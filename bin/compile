@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# bin/detect <build-dir> <cache-dir> <env-dir>
+
+set -e
+
+build_dir=$1
+cache_dir=$2
+env_dir=$3
+bp_dir=$(dirname $(dirname $0))
+
+version="1.8.0"
+nginx_tarball_url="https://s3-external-1.amazonaws.com/heroku-buildpack-ruby/nginx/cedar-14/nginx-$version.tgz"
+
+mkdir -p $build_dir/bin
+curl -L $nginx_tarball_url | tar xzv -C $build_dir/bin
+nginx_version=$($build_dir/bin/nginx-$STACK -V 2>&1 | head -1 | awk '{ print $NF }')
+echo "-----> Installed ${nginx_version} to /app/bin"
+
+mkdir -p $build_dir/config
+cp $bp_dir/config/nginx.conf.erb $build_dir/config
+cp $bp_dir/config/mime.types $build_dir/config
+
+mkdir -p $build_dir/logs
+
+exit 0

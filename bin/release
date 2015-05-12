@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# bin/release <build-dir>
+
+cat <<EOF
+---
+addons: []
+default_process_types:
+  web: erb config/nginx.conf.erb > config/nginx.conf && bin/nginx -p . -c config/nginx.conf
+EOF
