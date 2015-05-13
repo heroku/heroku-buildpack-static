@@ -25,9 +25,15 @@ http {
   client_body_timeout 5;
 
   server {
-    listen <%= ENV["PORT"] %>;
+    listen <%= port %>;
     server_name _;
     keepalive_timeout 5;
     root public/;
+
+<% backends.each do |backend| %>
+    location <%= backend['mount_point'] %> {
+      proxy_pass <%= backend['url'] %>;
+    }
+<% end %>
   }
 }

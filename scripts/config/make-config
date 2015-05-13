@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+TEMPLATE = 'config/nginx.conf.erb'
+BACKENDS = 'backends.yml'
+CONFIG = 'config/nginx.conf'
+
+require 'erb'
+require 'yaml'
+
+def port
+  ENV['PORT'] || 5000
+end
+
+def backends
+  YAML.load(File.read(BACKENDS))
+rescue Errno::ENOENT
+  []
+end
+
+erb = ERB.new(File.read(TEMPLATE))
+
+File.write(CONFIG, erb.result(binding))

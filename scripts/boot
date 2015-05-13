@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+HERE=$(dirname "$0")
+
+"${HERE}/config/make-config" && "${HERE}/nginx" -p . -c config/nginx.conf
