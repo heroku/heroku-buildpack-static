@@ -3,7 +3,7 @@
 
 build_dir=$1
 
-if [ ! $build_dir/public ]; then
+if [ ! -d "$build_dir/public" ]; then
     exit 1
 fi
 
