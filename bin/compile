@@ -19,8 +19,8 @@ cp -a $bp_dir/scripts/config $build_dir/bin/config
 echo "-----> Installed ${nginx_version} to /app/bin"
 
 mkdir -p $build_dir/config
-cp $bp_dir/config/nginx.conf.erb $build_dir/config
-cp $bp_dir/config/mime.types $build_dir/config
+cp $bp_dir/scripts/config/templates/nginx.conf.erb $build_dir/config
+cp $bp_dir/scripts/config/templates/mime.types $build_dir/config
 
 mkdir -p $build_dir/logs
 
