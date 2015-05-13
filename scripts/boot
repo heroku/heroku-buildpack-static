@@ -2,4 +2,5 @@
 
 HERE=$(dirname "$0")
 
-"${HERE}/config/make-config" && "${HERE}/nginx" -p . -c config/nginx.conf
+"${HERE}/config/make-config"
+"${HERE}/nginx" -p . -c config/nginx.conf
