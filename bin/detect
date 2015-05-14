@@ -3,9 +3,9 @@
 
 build_dir=$1
 
-if [ ! -d "$build_dir/public" ]; then
+if [ ! -d "$build_dir/public_html" ]; then
     exit 1
 fi
 
-echo 'static buildpack'
+echo 'Static HTML'
 exit 0
