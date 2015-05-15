@@ -8,7 +8,7 @@ This is a discovery project for using a buildpack for handling static sites and 
 * error/access logs support in `heroku logs`
 
 ## Deploying
-The directory structure expected is that you have a `public/` directory containing all your static assets.
+The directory structure expected is that you have a `public_html/` directory containing all your static assets.
 
 1. Set the app to this buildpack: `$ heroku buildpacks:set git://github.com/hone/heroku-buildpack-static.git`.
 2. Deploy: `$ git push heroku master`
