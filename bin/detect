@@ -3,7 +3,7 @@
 
 build_dir=$1
 
-if [ ! -d "$build_dir/public_html" ]; then
+if [ ! -f "$build_dir/static.json" ] && [ ! -d "$build_dir/public_html" ]; then
     exit 1
 fi
 
