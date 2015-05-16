@@ -1,22 +1,26 @@
 #!/usr/bin/env ruby
 
-TEMPLATE = 'config/nginx.conf.erb'
-BACKENDS = 'backends.yml'
-CONFIG = 'config/nginx.conf'
+require 'fileutils'
+
+TEMPLATE     = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
+USER_CONFIG  = 'static.json'
+NGINX_CONFIG = 'config/nginx.conf'
 
 require 'erb'
-require 'yaml'
+require 'json'
 
-def port
-  ENV['PORT'] || 5000
+
+class NginxConfig
+  json = {}
+  json = JSON.parse(File.read(USER_CONFIG)) if File.exist?(USER_CONFIG)
+  json["port"] ||= ENV["PORT"] || 5000
+  json["proxies"] ||= {}
+  json.each do |key, value|
+    define_method(key) { value }
+  end
 end
 
-def backends
-  YAML.load(File.read(BACKENDS))
-rescue Errno::ENOENT
-  []
-end
-
-erb = ERB.new(File.read(TEMPLATE))
-
-File.write(CONFIG, erb.result(binding))
+erb   = ERB.new(File.read(TEMPLATE))
+klass = erb.def_class(NginxConfig, 'render()')
+FileUtils.mkdir_p(File.dirname(NGINX_CONFIG))
+File.write(NGINX_CONFIG, klass.new.render)

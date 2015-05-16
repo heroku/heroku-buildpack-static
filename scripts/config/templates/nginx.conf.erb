@@ -33,10 +33,10 @@ http {
     keepalive_timeout 5;
     root public_html/;
 
-<% backends.each do |backend| %>
-    location <%= backend['mount_point'] %> {
-      proxy_pass <%= backend['url'] %>;
+  <% proxies.each do |location, hash| %>
+    location <%= location %> {
+      proxy_pass <%= hash['origin'] %>;
     }
-<% end %>
+  <% end %>
   }
 }
