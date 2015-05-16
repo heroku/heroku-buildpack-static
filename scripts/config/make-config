@@ -16,6 +16,7 @@ class NginxConfig
   json["port"] ||= ENV["PORT"] || 5000
   json["root"] ||= "public_html/"
   json["proxies"] ||= {}
+  json["clean_urls"] ||= false
   json.each do |key, value|
     define_method(key) { value }
   end

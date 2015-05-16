@@ -33,6 +33,12 @@ http {
     keepalive_timeout 5;
     root <%= root %>;
 
+  <% if clean_urls %>
+    location / {
+      try_files $uri $uri/ $uri.html;
+    }
+  <% end %>
+
   <% proxies.each do |location, hash| %>
     location <%= location %> {
       proxy_pass <%= hash['origin'] %>;
