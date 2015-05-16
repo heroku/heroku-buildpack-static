@@ -14,6 +14,7 @@ class NginxConfig
   json = {}
   json = JSON.parse(File.read(USER_CONFIG)) if File.exist?(USER_CONFIG)
   json["port"] ||= ENV["PORT"] || 5000
+  json["root"] ||= "public_html/"
   json["proxies"] ||= {}
   json.each do |key, value|
     define_method(key) { value }

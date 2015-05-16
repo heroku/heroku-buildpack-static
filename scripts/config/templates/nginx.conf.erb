@@ -31,7 +31,7 @@ http {
     listen <%= port %>;
     server_name _;
     keepalive_timeout 5;
-    root public_html/;
+    root <%= root %>;
 
   <% proxies.each do |location, hash| %>
     location <%= location %> {
