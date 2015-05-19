@@ -31,6 +31,9 @@ http {
     listen <%= port %>;
     keepalive_timeout 5;
     root <%= root %>;
+  <% if error_page %>
+    error_page 404 500 /<%= error_page %>;
+  <% end %>
 
   <% if clean_urls %>
     location / {
