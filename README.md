@@ -1,5 +1,5 @@
 # heroku-buildpack-static
-This is a discovery project for using a buildpack for handling static sites and single page web apps (I'm lookingat you Sam Phippen).
+This is a discovery project for using a buildpack for handling static sites and single page web apps (I'm looking at you Sam Phippen).
 
 ## Features
 * serving static assets
