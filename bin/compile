@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bin/detect <build-dir> <cache-dir> <env-dir>
+# bin/compile <build-dir> <cache-dir> <env-dir>
 
 set -e
 
