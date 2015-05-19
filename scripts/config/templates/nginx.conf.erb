@@ -42,6 +42,12 @@ http {
     }
   <% end %>
 
+  <% redirects.each do |path, hash| %>
+    location <%= path %> {
+      return <%= hash['status'] || 301 %> <%= hash['url'] %>;
+    }
+  <% end %>
+
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
       alias <%= root %>/<%= path %>;
