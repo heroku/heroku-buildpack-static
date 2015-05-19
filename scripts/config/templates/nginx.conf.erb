@@ -42,6 +42,12 @@ http {
     }
   <% end %>
 
+  <% routes.each do |route, path| %>
+    location ~ ^<%= route %>$ {
+      alias <%= root %>/<%= path %>;
+    }
+  <% end %>
+
   <% proxies.each do |location, hash| %>
     location <%= location %> {
       proxy_pass <%= hash['origin'] %>;
