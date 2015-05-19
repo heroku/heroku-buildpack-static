@@ -83,8 +83,6 @@ For single page web applications like Ember, it's common to back the application
 
 ```json
 {
-  "root": "public/",
-  "clean_urls": true,
   "proxies": {
     "/api/": {
       "origin": "https://hone-ember-todo-rails.herokuapp.com/"
