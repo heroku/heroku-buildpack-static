@@ -53,7 +53,7 @@ http {
 
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
-      alias <%= root %>/<%= path %>;
+      try_files /<%= path %> =404;
     }
   <% end %>
 
