@@ -6,6 +6,15 @@ HERE=$(dirname "$0")
 
 # Reify the environment into an nginx config file, since nginx doesn't support
 # environment variables particularly well
+case $(ulimit -u) in
+512)   # 2X Dyno
+  export WORKER_CONNECTIONS=2048
+  ;;
+*)     # 1X, PX, IX, Hobby, Free Dynos
+  export WORKER_CONNECTIONS=2048
+  ;;
+esac
+
 "${HERE}/config/make-config"
 
 # make a shared pipe; we'll write the name of the process that exits to it once

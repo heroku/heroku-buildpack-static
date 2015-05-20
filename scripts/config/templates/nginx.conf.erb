@@ -1,10 +1,10 @@
 daemon off;
-worker_processes 4;
+worker_processes auto;
 
 events {
   use epoll;
   accept_mutex on;
-  worker_connections 1024;
+  worker_connections <%= worker_connections %>;
 }
 
 http {
