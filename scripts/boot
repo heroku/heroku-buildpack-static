@@ -17,6 +17,12 @@ rm -f $wait_pipe
 mkfifo $wait_pipe
 exec 3<> $wait_pipe
 
+# make a second shared pipe; nginx will write logs to this, and the log tail
+# process will read from it and write to stdout.
+mkdir -p logs
+rm -f logs/access.log
+mkfifo "logs/access.log"
+
 pids=()
 
 # trap SIGQUIT (ctrl+\ on the console), SIGTERM (when we get killed) and EXIT
@@ -62,9 +68,6 @@ echo "Starting log redirection..." >&2
 (
     trap 'echo "logs" >&3;' EXIT
     trap 'kill -TERM $! 2> /dev/null' TERM
-    mkdir -p logs
-    rm -f logs/access.log
-    mkfifo "logs/access.log"
     cat "logs/access.log" 1>&2 &
     wait
 ) & pids+=($!)
