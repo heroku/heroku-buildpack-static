@@ -9,7 +9,7 @@ env_dir=$3
 bp_dir=$(dirname $(dirname $0))
 
 fetch_nginx_tarball() {
-    local version="1.8.0"
+    local version="1.9.1"
     local tarball_file="nginx-$version.tgz"
     local stack="cedar-14"
     local nginx_tarball_url="https://s3-external-1.amazonaws.com/heroku-buildpack-ruby/nginx/$stack/nginx-$version.tgz"

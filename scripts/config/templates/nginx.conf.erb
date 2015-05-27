@@ -28,7 +28,7 @@ http {
   client_body_timeout 5;
 
   server {
-    listen <%= port %>;
+    listen <%= port %> reuseport;
     keepalive_timeout 5;
     root <%= root %>;
   <% if error_page %>
