@@ -3,9 +3,11 @@ require_relative "support/app_runner"
 require_relative "support/buildpack_builder"
 
 describe "Simple" do
-  let(:debug) { false }
-  let(:app)   { AppRunner.new("hello_world", debug) }
-  before      { BuildpackBuilder.new(debug) }
+  before(:all) do
+    @debug = false
+    BuildpackBuilder.new(@debug)
+  end
+  let(:app) { AppRunner.new("hello_world", @debug) }
 
   after do
     app.destroy
