@@ -5,7 +5,7 @@ require "json"
 require "docker"
 require_relative "path_helper"
 
-class BuildpackRunner
+class AppRunner
   include PathHelper
 
   HOST_PORT      = "3000"
@@ -15,14 +15,13 @@ class BuildpackRunner
   def initialize(fixture, debug = false)
     @debug     = debug
     @image     = build_image(fixture)
-    puts @image.id if @debug
     @container = Docker::Container.create(
       'Image'      => @image.id,
       'HostConfig' => {
         'PortBindings' => {
           "#{CONTAINER_PORT}/tcp" => [{
             "HostIp" => HOST_IP,
-            "HostPort": HOST_PORT, 
+            "HostPort": HOST_PORT,
           }]
         }
       }
@@ -59,8 +58,6 @@ class BuildpackRunner
     image = nil
 
     Dir.mktmpdir do |tmpdir|
-      fixture_path = fixtures_path(fixture)
-      dest_bp_dir  = Pathname.new(File.join(tmpdir, "buildpack"))
       print_output =
         if @debug
           -> (chunk) {
@@ -71,11 +68,8 @@ class BuildpackRunner
           -> (chunk) { nil }
         end
 
-      FileUtils.mkdir_p(dest_bp_dir)
-      FileUtils.cp_r(buildpack_path("bin"), dest_bp_dir)
-      FileUtils.cp_r(buildpack_path("scripts"), dest_bp_dir)
-      FileUtils.cp_r(Dir.glob(fixture_path + "*"), tmpdir)
-      image = Docker::Image.build_from_dir(tmpdir, &print_output)
+      FileUtils.cp_r(Dir.glob(fixtures_path(fixture) + "*"), tmpdir)
+      image = Docker::Image.build_from_dir(tmpdir, 'rm' => true, &print_output)
     end
 
     image
