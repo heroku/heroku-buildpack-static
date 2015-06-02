@@ -31,4 +31,14 @@ describe "Simple" do
       expect(response.body.chomp).to eq("Hello from dist/")
     end
   end
+
+  describe "clean_urls" do
+    let(:name) { "clean_urls" }
+
+    it "should drop the .html extension from URLs" do
+      response = app.get("/foo")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("foobar")
+    end
+  end
 end
