@@ -7,15 +7,28 @@ describe "Simple" do
     @debug = false
     BuildpackBuilder.new(@debug)
   end
-  let(:app) { AppRunner.new("hello_world", @debug) }
 
   after do
     app.destroy
   end
 
+  let(:app)  { AppRunner.new(name, @debug) }
+
+  let(:name) { "hello_world" }
+
   it "should serve out of public_html by default" do
     response = app.get("/")
     expect(response.code).to eq("200")
     expect(response.body.chomp).to eq("Hello World")
+  end
+
+  describe "root" do
+    let(:name) { "different_root" }
+
+    it "should serve assets out of user defined root" do
+      response = app.get("/")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("Hello from dist/")
+    end
   end
 end
