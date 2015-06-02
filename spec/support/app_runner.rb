@@ -5,6 +5,7 @@ require "json"
 require "docker"
 require "concurrent/atomic/count_down_latch"
 require_relative "path_helper"
+require_relative "buildpack_builder"
 
 class AppRunner
   include PathHelper
@@ -94,6 +95,12 @@ class AppRunner
         end
 
       FileUtils.cp_r(Dir.glob(fixtures_path(fixture) + "*"), tmpdir)
+      dockerfile = "#{tmpdir}/Dockerfile"
+      unless File.exist?(dockerfile)
+        File.open(dockerfile, "w") do |file|
+          file.puts "FROM #{BuildpackBuilder::TAG}"
+        end
+      end
       image = Docker::Image.build_from_dir(tmpdir, 'rm' => true, &print_output)
     end
 
