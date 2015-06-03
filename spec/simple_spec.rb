@@ -1,6 +1,8 @@
+require "fileutils"
 require_relative "spec_helper"
 require_relative "support/app_runner"
 require_relative "support/buildpack_builder"
+require_relative "support/path_helper"
 
 RSpec.describe "Simple" do
   before(:all) do
@@ -77,6 +79,36 @@ RSpec.describe "Simple" do
       response = app.get("/ewat")
       expect(response.code).to eq("404")
       expect(response.body.chomp).to eq("not found")
+    end
+  end
+
+  describe "proxies" do
+    include PathHelper
+
+    let(:name)             { "proxies" }
+    let(:static_json_path) { fixtures_path("proxies/static.json") }
+    before do
+      File.open(static_json_path, "w") do |file|
+        file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo/"
+    }
+  }
+}
+STATIC_JSON
+      end
+    end
+
+    after do
+      FileUtils.rm(static_json_path)
+    end
+
+    it "should proxy requests" do
+      response = app.get("/api/bar/")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("api")
     end
   end
 end
