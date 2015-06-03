@@ -59,4 +59,14 @@ RSpec.describe "Simple" do
       expect(response.body.chomp).to eq("hello from route")
     end
   end
+
+  describe "redirects" do
+    let(:name) { "redirects" }
+
+    it "should redirect and respect the http code" do
+      response = app.get("/old/gone")
+      expect(response.code).to eq("302")
+      expect(response["location"]).to eq("http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/")
+    end
+  end
 end
