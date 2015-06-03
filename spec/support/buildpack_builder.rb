@@ -6,7 +6,7 @@ require_relative "path_helper"
 class BuildpackBuilder
   include PathHelper
 
-  TAG = "hone/static:14"
+  TAG = "hone/static:cedar-14"
 
   def initialize(debug = false)
     @debug = debug
