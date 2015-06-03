@@ -2,7 +2,7 @@ require_relative "spec_helper"
 require_relative "support/app_runner"
 require_relative "support/buildpack_builder"
 
-describe "Simple" do
+RSpec.describe "Simple" do
   before(:all) do
     @debug = false
     BuildpackBuilder.new(@debug)
