@@ -41,4 +41,22 @@ describe "Simple" do
       expect(response.body.chomp).to eq("foobar")
     end
   end
+
+  describe "routes" do
+    let(:name) { "routes" }
+
+    it "should support custom routes" do
+      response = app.get("/foo.html")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("hello world")
+
+      response = app.get("/route/foo")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("hello from route")
+
+      response = app.get("/route/foo/bar")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("hello from route")
+    end
+  end
 end
