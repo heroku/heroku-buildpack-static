@@ -69,4 +69,14 @@ RSpec.describe "Simple" do
       expect(response["location"]).to eq("http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/")
     end
   end
+
+  describe "custom error pages" do
+    let(:name) { "custom_error_pages" }
+
+    it "should render the error page for a 404" do
+      response = app.get("/ewat")
+      expect(response.code).to eq("404")
+      expect(response.body.chomp).to eq("not found")
+    end
+  end
 end
