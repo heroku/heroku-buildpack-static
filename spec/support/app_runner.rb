@@ -16,10 +16,11 @@ class AppRunner
 
   def initialize(fixture, debug = false)
     @debug     = debug
-    @image     = build_image(fixture)
     @container = Docker::Container.create(
-      'Image'      => @image.id,
+      'Image'      => BuildpackBuilder::TAG,
+      'Cmd'        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
       'HostConfig' => {
+        'Binds' => ["#{fixtures_path(fixture)}:/src"],
         'PortBindings' => {
           "#{CONTAINER_PORT}/tcp" => [{
             "HostIp" => HOST_IP,
@@ -62,10 +63,7 @@ class AppRunner
   end
 
   def destroy
-    unless @debug
-      @container.delete(force: true)
-      @image.remove(force: true)
-    end
+    @container.delete(force: true) unless @debug
   end
 
   private
@@ -78,32 +76,5 @@ class AppRunner
       retry_count += 1
       retry
     end
-  end
-
-  def build_image(fixture)
-    image = nil
-
-    Dir.mktmpdir do |tmpdir|
-      print_output =
-        if @debug
-          -> (chunk) {
-            json = JSON.parse(chunk)
-            puts json["stream"]
-          }
-        else
-          -> (chunk) { nil }
-        end
-
-      FileUtils.cp_r(Dir.glob(fixtures_path(fixture) + "*"), tmpdir)
-      dockerfile = "#{tmpdir}/Dockerfile"
-      unless File.exist?(dockerfile)
-        File.open(dockerfile, "w") do |file|
-          file.puts "FROM #{BuildpackBuilder::TAG}"
-        end
-      end
-      image = Docker::Image.build_from_dir(tmpdir, 'rm' => true, &print_output)
-    end
-
-    image
   end
 end
