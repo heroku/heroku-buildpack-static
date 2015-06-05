@@ -85,19 +85,22 @@ RSpec.describe "Simple" do
   describe "proxies" do
     include PathHelper
 
-    let(:name)             { "proxies" }
-    let(:static_json_path) { fixtures_path("proxies/static.json") }
-    before do
+    let(:name)              { "proxies" }
+    let(:static_json_path)  { fixtures_path("proxies/static.json") }
+    let(:setup_static_json) do
+      Proc.new do |path|
       File.open(static_json_path, "w") do |file|
         file.puts <<STATIC_JSON
 {
   "proxies": {
     "/api/": {
-      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo/"
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}#{path}"
     }
   }
 }
 STATIC_JSON
+
+        end
       end
     end
 
@@ -105,10 +108,28 @@ STATIC_JSON
       FileUtils.rm(static_json_path)
     end
 
-    it "should proxy requests" do
-      response = app.get("/api/bar/")
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("api")
+    context "trailing slash" do
+      before do
+        setup_static_json.call("/foo/")
+      end
+
+      it "should proxy requests" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+    end
+
+    context "without a trailing slash" do
+      before do
+        setup_static_json.call("/foo")
+      end
+
+      it "should proxy requests" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
     end
   end
 end
