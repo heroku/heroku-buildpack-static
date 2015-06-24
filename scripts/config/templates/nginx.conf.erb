@@ -29,6 +29,7 @@ http {
 
   server {
     listen <%= port %> reuseport;
+    port_in_redirect off;
     keepalive_timeout 5;
     root <%= root %>;
   <% if error_page %>
