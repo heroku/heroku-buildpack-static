@@ -1,0 +1,36 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    concurrent-ruby (0.8.0)
+      ref (~> 1.0, >= 1.0.5)
+    diff-lcs (1.2.5)
+    docker-api (1.21.4)
+      excon (>= 0.38.0)
+      json
+    excon (0.45.3)
+    json (1.8.2)
+    ref (1.0.5)
+    rspec (3.2.0)
+      rspec-core (~> 3.2.0)
+      rspec-expectations (~> 3.2.0)
+      rspec-mocks (~> 3.2.0)
+    rspec-core (3.2.3)
+      rspec-support (~> 3.2.0)
+    rspec-expectations (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-mocks (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-support (3.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  concurrent-ruby
+  docker-api
+  rspec
+
+BUNDLED WITH
+   1.10.2

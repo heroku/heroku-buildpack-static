@@ -90,3 +90,21 @@ For single page web applications like Ember, it's common to back the application
   }
 }
 ```
+
+## Testing
+For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
+
+```sh
+$ bundle install
+```
+
+To run the test suite just execute:
+
+```sh
+$ bundle exec rspec
+```
+
+### Structure
+To add a new test, add another example inside `spec/simple_spec.rb` or create a new file based off of `spec/simple_spec.rb`. All the example apps live in `spec/fixtures`.
+
+When writing a test, `BuildpackBuilder` creates the docker container we need that represents the heroku cedar-14 stack. `AppRunner.new` takes the name of a fixture and mounts it in the container built by `BuildpackBuilder` to run tests against. The `AppRunner` instance provides convenience methods like `get` that just wrap `net/http` for analyzing the response.
