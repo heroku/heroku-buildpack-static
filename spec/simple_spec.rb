@@ -89,8 +89,8 @@ RSpec.describe "Simple" do
     let(:static_json_path)  { fixtures_path("proxies/static.json") }
     let(:setup_static_json) do
       Proc.new do |path|
-      File.open(static_json_path, "w") do |file|
-        file.puts <<STATIC_JSON
+        File.open(static_json_path, "w") do |file|
+          file.puts <<STATIC_JSON
 {
   "proxies": {
     "/api/": {
