@@ -54,8 +54,12 @@ class AppRunner
 
     run do
       network_retry(max_retries) do
-        uri      = URI("http://#{HOST_IP}:#{HOST_PORT}/#{path}")
-        response = Net::HTTP.get_response(uri)
+        uri = URI("#{path}")
+        uri.host   = HOST_IP   if uri.host.nil?
+        uri.port   = HOST_PORT if (uri.host == HOST_IP && uri.port != HOST_PORT) || uri.port.nil?
+        uri.scheme = "http"    if uri.scheme.nil?
+
+        response = Net::HTTP.get_response(URI(uri.to_s))
       end
     end
 
