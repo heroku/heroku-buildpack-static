@@ -1,62 +1,12 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'erb'
+require_relative 'lib/nginx_config'
 
 TEMPLATE     = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
 USER_CONFIG  = 'static.json'
 NGINX_CONFIG = 'config/nginx.conf'
 
-require 'erb'
-require 'json'
-
-
-class NginxConfig
-  def initialize(json_file)
-    json = {}
-    json = JSON.parse(File.read(json_file)) if File.exist?(json_file)
-    json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || 512
-    json["port"] ||= ENV["PORT"] || 5000
-    json["root"] ||= "public_html/"
-    json["proxies"] ||= {}
-    json["proxies"].each do |loc, hash|
-      if hash["origin"][-1] != "/"
-        json["proxies"][loc].merge!("origin" => hash["origin"] + "/")
-      end
-    end
-    json["clean_urls"] ||= false
-    json["routes"] ||= {}
-    json["routes"] = Hash[json["routes"].map { |route, target| [self.class.to_regex(route), target] }]
-    json["redirects"] ||= {}
-    json["error_page"] ||= nil
-    json.each do |key, value|
-      self.class.send(:define_method, key) { value }
-    end
-  end
-
-  def context
-    binding
-  end
-
-  def self.to_regex(path)
-    segments = []
-    while !path.empty?
-      if path[0...2] == '**'
-        segments << '.*'
-        path = path[2..-1]
-      elsif path[0...1] == '*'
-        segments << '[^/]*'
-        path = path[1..-1]
-      else
-        next_star = path.index("*") || path.length
-        segments << Regexp.escape(path[0...next_star])
-        path = path[next_star..-1]
-      end
-    end
-    segments.join
-  end
-end
-
-if __FILE__ == $0
-  erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
-  File.write(NGINX_CONFIG, erb)
-end
+erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
+File.write(NGINX_CONFIG, erb)
