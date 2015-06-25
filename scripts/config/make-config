@@ -25,7 +25,7 @@ class NginxConfig
     end
     json["clean_urls"] ||= false
     json["routes"] ||= {}
-    json["routes"] = Hash[json["routes"].map { |route, target| [to_regex(route), target] }]
+    json["routes"] = Hash[json["routes"].map { |route, target| [self.class.to_regex(route), target] }]
     json["redirects"] ||= {}
     json["error_page"] ||= nil
     json.each do |key, value|
@@ -37,8 +37,7 @@ class NginxConfig
     binding
   end
 
-  private
-  def to_regex(path)
+  def self.to_regex(path)
     segments = []
     while !path.empty?
       if path[0...2] == '**'
@@ -57,6 +56,7 @@ class NginxConfig
   end
 end
 
-
-erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
-File.write(NGINX_CONFIG, erb)
+if __FILE__ == $0
+  erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
+  File.write(NGINX_CONFIG, erb)
+end
