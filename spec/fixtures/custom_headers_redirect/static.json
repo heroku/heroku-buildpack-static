@@ -1,0 +1,13 @@
+{
+  "headers": {
+    "/overlap": {
+      "X-Header": "present"
+    }
+  },
+  "redirects": {
+    "/overlap": {
+      "url": "/",
+      "status": 302
+    }
+  }
+}
