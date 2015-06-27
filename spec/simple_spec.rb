@@ -72,6 +72,16 @@ RSpec.describe "Simple" do
     end
   end
 
+  describe "https only" do
+    let(:name) { "https_only" }
+
+    it "should redirect http to https" do
+      response = app.get("/foo")
+      expect(response.code).to eq("301")
+      expect(response['location']).to eq("https://#{AppRunner::HOST_IP}/foo")
+    end
+  end
+
   describe "custom error pages" do
     let(:name) { "custom_error_pages" }
 
