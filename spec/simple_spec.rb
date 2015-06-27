@@ -132,4 +132,132 @@ STATIC_JSON
       end
     end
   end
+
+  describe "custom headers" do
+    let(:name) { "custom_headers" }
+
+    it "should return the respected headers only for the path specified" do
+      response = app.get("/")
+      expect(response["cache-control"]).to eq("no-cache")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("index")
+
+      response = app.get("/foo.html")
+      expect(response["cache-control"]).to eq(nil)
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("foo")
+    end
+
+    describe "wildcard paths" do
+      let(:name) { "custom_headers_wildcard" }
+
+      it "should add the headers" do
+        response = app.get("/cache/")
+        expect(response["Cache-Control"]).to eq("max-age=38400")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("cached index")
+
+        response = app.get("/")
+        expect(response["Cache-Control"]).to eq(nil)
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("index")
+      end
+    end
+
+    describe "redirect" do
+      let(:name) { "custom_headers_redirect" }
+
+      it "should add the headers" do
+        response = app.get("/overlap")
+        expect(response["X-Header"]).to eq("present")
+        expect(response.code).to eq("302")
+      end
+    end
+
+    describe "clean_urls" do
+      let(:name) { "custom_headers_clean_urls" }
+
+      it "should add the headers" do
+        response = app.get("/foo")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foo")
+        expect(response["X-Header"]).to eq("present")
+
+        response = app.get("/bar")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("bar")
+        expect(response["X-Header"]).to be_nil
+      end
+
+      it "should not add headers for .html urls" do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("200")
+        expect(response["X-Header"]).to be_nil
+      end
+    end
+
+    describe "routes" do
+      let(:name) { "custom_headers_routes" }
+
+      it "should add headers" do
+        response = app.get("/active")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("index")
+        expect(response["X-Header"]).to eq("present")
+
+        response = app.get("/foo/foo.html")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foo")
+        expect(response["X-Header"]).to be_nil
+      end
+    end
+
+    describe "proxies" do
+      include PathHelper
+
+      let(:name)              { "proxies" }
+      let(:static_json_path)  { fixtures_path("proxies/static.json") }
+      let(:setup_static_json) do
+        Proc.new do |path|
+          File.open(static_json_path, "w") do |file|
+            file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}#{path}"
+    }
+  },
+  "headers": {
+    "/api/bar/": {
+      "X-Header": "present"
+    }
+  }
+}
+STATIC_JSON
+
+          end
+        end
+      end
+
+      before do
+        setup_static_json.call("/foo/")
+      end
+
+      after do
+        FileUtils.rm(static_json_path)
+      end
+
+      it "should proxy requests" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+        expect(response["X-Header"]).to eq("present")
+
+        response = app.get("/api/baz/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("baz")
+        expect(response["X-Header"]).to be_nil
+      end
+    end
+  end
 end

@@ -91,6 +91,25 @@ For single page web applications like Ember, it's common to back the application
 }
 ```
 
+#### Custom Headers
+Using the headers key, you can set custom response headers. It uses the same operators for pathing as [Custom Routes](#custom-routes).
+
+```json
+{
+  "headers": {
+    "/": {
+      "Cache-Control": "no-store, no-cache"
+    },
+    "/assets/**": {
+      "Cache-Control": "public, max-age=512000"
+    },
+    "/assets/webfonts/*": {
+      "Access-Control-Allow-Origin": "*"
+    }
+  }
+}
+```
+
 ## Testing
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 

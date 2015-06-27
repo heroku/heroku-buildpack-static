@@ -1,0 +1,8 @@
+{
+  "clean_urls": true,
+  "headers": {
+    "/foo": {
+      "X-Header": "present"
+    }
+  }
+}

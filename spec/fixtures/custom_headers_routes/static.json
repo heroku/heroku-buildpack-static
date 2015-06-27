@@ -1,0 +1,10 @@
+{
+  "routes": {
+    "/*": "index.html"
+  },
+  "headers": {
+    "/*": {
+      "X-Header": "present"
+    }
+  }
+}
