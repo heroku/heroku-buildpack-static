@@ -11,7 +11,7 @@ class AppRunner
   include PathHelper
 
   HOST_PORT      = "3000"
-  HOST_IP        = "127.0.0.1"
+  HOST_IP        = %x(boot2docker ip).match(/([0-9]{1,3}\.){3}[0-9]{1,3}/)[0] || "127.0.0.1"
   CONTAINER_PORT = "3000"
 
   def initialize(fixture, debug = false)
