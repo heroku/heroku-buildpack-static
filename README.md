@@ -137,3 +137,12 @@ $ bundle exec rspec
 To add a new test, add another example inside `spec/simple_spec.rb` or create a new file based off of `spec/simple_spec.rb`. All the example apps live in `spec/fixtures`.
 
 When writing a test, `BuildpackBuilder` creates the docker container we need that represents the heroku cedar-14 stack. `AppRunner.new` takes the name of a fixture and mounts it in the container built by `BuildpackBuilder` to run tests against. The `AppRunner` instance provides convenience methods like `get` that just wrap `net/http` for analyzing the response.
+
+### Boot2docker
+
+If you are running docker with boot2docker, the buildpack will automatically send tests to the right ip address.
+You need to forward the docker's port 3000 to the virtual machine's port though.
+
+```
+VBoxManage modifyvm "boot2docker-vm" --natpf1 "tcp-port3000,tcp,,3000,,3000";
+```
