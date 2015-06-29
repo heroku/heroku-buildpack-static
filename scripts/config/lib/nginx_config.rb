@@ -15,6 +15,7 @@ class NginxConfig
       end
     end
     json["clean_urls"] ||= false
+    json["https_only"] ||= false
     json["routes"] ||= {}
     json["routes"] = Hash[json["routes"].map {|route, target| [NginxConfigUtil.to_regex(route), target] }]
     json["redirects"] ||= {}

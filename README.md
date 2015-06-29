@@ -78,6 +78,16 @@ You can replace the default nginx 404 and 500 error pages by defining the path t
 }
 ```
 
+#### HTTPS Only
+
+You can redirect all HTTP requests to HTTPS.
+
+```
+{
+  "https_only": true
+}
+```
+
 #### Proxy Backends
 For single page web applications like Ember, it's common to back the application with another app that's hosted on Heroku. The down side of separating out these two applications is that now you have to deal with CORS. To get around this (but at the cost of some latency) you can have the static buildpack proxy apps to your backend at a mountpoint. For instance, we can have all the api requests live at `/api/` which actually are just requests to our API server.
 
