@@ -24,6 +24,16 @@ RSpec.describe "Simple" do
     expect(response.body.chomp).to eq("Hello World")
   end
 
+  describe "no config" do
+    let(:name) { "no_config" }
+
+    it "should serve out of public_html by default" do
+      response = app.get("/")
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("Hello World")
+    end
+  end
+
   describe "root" do
     let(:name) { "different_root" }
 
