@@ -17,7 +17,7 @@ class NginxConfig
     json["clean_urls"] ||= false
     json["https_only"] ||= false
     json["routes"] ||= {}
-    json["routes"] = Hash[json["routes"].map {|route, target| [NginxConfigUtil.to_regex(route), target] }]
+    json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
     json["redirects"] ||= {}
     json["error_page"] ||= nil
     json["debug"] ||= ENV['STATIC_DEBUG']

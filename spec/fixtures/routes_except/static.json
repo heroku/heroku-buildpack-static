@@ -1,0 +1,8 @@
+{
+  "routes": {
+    "/**": {
+      "path": "index.html",
+      "except": "/assets/*"
+    }
+  }
+}

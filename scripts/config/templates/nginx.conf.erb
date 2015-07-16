@@ -70,7 +70,9 @@ http {
 
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
-      try_files /<%= path %> =404;
+      set $route <%= route %>;
+      mruby_set $path /app/bin/config/lib/ngx_mruby/routes.rb cache;
+      try_files /$path =404;
     }
   <% end %>
 

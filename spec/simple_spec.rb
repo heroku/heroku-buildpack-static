@@ -73,6 +73,22 @@ RSpec.describe "Simple" do
         expect(response.body.chomp).to eq("hello from route")
       end
     end
+
+    context "whitelist" do
+      let(:name) { "routes_except" }
+
+      it "redirects paths not on the except list" do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello world")
+      end
+
+      it "should not override the except list" do
+        response = app.get("/assets/app.js")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("{}")
+      end
+    end
   end
 
   describe "redirects" do
