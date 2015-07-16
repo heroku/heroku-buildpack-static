@@ -14,9 +14,10 @@ RSpec.describe "Simple" do
     app.destroy
   end
 
-  let(:app)  { AppRunner.new(name, @debug) }
+  let(:app)  { AppRunner.new(name, env, @debug) }
 
   let(:name) { "hello_world" }
+  let(:env)  { Hash.new }
 
   it "should serve out of public_html by default" do
     response = app.get("/")

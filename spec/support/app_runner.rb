@@ -19,11 +19,13 @@ class AppRunner
   HOST_IP        = boot2docker_ip || "127.0.0.1"
   CONTAINER_PORT = "3000"
 
-  def initialize(fixture, debug = false)
+  def initialize(fixture, env = nil, debug = false)
     @debug     = debug
     @container = Docker::Container.create(
       'Image'      => BuildpackBuilder::TAG,
       'Cmd'        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
+      # Env format is [KEY1=VAL1 KEY2=VAL2]
+      'Env'        => env.to_a.map {|i| i.join("=") },
       'HostConfig' => {
         'Binds' => ["#{fixtures_path(fixture)}:/src"],
         'PortBindings' => {
