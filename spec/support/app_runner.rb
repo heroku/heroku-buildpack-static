@@ -10,8 +10,13 @@ require_relative "buildpack_builder"
 class AppRunner
   include PathHelper
 
+  def self.boot2docker_ip
+    %x(boot2docker ip).match(/([0-9]{1,3}\.){3}[0-9]{1,3}/)[0]
+  rescue Errno::ENOENT
+  end
+
   HOST_PORT      = "3000"
-  HOST_IP        = %x(boot2docker ip).match(/([0-9]{1,3}\.){3}[0-9]{1,3}/)[0] || "127.0.0.1"
+  HOST_IP        = boot2docker_ip || "127.0.0.1"
   CONTAINER_PORT = "3000"
 
   def initialize(fixture, debug = false)
