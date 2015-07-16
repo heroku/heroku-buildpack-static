@@ -1,0 +1,12 @@
+{
+  "redirects": {
+    "/old/gone": {
+      "url": "/gone.html",
+      "status": 302
+    },
+    "/no_redirect.html": {
+      "url": "/gone.html",
+      "status": 302
+    }
+  }
+}

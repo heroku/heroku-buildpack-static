@@ -41,18 +41,19 @@ http {
     error_page 404 500 /<%= error_page %>;
   <% end %>
 
-  <% if clean_urls %>
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
-      try_files $uri $uri/ $uri.html;
+      mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+    <% if clean_urls %>
+      try_files $uri $uri/ $uri.html $fallback;
+    <% else %>
+      try_files $uri $uri/ $fallback;
+    <% end %>
     }
 
+  <% if clean_urls %>
     location ~ \.html$ {
       try_files $uri =404;
-    }
-  <% else %>
-    location / {
-      mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
     }
   <% end %>
 
@@ -62,15 +63,16 @@ http {
     }
   <% end %>
 
-  <% redirects.each do |path, hash| %>
-    location <%= path %> {
-      return <%= hash['status'] || 301 %> <%= hash['url'] %>;
-    }
-  <% end %>
-
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
-      try_files /<%= path %> =404;
+      set $route <%= route %>;
+      mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
+      mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+    <% if clean_urls %>
+      try_files $uri $uri/ /$uri.html $path $fallback;
+    <% else %>
+      try_files $uri $path $fallback;
+    <% end %>
     }
   <% end %>
 
@@ -79,5 +81,26 @@ http {
       proxy_pass <%= hash['origin'] %>;
     }
   <% end %>
+
+  # need this b/c setting $fallback to =404 will try #{root}=404 instead of returning a 404
+  location @404 {
+    return 404;
+  }
+
+  # fallback proxy named match
+  <% proxies.each do |location, hash| %>
+    location @<%= location %> {
+      rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
+      proxy_pass <%= hash['host'] %>;
+    }
+  <% end %>
+
+  # fallback redirects named match
+  <% redirects.each do |path, hash| %>
+    location @<%= path %> {
+      return <%= hash['status'] || 301 %> <%= hash['url'] %>;
+    }
+  <% end %>
+
   }
 }

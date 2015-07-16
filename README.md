@@ -120,6 +120,15 @@ Using the headers key, you can set custom response headers. It uses the same ope
 }
 ```
 
+### Route Ordering
+
+* Root Files
+* Clean URLs
+* Proxies
+* Redirects
+* Custom Routes
+* 404
+
 ## Testing
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 

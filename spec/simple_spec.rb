@@ -162,6 +162,40 @@ STATIC_JSON
         expect(response.body.chomp).to eq("api")
       end
     end
+
+    context "with custom routes" do
+      before do
+        File.open(static_json_path, "w") do |file|
+          file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+    },
+    "/proxy/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+    }
+  },
+  "routes": {
+    "/api/**": "index.html"
+  }
+}
+STATIC_JSON
+        end
+      end
+
+      it "should take precedence over a custom route" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+
+      it "should proxy if there is no matching custom route" do
+        response = app.get("/proxy/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+    end
   end
 
   describe "custom headers" do
@@ -320,6 +354,146 @@ STATIC_JSON
         skip if @debug
         _, io_stream = app.get("/", true)
         expect(io_stream.string).not_to include("[info]")
+      end
+    end
+  end
+
+  describe "ordering" do
+    let(:name) { "ordering" }
+
+    it "should serve files in the correct order" do
+      app.run do
+        response = app.get("/assets/app.js")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("{}")
+
+        response = app.get("/old/gone")
+        expect(response.code).to eq("302")
+        expect(app.get(response["location"]).body.chomp).to eq("goodbye")
+
+        response = app.get("/foo")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello world")
+      end
+    end
+
+    context "https" do
+      let(:name) { "ordering_https" }
+
+      it "should serve files in the correct order" do
+        app.run do
+          response = app.get("/assets/app.js")
+          expect(response.code).to eq("301")
+
+          uri = URI(response['location'])
+          expect(uri.path).to eq("/assets/app.js")
+          expect(uri.scheme).to eq("https")
+        end
+      end
+
+    end
+
+    context "clean_urls" do
+      let(:name) { "ordering_clean_urls" }
+
+      it "should honor clean urls" do
+        app.run do
+          response = app.get("/gone")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("goodbye")
+
+          response = app.get("/gone.html")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("goodbye")
+
+          response = app.get("/bar")
+          expect(response.code).to eq("301")
+          response = app.get(response["Location"])
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+
+          response = app.get("/assets/app.js")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("{}")
+
+          response = app.get("/old/gone")
+          expect(response.code).to eq("302")
+          expect(app.get(response["location"]).body.chomp).to eq("goodbye")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("hello world")
+        end
+      end
+    end
+
+    context "without custom routes" do
+      let(:name) { "ordering_without_custom_routes" }
+
+      it "should still respect ordering" do
+        app.run do
+          response = app.get("/gone.html")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("goodbye")
+
+          response = app.get("/no_redirect.html")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("no_redirect")
+
+          response = app.get("/bar")
+          expect(response.code).to eq("301")
+          response = app.get(response["Location"])
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+
+          response = app.get("/assets/app.js")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("{}")
+
+          response = app.get("/old/gone")
+          expect(response.code).to eq("302")
+          expect(app.get(response["location"]).body.chomp).to eq("goodbye")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("404")
+        end
+      end
+    end
+
+    context "with clean urls without custom routes" do
+      let(:name) { "ordering_with_clean_urls_without_custom_routes" }
+
+      it "should still respect ordering" do
+        app.run do
+          response = app.get("/gone")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("goodbye")
+
+          response = app.get("/gone.html")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("goodbye")
+
+          response = app.get("/no_redirect")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("no_redirect")
+
+          response = app.get("/bar")
+          expect(response.code).to eq("301")
+          response = app.get(response["Location"])
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+
+          response = app.get("/assets/app.js")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("{}")
+
+          response = app.get("/old/gone")
+          expect(response.code).to eq("302")
+          expect(app.get(response["location"]).body.chomp).to eq("goodbye")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("404")
+        end
       end
     end
   end
