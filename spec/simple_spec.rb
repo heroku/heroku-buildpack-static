@@ -59,17 +59,19 @@ RSpec.describe "Simple" do
     let(:name) { "routes" }
 
     it "should support custom routes" do
-      response = app.get("/foo.html")
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("hello world")
+      app.run do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello world")
 
-      response = app.get("/route/foo")
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("hello from route")
+        response = app.get("/route/foo")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello from route")
 
-      response = app.get("/route/foo/bar")
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("hello from route")
+        response = app.get("/route/foo/bar")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello from route")
+      end
     end
   end
 
@@ -158,30 +160,34 @@ STATIC_JSON
     let(:name) { "custom_headers" }
 
     it "should return the respected headers only for the path specified" do
-      response = app.get("/")
-      expect(response["cache-control"]).to eq("no-cache")
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("index")
+      app.run do
+        response = app.get("/")
+        expect(response["cache-control"]).to eq("no-cache")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("index")
 
-      response = app.get("/foo.html")
-      expect(response["cache-control"]).to eq(nil)
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("foo")
+        response = app.get("/foo.html")
+        expect(response["cache-control"]).to eq(nil)
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foo")
+      end
     end
 
     describe "wildcard paths" do
       let(:name) { "custom_headers_wildcard" }
 
       it "should add the headers" do
-        response = app.get("/cache/")
-        expect(response["Cache-Control"]).to eq("max-age=38400")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("cached index")
+        app.run do
+          response = app.get("/cache/")
+          expect(response["Cache-Control"]).to eq("max-age=38400")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("cached index")
 
-        response = app.get("/")
-        expect(response["Cache-Control"]).to eq(nil)
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("index")
+          response = app.get("/")
+          expect(response["Cache-Control"]).to eq(nil)
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("index")
+        end
       end
     end
 
@@ -199,15 +205,17 @@ STATIC_JSON
       let(:name) { "custom_headers_clean_urls" }
 
       it "should add the headers" do
-        response = app.get("/foo")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("foo")
-        expect(response["X-Header"]).to eq("present")
+        app.run do
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foo")
+          expect(response["X-Header"]).to eq("present")
 
-        response = app.get("/bar")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("bar")
-        expect(response["X-Header"]).to be_nil
+          response = app.get("/bar")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+          expect(response["X-Header"]).to be_nil
+        end
       end
 
       it "should not add headers for .html urls" do
@@ -221,15 +229,17 @@ STATIC_JSON
       let(:name) { "custom_headers_routes" }
 
       it "should add headers" do
-        response = app.get("/active")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("index")
-        expect(response["X-Header"]).to eq("present")
+        app.run do
+          response = app.get("/active")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("index")
+          expect(response["X-Header"]).to eq("present")
 
-        response = app.get("/foo/foo.html")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("foo")
-        expect(response["X-Header"]).to be_nil
+          response = app.get("/foo/foo.html")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foo")
+          expect(response["X-Header"]).to be_nil
+        end
       end
     end
 
@@ -269,15 +279,17 @@ STATIC_JSON
       end
 
       it "should proxy requests" do
-        response = app.get("/api/bar/")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("api")
-        expect(response["X-Header"]).to eq("present")
+        app.run do
+          response = app.get("/api/bar/")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("api")
+          expect(response["X-Header"]).to eq("present")
 
-        response = app.get("/api/baz/")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("baz")
-        expect(response["X-Header"]).to be_nil
+          response = app.get("/api/baz/")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("baz")
+          expect(response["X-Header"]).to be_nil
+        end
       end
     end
   end

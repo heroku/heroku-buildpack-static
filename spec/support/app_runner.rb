@@ -20,6 +20,7 @@ class AppRunner
   CONTAINER_PORT = "3000"
 
   def initialize(fixture, env = nil, debug = false)
+    @run       = false
     @debug     = debug
     @container = Docker::Container.create(
       'Image'      => BuildpackBuilder::TAG,
@@ -39,7 +40,9 @@ class AppRunner
   end
 
   def run
-    latch = Concurrent::CountDownLatch.new(1)
+    @run       = true
+    retn       = nil
+    latch      = Concurrent::CountDownLatch.new(1)
     run_thread = Thread.new {
       latch.wait(0.5)
       yield(@container)
@@ -51,26 +54,20 @@ class AppRunner
       end
     }
 
-    run_thread.join
+    retn = run_thread.value
     @container.stop
     container_thread.join
+    @run = false
+
+    retn
   end
 
   def get(path, max_retries = 5)
-    response = nil
-
-    run do
-      network_retry(max_retries) do
-        uri = URI("#{path}")
-        uri.host   = HOST_IP   if uri.host.nil?
-        uri.port   = HOST_PORT if (uri.host == HOST_IP && uri.port != HOST_PORT) || uri.port.nil?
-        uri.scheme = "http"    if uri.scheme.nil?
-
-        response = Net::HTTP.get_response(URI(uri.to_s))
-      end
+    if @run
+      response = get_retry(path, max_retries)
+    else
+      run { get_retry(path, max_retries) }
     end
-
-    response
   end
 
   def destroy
@@ -78,6 +75,17 @@ class AppRunner
   end
 
   private
+  def get_retry(path, max_retries)
+    network_retry(max_retries) do
+      uri = URI("#{path}")
+      uri.host   = HOST_IP   if uri.host.nil?
+      uri.port   = HOST_PORT if (uri.host == HOST_IP && uri.port != HOST_PORT) || uri.port.nil?
+      uri.scheme = "http"    if uri.scheme.nil?
+
+      Net::HTTP.get_response(URI(uri.to_s))
+    end
+  end
+
   def network_retry(max_retries, retry_count = 0)
     yield
   rescue Errno::ECONNRESET, EOFError
