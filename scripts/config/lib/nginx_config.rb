@@ -9,6 +9,7 @@ class NginxConfig
     json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || 512
     json["port"] ||= ENV["PORT"] || 5000
     json["root"] ||= "public_html/"
+    json["encoding"] ||= "UTF-8"
     json["proxies"] ||= {}
     json["proxies"].each do |loc, hash|
       if hash["origin"][-1] != "/"
