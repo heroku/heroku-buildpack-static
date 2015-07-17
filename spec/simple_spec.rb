@@ -293,4 +293,25 @@ STATIC_JSON
       end
     end
   end
+
+  describe "debug" do
+    let(:name) { "debug" }
+
+    context "when debug is set" do
+      it "should display debug info" do
+        _, io_stream = app.get("/", true)
+        expect(io_stream.string).to include("[info]")
+      end
+    end
+
+    context "when debug isn't set" do
+      let(:name) { "hello_world" }
+
+      it "should not display debug info" do
+        skip if @debug
+        _, io_stream = app.get("/", true)
+        expect(io_stream.string).not_to include("[info]")
+      end
+    end
+  end
 end

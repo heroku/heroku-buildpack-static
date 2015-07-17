@@ -20,6 +20,7 @@ class NginxConfig
     json["routes"] = Hash[json["routes"].map {|route, target| [NginxConfigUtil.to_regex(route), target] }]
     json["redirects"] ||= {}
     json["error_page"] ||= nil
+    json["debug"] ||= ENV['STATIC_DEBUG']
     json.each do |key, value|
       self.class.send(:define_method, key) { value }
     end

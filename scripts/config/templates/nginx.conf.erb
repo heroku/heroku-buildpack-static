@@ -18,7 +18,12 @@ http {
   server_tokens off;
 
   access_log  logs/access.log;
+<% if debug %>
+  error_log stderr debug;
+  rewrite_log on;
+<% else %>
   error_log   stderr;
+<% end %>
 
   include mime.types;
   default_type application/octet-stream;

@@ -22,6 +22,7 @@ class AppRunner
   def initialize(fixture, env = nil, debug = false)
     @run       = false
     @debug     = debug
+    env.merge!("STATIC_DEBUG" => true) if @debug
     @container = Docker::Container.create(
       'Image'      => BuildpackBuilder::TAG,
       'Cmd'        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
@@ -39,17 +40,20 @@ class AppRunner
     )
   end
 
-  def run
+  def run(capture_io = false)
     @run       = true
     retn       = nil
     latch      = Concurrent::CountDownLatch.new(1)
+    io_stream  = StringIO.new
     run_thread = Thread.new {
       latch.wait(0.5)
       yield(@container)
     }
     container_thread = Thread.new {
       @container.tap(&:start).attach do |stream, chunk|
-        puts "#{stream}: #{chunk}" if @debug
+        io_message = "#{stream}: #{chunk}"
+        puts io_message if @debug
+        io_stream << io_message if capture_io
         latch.count_down if chunk.include?("Starting nginx...")
       end
     }
@@ -57,16 +61,21 @@ class AppRunner
     retn = run_thread.value
     @container.stop
     container_thread.join
+    io_stream.close_write
     @run = false
 
-    retn
+    if capture_io
+      [retn, io_stream]
+    else
+      retn
+    end
   end
 
-  def get(path, max_retries = 5)
+  def get(path, capture_io = false, max_retries = 5)
     if @run
-      response = get_retry(path, max_retries)
+      get_retry(path, max_retries)
     else
-      run { get_retry(path, max_retries) }
+      run(capture_io) { get_retry(path, max_retries) }
     end
   end
 
