@@ -19,11 +19,15 @@ req         = Nginx::Request.new
 uri         = req.var.uri
 nginx_route = req.var.route
 routes      = NginxConfigUtil.parse_routes(config["routes"])
+proxies     = config["proxies"] || {}
 
-if path = routes[nginx_route]
+if NginxConfigUtil.match_proxies(proxies.keys, uri)
+  # this will always fail, so try_files uses the callback
+  uri
+elsif path = routes[nginx_route]
   if match_excepts(path["excepts"], uri)
-    uri
+    "/#{uri}"
   else
-    path["path"]
+    "/#{path["path"]}"
   end
 end

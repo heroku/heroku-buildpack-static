@@ -176,6 +176,43 @@ STATIC_JSON
         expect(response.body.chomp).to eq("api")
       end
     end
+
+    context "with custom routes" do
+      before do
+        File.open(static_json_path, "w") do |file|
+          file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+    },
+    "/proxy/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+    }
+  },
+  "routes": {
+    "/api/**": {
+      "path": "index.html",
+      "excepts": ["/foo/**"]
+    }
+  }
+}
+STATIC_JSON
+        end
+      end
+
+      it "should take precedence over a custom route" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+
+      it "should proxy if there is no matching custom route" do
+        response = app.get("/proxy/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+    end
   end
 
   describe "custom headers" do

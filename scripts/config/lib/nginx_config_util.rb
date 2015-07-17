@@ -34,4 +34,14 @@ module NginxConfigUtil
 
     Hash[routes]
   end
+
+  def self.match_proxies(proxies, uri)
+    return false unless proxies
+
+    proxies.each do |proxy|
+      return proxy if Regexp.compile("^#{proxy}") =~ uri
+    end
+
+    false
+  end
 end

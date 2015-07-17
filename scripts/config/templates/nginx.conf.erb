@@ -71,9 +71,26 @@ http {
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
       set $route <%= route %>;
-      mruby_set $path /app/bin/config/lib/ngx_mruby/routes.rb cache;
-      try_files /$path =404;
+      mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
+      mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+      try_files $path $fallback;
     }
+  <% end %>
+
+  <% if routes.any? %>
+    # need this b/c setting $fallback to =404 will try #{root}=404 instead of returning a 404
+    location @404 {
+      return 404;
+    }
+  <% end %>
+
+  <% if routes.any? %>
+    <% proxies.each do |location, hash| %>
+      location @<%= location %> {
+        rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
+        proxy_pass <%= hash['host'] %>;
+      }
+    <% end %>
   <% end %>
 
   <% proxies.each do |location, hash| %>
