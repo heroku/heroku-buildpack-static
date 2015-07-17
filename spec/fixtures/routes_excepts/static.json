@@ -2,7 +2,10 @@
   "routes": {
     "/**": {
       "path": "index.html",
-      "except": "/assets/*"
+      "excepts": [
+        "/assets/*",
+        "/api/**"
+      ]
     }
   }
 }

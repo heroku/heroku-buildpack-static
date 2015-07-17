@@ -24,8 +24,8 @@ module NginxConfigUtil
           {"path" => target}
         else
           {
-            "path"   => target["path"],
-            "except" => to_regex(target["except"])
+            "path"    => target["path"],
+            "excepts" => target["excepts"].map {|except| to_regex(except) }
           }
         end
 

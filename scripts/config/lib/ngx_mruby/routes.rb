@@ -3,14 +3,14 @@ eval(File.read('/app/bin/config/lib/nginx_config_util.rb'))
 
 USER_CONFIG = "/app/static.json"
 
-def match_except(except, uri)
-  return false unless except
+def match_excepts(excepts, uri)
+  return false unless excepts
 
-  if Regexp.compile("^#{except}$") =~ uri
-    true
-  else
-    false
+  excepts.each do |except|
+    return true if Regexp.compile("^#{except}$") =~ uri
   end
+
+  false
 end
 
 config      = {}
@@ -21,7 +21,7 @@ nginx_route = req.var.route
 routes      = NginxConfigUtil.parse_routes(config["routes"])
 
 if path = routes[nginx_route]
-  if match_except(path["except"], uri)
+  if match_excepts(path["excepts"], uri)
     uri
   else
     path["path"]

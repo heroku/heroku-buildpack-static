@@ -75,7 +75,7 @@ RSpec.describe "Simple" do
     end
 
     context "whitelist" do
-      let(:name) { "routes_except" }
+      let(:name) { "routes_excepts" }
 
       it "redirects paths not on the except list" do
         response = app.get("/foo.html")
@@ -84,9 +84,15 @@ RSpec.describe "Simple" do
       end
 
       it "should not override the except list" do
-        response = app.get("/assets/app.js")
-        expect(response.code).to eq("200")
-        expect(response.body.chomp).to eq("{}")
+        app.run do
+          response = app.get("/assets/app.js")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("{}")
+
+          response = app.get("/api/v1/items.json")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq('{ "item": "foo" }')
+        end
       end
     end
   end
