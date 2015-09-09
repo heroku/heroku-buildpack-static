@@ -1,0 +1,7 @@
+language: ruby
+sudo: required
+services:
+  - docker
+script:
+  - bundle exec rspec
+
