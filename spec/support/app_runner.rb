@@ -19,7 +19,7 @@ class AppRunner
   HOST_IP        = boot2docker_ip || "127.0.0.1"
   CONTAINER_PORT = "3000"
 
-  def initialize(fixture, env = nil, debug = false)
+  def initialize(fixture, env = {}, debug = false)
     @run       = false
     @debug     = debug
     env.merge!("STATIC_DEBUG" => true) if @debug
