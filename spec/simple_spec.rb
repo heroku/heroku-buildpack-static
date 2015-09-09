@@ -6,7 +6,11 @@ require_relative "support/path_helper"
 
 RSpec.describe "Simple" do
   before(:all) do
-    @debug = false
+    if ENV['TRAVIS']
+      @debug = true
+    else
+      @debug = false
+    end
     BuildpackBuilder.new(@debug)
   end
 
