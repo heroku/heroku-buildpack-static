@@ -6,7 +6,7 @@ require_relative "support/path_helper"
 
 RSpec.describe "Simple" do
   before(:all) do
-    @debug = false
+    @debug = true
     BuildpackBuilder.new(@debug)
   end
 
