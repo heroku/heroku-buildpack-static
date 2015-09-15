@@ -32,8 +32,8 @@ class AppRunner
         'Binds' => ["#{fixtures_path(fixture)}:/src"],
         'PortBindings' => {
           "#{CONTAINER_PORT}/tcp" => [{
-            "HostIp" => HOST_IP,
-            "HostPort": HOST_PORT,
+            "HostIp"   => HOST_IP,
+            "HostPort" => HOST_PORT,
           }]
         }
       }
