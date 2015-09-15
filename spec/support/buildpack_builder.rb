@@ -8,9 +8,10 @@ class BuildpackBuilder
 
   TAG = "hone/static:cedar-14"
 
-  def initialize(debug = false)
-    @debug = debug
-    @image = build_image
+  def initialize(debug = false, intermediates = false)
+    @debug         = debug
+    @intermediates = intermediates
+    @image         = build_image
   end
 
   def build_image
@@ -24,6 +25,6 @@ class BuildpackBuilder
         -> (chunk) { nil }
       end
 
-    Docker::Image.build_from_dir(buildpack_path.to_s, 't' => TAG, 'rm' => true, 'dockerfile' => "spec/support/docker/Dockerfile", &print_output)
+    Docker::Image.build_from_dir(buildpack_path.to_s, 't' => TAG, 'rm' => !@intermediates, 'dockerfile' => "spec/support/docker/Dockerfile", &print_output)
   end
 end
