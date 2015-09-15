@@ -35,7 +35,8 @@ class AppRunner
             "HostIp"   => HOST_IP,
             "HostPort" => HOST_PORT,
           }]
-        }
+        },
+        'Privileged': true
       }
     )
   end
