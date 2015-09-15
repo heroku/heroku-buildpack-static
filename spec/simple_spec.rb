@@ -7,7 +7,7 @@ require_relative "support/path_helper"
 RSpec.describe "Simple" do
   before(:all) do
     @debug = true
-    BuildpackBuilder.new(@debug)
+    BuildpackBuilder.new(@debug, ENV['CIRCLECI'])
   end
 
   after do

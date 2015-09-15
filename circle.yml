@@ -3,3 +3,5 @@ machine:
     - docker
   ruby:
     version: ruby-2.2.3
+  environment:
+    circleci: true
