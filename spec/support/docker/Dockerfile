@@ -13,3 +13,6 @@ ENV PORT 3000
 EXPOSE 3000
 
 WORKDIR /app
+
+COPY ./spec/support/docker/init.sh /usr/bin/init.sh
+ENTRYPOINT ["/usr/bin/init.sh"]

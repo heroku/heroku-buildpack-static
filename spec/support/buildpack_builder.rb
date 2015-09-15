@@ -24,6 +24,6 @@ class BuildpackBuilder
         -> (chunk) { nil }
       end
 
-    Docker::Image.build_from_dir(buildpack_path.to_s, 't' => TAG, 'rm' => true, &print_output)
+    Docker::Image.build_from_dir(buildpack_path.to_s, 't' => TAG, 'rm' => true, 'dockerfile' => "spec/support/docker/Dockerfile", &print_output)
   end
 end
