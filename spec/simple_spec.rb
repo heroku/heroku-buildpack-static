@@ -52,6 +52,12 @@ RSpec.describe "Simple" do
       response = app.get("/foo")
       expect(response.code).to eq("200")
       expect(response.body.chomp).to eq("foobar")
+
+      response = app.get("/bar")
+      expect(response.code).to eq("301")
+      response = app.get(response["Location"])
+      expect(response.code).to eq("200")
+      expect(response.body.chomp).to eq("bar")
     end
   end
 
