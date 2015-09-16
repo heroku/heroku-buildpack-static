@@ -97,7 +97,9 @@ RSpec.describe "Simple" do
     it "should redirect http to https" do
       response = app.get("/foo")
       expect(response.code).to eq("301")
-      expect(response['location']).to eq("https://#{AppRunner::HOST_IP}/foo")
+      uri = URI(response['Location'])
+      expect(uri.scheme).to eq("https")
+      expect(uri.path).to eq("/foo")
     end
   end
 
