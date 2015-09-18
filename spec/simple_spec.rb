@@ -176,6 +176,7 @@ STATIC_JSON
 
         response = app.get("/foo.html")
         expect(response["cache-control"]).to eq(nil)
+        expect(response["X-Foo"]).to eq("true")
         expect(response.code).to eq("200")
         expect(response.body.chomp).to eq("foo")
       end
