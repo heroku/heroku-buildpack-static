@@ -16,4 +16,32 @@ module NginxConfigUtil
     end
     segments.join
   end
+
+  def self.parse_routes(json)
+    routes = json.map do |route, target|
+      [to_regex(route), target]
+    end
+
+    Hash[routes]
+  end
+
+  def self.match_proxies(proxies, uri)
+    return false unless proxies
+
+    proxies.each do |proxy|
+      return proxy if Regexp.compile("^#{proxy}") =~ uri
+    end
+
+    false
+  end
+
+  def self.match_redirects(redirects, uri)
+    return false unless redirects
+
+    redirects.each do |redirect|
+      return redirect if redirect == uri
+    end
+
+    false
+  end
 end

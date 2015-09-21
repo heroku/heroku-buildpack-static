@@ -1,4 +1,5 @@
 require 'json'
+require 'uri'
 require_relative 'nginx_config_util'
 
 class NginxConfig
@@ -13,11 +14,16 @@ class NginxConfig
       if hash["origin"][-1] != "/"
         json["proxies"][loc].merge!("origin" => hash["origin"] + "/")
       end
+
+      uri = URI(hash["origin"])
+      json["proxies"][loc]["path"] = uri.path
+      uri.path = ""
+      json["proxies"][loc]["host"] = uri.to_s
     end
     json["clean_urls"] ||= false
     json["https_only"] ||= false
     json["routes"] ||= {}
-    json["routes"] = Hash[json["routes"].map {|route, target| [NginxConfigUtil.to_regex(route), target] }]
+    json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
     json["redirects"] ||= {}
     json["error_page"] ||= nil
     json["debug"] ||= ENV['STATIC_DEBUG']

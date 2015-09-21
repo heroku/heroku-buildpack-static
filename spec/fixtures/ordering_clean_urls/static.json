@@ -1,0 +1,12 @@
+{
+  "routes": {
+    "/**": "index.html"
+  },
+  "redirects": {
+    "/old/gone": {
+      "url": "/gone.html",
+      "status": 302
+    }
+  },
+  "clean_urls": true
+}
