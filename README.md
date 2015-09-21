@@ -46,11 +46,17 @@ You can define custom routes that combine to a single file. This allows you to p
 * `*` supports a single path segment in the URL. In the configuration below, `/baz.html` would match but `/bar/baz.html` would not.
 * `**` supports any length in the URL.  In the configuration below, both `/route/foo` would work and `/route/foo/bar/baz`.
 
+There's also an `excepts` option you can use in conjuction with `**`, to match everything except routes in `excepts`.
+
 ```json
 {
   "routes": {
     "/*.html": "index.html",
     "/route/**": "bar/baz.html"
+    "/spa/**": {
+      "path": "index.html",
+      "excepts": ["/spa/assets/"]
+    }
   }
 }
 ```

@@ -79,6 +79,28 @@ RSpec.describe "Simple" do
         expect(response.body.chomp).to eq("hello from route")
       end
     end
+
+    context "whitelist" do
+      let(:name) { "routes_excepts" }
+
+      it "redirects paths not on the except list" do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello world")
+      end
+
+      it "should not override the except list" do
+        app.run do
+          response = app.get("/assets/app.js")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("{}")
+
+          response = app.get("/api/v1/items.json")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq('{ "item": "foo" }')
+        end
+      end
+    end
   end
 
   describe "redirects" do
@@ -158,6 +180,43 @@ STATIC_JSON
 
       it "should proxy requests" do
         response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+    end
+
+    context "with custom routes" do
+      before do
+        File.open(static_json_path, "w") do |file|
+          file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+    },
+    "/proxy/": {
+      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+    }
+  },
+  "routes": {
+    "/api/**": {
+      "path": "index.html",
+      "excepts": ["/foo/**"]
+    }
+  }
+}
+STATIC_JSON
+        end
+      end
+
+      it "should take precedence over a custom route" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+
+      it "should proxy if there is no matching custom route" do
+        response = app.get("/proxy/bar/")
         expect(response.code).to eq("200")
         expect(response.body.chomp).to eq("api")
       end
