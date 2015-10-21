@@ -113,7 +113,7 @@ Using the headers key, you can set custom response headers. It uses the same ope
     "/assets/**": {
       "Cache-Control": "public, max-age=512000"
     },
-    "/assets/webfonts/*": {
+    "/**": {
       "Access-Control-Allow-Origin": "*"
     }
   }
