@@ -120,6 +120,18 @@ Using the headers key, you can set custom response headers. It uses the same ope
 }
 ```
 
+For example, to enable CORS for all resources, you just need to enable it for all routes like this:
+
+```json
+{
+  "headers": {
+    "/**": {
+      "Access-Control-Allow-Origin": "*"
+    }
+  }
+}
+```
+
 ### Route Ordering
 
 * Root Files
