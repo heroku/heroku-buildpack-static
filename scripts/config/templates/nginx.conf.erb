@@ -15,6 +15,9 @@ http {
   gzip_vary on;
   gzip_proxied any;
 
+  # default to UTF-8 encoding
+  charset UTF-8;
+
   server_tokens off;
 
   access_log  logs/access.log;
