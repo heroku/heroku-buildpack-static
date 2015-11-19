@@ -216,6 +216,18 @@ STATIC_JSON
       end
     end
 
+    describe "conflicting headers" do
+      let(:name) { "custom_headers_no_append" }
+
+      it "should not append headers" do
+        response = app.get("/foo.html")
+        expect(response["X-Foo"]).to eq("true")
+        expect(response["X-Bar"]).to eq(nil)
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foo")
+      end
+    end
+
     describe "wildcard paths" do
       let(:name) { "custom_headers_wildcard" }
 

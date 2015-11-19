@@ -132,6 +132,25 @@ For example, to enable CORS for all resources, you just need to enable it for al
 }
 ```
 
+##### Precedence
+When there are header conflicts, the last header definition always wins. The headers do not get appended. For example,
+
+```json
+{
+  "headers": {
+    "/**": {
+      "X-Foo": "bar",
+      "X-Bar": "baz"
+    },
+    "/foo": {
+      "X-Foo": "foo"
+    }
+  }
+}
+```
+
+when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not be present.
+
 ### Route Ordering
 
 * Root Files

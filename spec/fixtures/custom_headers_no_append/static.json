@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "/": {
+      "Cache-Control": "no-cache"
+    },
+    "/**": {
+      "X-Foo": "false",
+      "X-Bar": "blah"
+    },
+    "/foo.html": {
+      "X-Foo": "true"
+    }
+  },
+  "clean_urls": true
+}
