@@ -86,7 +86,7 @@ class AppRunner
   private
   def get_retry(path, max_retries)
     network_retry(max_retries) do
-      uri = URI("#{path}")
+      uri = URI(path)
       uri.host   = HOST_IP   if uri.host.nil?
       uri.port   = HOST_PORT if (uri.host == HOST_IP && uri.port != HOST_PORT) || uri.port.nil?
       uri.scheme = "http"    if uri.scheme.nil?
