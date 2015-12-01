@@ -509,4 +509,42 @@ STATIC_JSON
       end
     end
   end
+
+  describe "env vars" do
+    let(:name) { "env_vars" }
+    let(:env)  do
+      {
+        "SECRET"            => "OMG",
+        "HEROKU_STATIC_FOO" => "f00",
+        "HEROKU_STATIC_BAR" => "b4r"
+      }
+    end
+
+    fit "should setup envs accessible to the frontend app" do
+      response = app.get("/--/env.js")
+
+      expect(response.code).to eq("200")
+
+      app.run do
+        app.js("/index.html", <<JS)
+  if(status !== 'success') {
+    console.log("Could not access page");
+  } else {
+    var foo = page.evaluate(function() {
+      return $('#foo').text();
+    });
+    var bar = page.evaluate(function() {
+      return $('#bar').text();
+    });
+    var secret = page.evaluate(function() {
+      return $('#secret').text();
+    });
+    console.log(foo);
+    console.log(bar);
+    console.log(secret);
+  }
+JS
+      end
+    end
+  end
 end

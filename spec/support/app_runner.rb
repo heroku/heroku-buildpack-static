@@ -2,6 +2,7 @@ require "uri"
 require "net/http"
 require "fileutils"
 require "json"
+require "tmpdir"
 require "docker"
 require "concurrent/atomic/count_down_latch"
 require_relative "path_helper"
@@ -72,6 +73,31 @@ class AppRunner
     @run = false
   end
 
+  def js(path, content)
+    uri    = to_uri(path)
+    output = nil
+
+    puts "URI: #{uri.to_s}"
+
+    Dir.mktmpdir do |dir|
+      Dir.chdir(dir) do
+        File.write("test.js", <<CONTENT)
+var page = require('webpage').create();
+page.open('#{uri.to_s}', function(status) {
+#{content}
+  phantom.exit();
+});
+CONTENT
+
+        output = `phantomjs test.js`
+      end
+    end
+
+    puts output
+
+    output
+  end
+
   def get(path, capture_io = false, max_retries = 30)
     if @run
       get_retry(path, max_retries)
@@ -105,5 +131,14 @@ class AppRunner
       retry_count += 1
       retry
     end
+  end
+
+  def to_uri(path)
+    uri = URI(path)
+    uri.host   = HOST_IP   if uri.host.nil?
+    uri.port   = HOST_PORT if (uri.host == HOST_IP && uri.port != HOST_PORT) || uri.port.nil?
+    uri.scheme = "http"    if uri.scheme.nil?
+
+    uri
   end
 end

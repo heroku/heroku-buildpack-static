@@ -16,6 +16,7 @@ case $(ulimit -u) in
 esac
 
 "${HERE}/config/make-config"
+"${HERE}/config/make-env"
 
 # make a shared pipe; we'll write the name of the process that exits to it once
 # that happens, and wait for that event below this particular call works on

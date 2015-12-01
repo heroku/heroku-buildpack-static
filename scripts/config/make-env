@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'fileutils'
+require_relative 'lib/nginx_config'
+
+REGEX = /^HEROKU_STATIC_/
+USER_CONFIG  = 'static.json'
+
+vars = {}
+ENV.each do |key, value|
+  vars[key.sub(REGEX, '')] = value if key.match(REGEX)
+end
+
+config   = NginxConfig.new(USER_CONFIG)
+env_file = "#{config.root}/--/env.js"
+content  = "window.__env = #{vars.to_json}"
+
+FileUtils.mkdir_p(File.dirname(env_file))
+File.write(env_file, content)
