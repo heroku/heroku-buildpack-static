@@ -520,29 +520,22 @@ STATIC_JSON
       }
     end
 
-    fit "should setup envs accessible to the frontend app" do
+    it "should setup envs accessible to the frontend app" do
       response = app.get("/--/env.js")
 
       expect(response.code).to eq("200")
 
       app.run do
-        app.js("/index.html", <<JS)
-  if(status !== 'success') {
-    console.log("Could not access page");
-  } else {
-    var foo = page.evaluate(function() {
-      return $('#foo').text();
-    });
-    var bar = page.evaluate(function() {
-      return $('#bar').text();
-    });
-    var secret = page.evaluate(function() {
-      return $('#secret').text();
-    });
-    console.log(foo);
-    console.log(bar);
-    console.log(secret);
-  }
+        app.test_js(name: "env vars get set", num: 3, path: "/index.html", content: <<JS)
+  test.assertEval(function() {
+    return $('#foo').text() === "#{env["HEROKU_STATIC_FOO"]}"
+  }, "#foo has changed values");
+  test.assertEval(function() {
+    return $('#bar').text() === "#{env["HEROKU_STATIC_BAR"]}"
+  }, "#bar has changed values");
+  test.assertEval(function() {
+    return $('#secret').text() === "Replace Me"
+  }, "#secret has not changed values");
 JS
       end
     end

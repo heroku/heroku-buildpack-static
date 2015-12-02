@@ -11,6 +11,8 @@ require_relative "buildpack_builder"
 class AppRunner
   include PathHelper
 
+  PREFIX_PADDING = 8
+
   def self.boot2docker_ip
     %x(boot2docker ip).match(/([0-9]{1,3}\.){3}[0-9]{1,3}/)[0]
   rescue Errno::ENOENT
@@ -52,7 +54,7 @@ class AppRunner
     }
     container_thread = Thread.new {
       @container.tap(&:start).attach do |stream, chunk|
-        io_message = "#{stream}: #{chunk}"
+        io_message = "#{"app".ljust(PREFIX_PADDING)} | #{stream}: #{chunk}"
         puts io_message if @debug
         io_stream << io_message if capture_io
         latch.count_down if chunk.include?("Starting nginx...")
@@ -73,29 +75,44 @@ class AppRunner
     @run = false
   end
 
-  def js(path, content)
-    uri    = to_uri(path)
-    output = nil
-
-    puts "URI: #{uri.to_s}"
+  def test_js(name:, num:, path:, content:)
+    uri      = to_uri(path)
+    uri.host = @container.json["NetworkSettings"]["IPAddress"]
 
     Dir.mktmpdir do |dir|
       Dir.chdir(dir) do
         File.write("test.js", <<CONTENT)
-var page = require('webpage').create();
-page.open('#{uri.to_s}', function(status) {
+casper.test.begin('#{name}', #{num}, function suite(test) {
+  casper.start("#{uri.to_s}", function() {
 #{content}
-  phantom.exit();
+  });
+
+  casper.run(function() {
+    test.done();
+  });
 });
 CONTENT
-
-        output = `phantomjs test.js`
       end
+
+      begin
+        test_container = Docker::Container.create(
+          'Image'      => BuildpackBuilder::TAG,
+          'Tty'        => true,
+          'Cmd'        => "bash",
+          'HostConfig' => {
+            'Binds' => ["#{dir}:/test"]
+          }
+        )
+        cmd            = ['bash', '-c', 'casperjs test /test/test.js']
+        _, _, status = test_container.tap(&:start).exec(cmd) do |stream, chunk|
+          puts "#{"casperjs".ljust(PREFIX_PADDING)} | #{stream}: #{chunk}" if @debug
+        end
+        raise RuntimeError.new("CasperJS Test Failed: #{status}") unless status == 0
+      ensure
+        test_container.stop
+      end
+
     end
-
-    puts output
-
-    output
   end
 
   def get(path, capture_io = false, max_retries = 30)
