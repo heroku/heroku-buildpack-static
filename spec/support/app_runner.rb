@@ -98,7 +98,7 @@ class AppRunner
 
   def network_retry(max_retries, retry_count = 0)
     yield
-  rescue Errno::ECONNRESET, EOFError
+  rescue Errno::ECONNRESET, EOFError, Errno::ECONNREFUSED
     if retry_count < max_retries
       puts "Retry Count: #{retry_count}" if @debug
       sleep(0.01 * retry_count)
