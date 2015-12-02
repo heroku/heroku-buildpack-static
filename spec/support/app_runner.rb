@@ -11,6 +11,8 @@ require_relative "buildpack_builder"
 class AppRunner
   include PathHelper
 
+  class CasperJSError < StandardError; end
+
   PREFIX_PADDING = 8
 
   def self.boot2docker_ip
@@ -107,7 +109,7 @@ CONTENT
         _, _, status = test_container.tap(&:start).exec(cmd) do |stream, chunk|
           puts "#{"casperjs".ljust(PREFIX_PADDING)} | #{stream}: #{chunk}" if @debug
         end
-        raise RuntimeError.new("CasperJS Test Failed: #{status}") unless status == 0
+        raise CasperJSError.new("CasperJS Test Failed with exit status: #{status}") unless status == 0
       ensure
         test_container.stop
       end

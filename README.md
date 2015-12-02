@@ -169,6 +169,35 @@ when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not 
 * Custom Routes
 * 404
 
+### Config Vars
+The buildpack will read any env vars that are prefixed with `HEROKU_STATIC_` and write out a file accessible at `/--/env.js` from your application. Since this is publicly accessible, do not put any secrets that are meant to be private. This JavaScript file, just creates a JavaScript object, `__env`, on `window`. For instance, if the heroku app was setup with this:
+
+```sh
+$ heroku config:set HEROKU_STATIC_FOO=foo BAR=bar
+```
+
+and there was an `index.html` page:
+
+```html
+<html>
+  <head>
+    <script src="/--/env.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <body>
+    <p id="foo">Replace Me</p>
+    <p id="bar">Replace Me</p>
+  </body>
+  <script type="text/javascript">
+$(document).ready(function() {
+  $("#foo").text(window.__env.FOO);
+  $("#bar").text(window.__env.BAR);
+});
+  </script>
+</html>
+```
+
+The `#foo` paragraph tag would have it's text property replaced with foo, but the `#bar` paragraph tag would not.
+
 ## Testing
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 
