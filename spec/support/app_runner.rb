@@ -59,16 +59,17 @@ class AppRunner
     }
 
     retn = run_thread.value
-    @container.stop
-    container_thread.join
-    io_stream.close_write
-    @run = false
 
     if capture_io
       [retn, io_stream]
     else
       retn
     end
+  ensure
+    @container.stop
+    container_thread.join
+    io_stream.close_write
+    @run = false
   end
 
   def get(path, capture_io = false, max_retries = 30)
