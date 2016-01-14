@@ -12,9 +12,12 @@ ENV.each do |key, value|
   vars[key.sub(REGEX, '')] = value if key.match(REGEX)
 end
 
-config   = NginxConfig.new(USER_CONFIG)
-env_file = "#{config.root}/--/env.js"
-content  = "window.__env = #{vars.to_json}"
 
-FileUtils.mkdir_p(File.dirname(env_file))
-File.write(env_file, content)
+config = NginxConfig.new(USER_CONFIG)
+Tuple  = Struct.new(:file, :contents)
+js     = Tuple.new("#{config.root}/--/env.js", "window.__env = #{vars.to_json}")
+json   = Tuple.new("#{config.root}/--/env.json", vars.to_json)
+
+FileUtils.mkdir_p(File.dirname(js.file))
+File.write(js.file, js.contents)
+File.write(json.file, json.contents)
