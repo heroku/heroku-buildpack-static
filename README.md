@@ -198,6 +198,14 @@ $(document).ready(function() {
 
 The `#foo` paragraph tag would have it's text property replaced with foo, but the `#bar` paragraph tag would not.
 
+A `/--/env.json` file is also produced and can be used instead. The contents for the example above would be:
+
+```json
+{
+  "FOO": "foo",
+}
+```
+
 ## Testing
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 
