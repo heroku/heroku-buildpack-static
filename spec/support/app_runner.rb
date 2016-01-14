@@ -24,9 +24,10 @@ class AppRunner
   HOST_IP        = boot2docker_ip || "127.0.0.1"
   CONTAINER_PORT = "3000"
 
-  def initialize(fixture, env = {}, debug = false)
+  def initialize(fixture, env = {}, debug = false, circleci = false)
     @run       = false
     @debug     = debug
+    @circleci  = circleci
     env.merge!("STATIC_DEBUG" => true) if @debug
     @container = Docker::Container.create(
       'Image'      => BuildpackBuilder::TAG,
@@ -100,14 +101,26 @@ CONTENT
         test_container = Docker::Container.create(
           'Image'      => BuildpackBuilder::TAG,
           'Tty'        => true,
-          'Cmd'        => "bash",
+          'EntryPoint' => "/bin/bash",
+          'OpenStdin'  => true,
           'HostConfig' => {
             'Binds' => ["#{dir}:/test"]
-          }
+          },
         )
         cmd            = ['bash', '-c', 'casperjs test /test/test.js']
-        _, _, status = test_container.tap(&:start).exec(cmd) do |stream, chunk|
-          puts "#{"casperjs".ljust(PREFIX_PADDING)} | #{stream}: #{chunk}" if @debug
+
+        # CircleCI doesn't support docker-exec
+        if @circleci
+          cid = test_container.start.id
+          cmd[2] = "'#{cmd[2]}'" # need to manually escape this for lxc-attach, but breaks in docker-exec
+          IO.popen(%Q{sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' #{cid})" -- #{cmd.join(' ')}}) do |io|
+            print io.read
+          end
+          status = $?
+        else
+          _, _, status = test_container.tap(&:start).exec(cmd) do |stream, chunk|
+            puts "#{"casperjs".ljust(PREFIX_PADDING)} | #{stream}: #{chunk}" if @debug
+          end
         end
         raise CasperJSError.new("CasperJS Test Failed with exit status: #{status}") unless status == 0
       ensure

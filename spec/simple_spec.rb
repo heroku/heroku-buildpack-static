@@ -14,7 +14,7 @@ RSpec.describe "Simple" do
     app.destroy
   end
 
-  let(:app)  { AppRunner.new(name, env, @debug) }
+  let(:app)  { AppRunner.new(name, env, @debug, ENV['CIRCLECI']) }
 
   let(:name) { "hello_world" }
   let(:env)  { Hash.new }
