@@ -4,8 +4,7 @@ require_relative 'nginx_config_util'
 
 class NginxConfig
   def initialize(json_file)
-    json = {}
-    json = JSON.parse(File.read(json_file)) if File.exist?(json_file)
+    json = JSON.parse(File.read(json_file))
     json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || 512
     json["port"] ||= ENV["PORT"] || 5000
     json["root"] ||= "public_html/"
