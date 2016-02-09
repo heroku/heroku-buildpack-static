@@ -3,13 +3,21 @@ require 'uri'
 require_relative 'nginx_config_util'
 
 class NginxConfig
+  DEFAULT = {
+    root: "public_html/",
+    encoding: "UTF-8",
+    clean_urls: false,
+    https_only: false,
+    worker_connections: 512
+  }
+
   def initialize(json_file)
     json = {}
     json = JSON.parse(File.read(json_file)) if File.exist?(json_file)
-    json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || 512
+    json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || DEFAULT[:worker_connections]
     json["port"] ||= ENV["PORT"] || 5000
-    json["root"] ||= "public_html/"
-    json["encoding"] ||= "UTF-8"
+    json["root"] ||= DEFAULT[:root]
+    json["encoding"] ||= DEFAULT[:encoding]
     json["proxies"] ||= {}
     json["proxies"].each do |loc, hash|
       if hash["origin"][-1] != "/"
@@ -21,8 +29,8 @@ class NginxConfig
       uri.path = ""
       json["proxies"][loc]["host"] = uri.to_s
     end
-    json["clean_urls"] ||= false
-    json["https_only"] ||= false
+    json["clean_urls"] ||= DEFAULT[:clean_urls]
+    json["https_only"] ||= DEFAULT[:https_only]
     json["routes"] ||= {}
     json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
     json["redirects"] ||= {}
