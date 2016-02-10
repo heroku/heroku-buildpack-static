@@ -1,6 +1,8 @@
 # heroku-buildpack-static
 This is a discovery project for using a buildpack for handling static sites and single page web apps (I'm looking at you Sam Phippen).
 
+For a guide, read the [Getting Started with Single Page Apps on Heroku](https://gist.github.com/hone/24b06869b4c1eca701f9).
+
 ## Features
 * serving static assets
 * gzip on by default
