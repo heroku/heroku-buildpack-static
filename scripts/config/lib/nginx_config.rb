@@ -20,11 +20,12 @@ class NginxConfig
     json["encoding"] ||= DEFAULT[:encoding]
     json["proxies"] ||= {}
     json["proxies"].each do |loc, hash|
-      if hash["origin"][-1] != "/"
-        json["proxies"][loc].merge!("origin" => hash["origin"] + "/")
+      evaled_origin = NginxConfigUtil.interpolate(hash['origin'], ENV)
+      if evaled_origin != "/"
+        json["proxies"][loc].merge!("origin" => evaled_origin + "/")
       end
 
-      uri = URI(hash["origin"])
+      uri = URI(evaled_origin)
       json["proxies"][loc]["path"] = uri.path
       uri.path = ""
       json["proxies"][loc]["host"] = uri.to_s

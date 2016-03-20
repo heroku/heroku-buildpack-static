@@ -112,6 +112,25 @@ For single page web applications like Ember, it's common to back the application
 }
 ```
 
+##### Interpolating Env Var Values
+It's common to want to be able to test the frontend against various backends. The `origin` key supports environment variable substitution using `${ENV_VAR_NAME}`. For instance, if there was a staging and production Heroku app for your API, you could setup the config above like the following:
+
+```json
+{
+  "proxies": {
+    "/api/": {
+      "origin": "https://${API_APP_NAME}.herokuapp.com/"
+    }
+  }
+}
+```
+
+Then using the [config vars](https://devcenter.heroku.com/articles/config-vars), you can point the frontend app to the appropriate backend. To match the original proxy setup:
+
+```bash
+$ heroku config:set API_APP_NAME="hone-ember-todo-rails"
+```
+
 #### Custom Headers
 Using the headers key, you can set custom response headers. It uses the same operators for pathing as [Custom Routes](#custom-routes).
 

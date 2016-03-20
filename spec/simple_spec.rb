@@ -196,6 +196,34 @@ STATIC_JSON
         expect(response.body.chomp).to eq("api")
       end
     end
+
+    context "env var substitution" do
+      before do
+        File.open(static_json_path, "w") do |file|
+          file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://${PROXY_HOST}/foo"
+    }
+  }
+}
+STATIC_JSON
+        end
+      end
+
+      let(:env) do
+        {
+          "PROXY_HOST" => "#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}"
+        }
+      end
+
+      it "should proxy requests" do
+        response = app.get("/api/bar/")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("api")
+      end
+    end
   end
 
   describe "custom headers" do
