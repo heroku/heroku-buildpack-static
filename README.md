@@ -10,7 +10,7 @@ For a guide, read the [Getting Started with Single Page Apps on Heroku](https://
 * custom [configuration](#configuration)
 
 ## Deploying
-The directory structure expected is that you have a `public_html/` directory containing all your static assets.
+The `static.json` file is required to use this buildpack. This file handles all the configuration described below.
 
 1. Set the app to this buildpack: `$ heroku buildpacks:set https://github.com/hone/heroku-buildpack-static.git`.
 2. Deploy: `$ git push heroku master`
