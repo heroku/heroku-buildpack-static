@@ -44,4 +44,16 @@ module NginxConfigUtil
 
     false
   end
+
+  def self.interpolate(string, vars)
+    regex = /\${(\w*?)}/
+
+    string.scan(regex).inject(string) do |acc, capture|
+      var_name = capture.first
+      value = vars[var_name] if vars
+      acc.sub!("${#{var_name}}", value) if value
+
+      acc
+    end
+  end
 end
