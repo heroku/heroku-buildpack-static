@@ -1,5 +1,7 @@
 # heroku-buildpack-static
-This is a discovery project for using a buildpack for handling static sites and single page web apps (I'm looking at you Sam Phippen).
+**NOTE**: This buildpack is in [private beta](https://devcenter.heroku.com/articles/heroku-beta-features#private-beta).
+
+This is a buildpack for handling static sites and single page web apps.
 
 For a guide, read the [Getting Started with Single Page Apps on Heroku](https://gist.github.com/hone/24b06869b4c1eca701f9).
 
