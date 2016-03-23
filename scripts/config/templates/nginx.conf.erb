@@ -80,6 +80,19 @@ http {
   <% proxies.each do |location, hash| %>
     location <%= location %> {
       proxy_pass <%= hash['origin'] %>;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_set_header Host $proxy_host;
+    <% if hash['headers'].any? { |s| s.casecmp('x-forwarded-proto') == 0 } %>
+      proxy_set_header X-Forwarded-Proto $scheme;
+    <% end %>
+    <% if hash['headers'].any? { |s| s.casecmp('x-forwarded-for') == 0 } %>
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    <% end %>
+    <% if hash['headers'].any? { |s| s.casecmp('x-forwarded-port') == 0 } %>
+      proxy_set_header X-Forwarded-Port $server_port;
+    <% end %>
     }
   <% end %>
 

@@ -8,7 +8,8 @@ class NginxConfig
     encoding: "UTF-8",
     clean_urls: false,
     https_only: false,
-    worker_connections: 512
+    worker_connections: 512,
+    headers: []
   }
 
   def initialize(json_file)
@@ -29,6 +30,7 @@ class NginxConfig
       json["proxies"][loc]["path"] = uri.path
       uri.path = ""
       json["proxies"][loc]["host"] = uri.to_s
+      json["proxies"][loc]["headers"] = hash["headers"] || DEFAULT[:headers]
     end
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
