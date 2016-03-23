@@ -91,7 +91,7 @@ http {
   # fallback proxy named match
   <% proxies.each do |location, hash| %>
     location @<%= location %> {
-      rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
+      rewrite ^<%= location %>(.*)$ <%= hash['path'] %>$1 break;
       proxy_pass <%= hash['host'] %>;
     }
   <% end %>

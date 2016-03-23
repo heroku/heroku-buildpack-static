@@ -22,7 +22,12 @@ class NginxConfig
     json["proxies"].each do |loc, hash|
       evaled_origin = NginxConfigUtil.interpolate(hash['origin'], ENV)
       if evaled_origin != "/"
-        json["proxies"][loc].merge!("origin" => evaled_origin + "/")
+        if (loc.end_with?("/") && !evaled_origin.end_with?("/"))
+          evaled_origin += "/"
+        elsif (!loc.end_with?("/") && evaled_origin.end_with?("/"))
+          evaled_origin = evaled_origin.chomp("/")
+        end
+        json["proxies"][loc].merge!("origin" => evaled_origin)
       end
 
       uri = URI(evaled_origin)
