@@ -93,6 +93,9 @@ http {
     <% if hash['headers'].any? { |s| s.casecmp('x-forwarded-port') == 0 } %>
       proxy_set_header X-Forwarded-Port $server_port;
     <% end %>
+    <% if hash['headers'].any? { |s| s.casecmp('x-request-start') == 0 } %>
+      proxy_set_header X-Request-Start "t=$msec";
+    <% end %>
     }
   <% end %>
 
