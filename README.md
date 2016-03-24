@@ -1,5 +1,5 @@
 # heroku-buildpack-static
-**NOTE**: This buildpack is in [private beta](https://devcenter.heroku.com/articles/heroku-beta-features#private-beta).
+**NOTE**: This buildpack is in an experimental OSS project.
 
 This is a buildpack for handling static sites and single page web apps.
 
