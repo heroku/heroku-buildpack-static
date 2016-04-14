@@ -62,6 +62,8 @@ http {
     if ($http_x_forwarded_proto != "https") {
       return 301 https://$host$uri;
     }
+    # XXX: Should this be configurable? 'preload' and 'includeSubDomains' tags are quite likely helpful for some apps.
+    add_header Strict-Transport-Security max-age=31536000;
   <% end %>
 
   <% routes.each do |route, path| %>
