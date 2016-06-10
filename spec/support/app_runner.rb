@@ -24,9 +24,6 @@ class AppRunner
     @debug     = debug
     env.merge!("STATIC_DEBUG" => true) if @debug
 
-    # support interpolation specs
-    env.merge!("INTERPOLATED_URL" => "/interpolation.html")
-
     @container = Docker::Container.create(
       "Image"      => BuildpackBuilder::TAG,
       "Cmd"        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
