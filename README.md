@@ -82,6 +82,25 @@ With custom redirects, you can move pages to new routes but still preserve the o
 }
 ```
 
+##### Interpolating Env Var Values
+It's common to want to be able to test the frontend against various backends. The `url` key supports environment variable substitution using `${ENV_VAR_NAME}`. For instance, if there was a staging and production Heroku app for your API, you could setup the config above like the following:
+
+```json
+{
+  "redirects": {
+    "/old/gone/": {
+      "url": "${NEW_SITE_DOMAIN}/new/here/"
+    }
+  }
+}
+```
+
+Then using the [config vars](https://devcenter.heroku.com/articles/config-vars), you can point the frontend app to the appropriate backend. To match the original proxy setup:
+
+```bash
+$ heroku config:set NEW_SITE_DOMAIN="https://example.herokapp.com"
+```
+
 #### Custom Error Pages
 You can replace the default nginx 404 and 500 error pages by defining the path to one in your config.
 

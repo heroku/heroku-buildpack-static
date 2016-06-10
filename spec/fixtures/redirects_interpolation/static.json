@@ -1,0 +1,12 @@
+{
+  "redirects": {
+    "/old/gone": {
+      "url": "/",
+      "status": 302
+    },
+    "/old/interpolation": {
+      "url": "${INTERPOLATED_URL}",
+      "status": 302
+    }
+  }
+}
