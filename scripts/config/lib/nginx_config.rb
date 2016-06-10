@@ -30,11 +30,18 @@ class NginxConfig
       uri.path = ""
       json["proxies"][loc]["host"] = uri.to_s
     end
+
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
+
     json["routes"] ||= {}
     json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
+
     json["redirects"] ||= {}
+    json["redirects"].each do |loc, hash|
+      json["redirects"][loc].merge!("url" => NginxConfigUtil.interpolate(hash["url"], ENV))
+    end
+
     json["error_page"] ||= nil
     json["debug"] ||= ENV['STATIC_DEBUG']
     json.each do |key, value|

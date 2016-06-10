@@ -23,14 +23,18 @@ class AppRunner
     @run       = false
     @debug     = debug
     env.merge!("STATIC_DEBUG" => true) if @debug
+
+    # support interpolation specs
+    env.merge!("INTERPOLATED_URL" => "/interpolation.html")
+
     @container = Docker::Container.create(
-      'Image'      => BuildpackBuilder::TAG,
-      'Cmd'        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
+      "Image"      => BuildpackBuilder::TAG,
+      "Cmd"        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
       # Env format is [KEY1=VAL1 KEY2=VAL2]
-      'Env'        => env.to_a.map {|i| i.join("=") },
-      'HostConfig' => {
-        'Binds' => ["#{fixtures_path(fixture)}:/src"],
-        'PortBindings' => {
+      "Env"        => env.to_a.map {|i| i.join("=") },
+      "HostConfig" => {
+        "Binds" => ["#{fixtures_path(fixture)}:/src"],
+        "PortBindings" => {
           "#{CONTAINER_PORT}/tcp" => [{
             "HostIp"   => HOST_IP,
             "HostPort" => HOST_PORT,

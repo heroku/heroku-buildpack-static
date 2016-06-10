@@ -89,6 +89,12 @@ RSpec.describe "Simple" do
       expect(response.code).to eq("302")
       expect(response["location"]).to eq("http://#{AppRunner::HOST_IP}/")
     end
+
+    it "should redirect using interpolated urls" do
+      response = app.get("/old/interpolation")
+      expect(response.code).to eq("302")
+      expect(response["location"]).to eq("http://#{AppRunner::HOST_IP}/interpolation.html")
+    end
   end
 
   describe "https only" do
