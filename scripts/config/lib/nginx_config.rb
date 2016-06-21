@@ -32,7 +32,7 @@ class NginxConfig
     end
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
-    json["https_only"] ||= DEFAULT[:https_only]
+    json["https_only"] ||= ENV['STATIC_HTTPS_ONLY'] || DEFAULT[:https_only]
 
     json["routes"] ||= {}
     json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
