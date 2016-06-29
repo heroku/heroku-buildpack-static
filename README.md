@@ -1,5 +1,9 @@
 # heroku-buildpack-static
-This is a discovery project for using a buildpack for handling static sites and single page web apps (I'm looking at you Sam Phippen).
+**NOTE**: This buildpack is in an experimental OSS project.
+
+This is a buildpack for handling static sites and single page web apps.
+
+For a guide, read the [Getting Started with Single Page Apps on Heroku](https://gist.github.com/hone/24b06869b4c1eca701f9).
 
 ## Features
 * serving static assets
@@ -8,9 +12,9 @@ This is a discovery project for using a buildpack for handling static sites and 
 * custom [configuration](#configuration)
 
 ## Deploying
-The directory structure expected is that you have a `public_html/` directory containing all your static assets.
+The `static.json` file is required to use this buildpack. This file handles all the configuration described below.
 
-1. Set the app to this buildpack: `$ heroku buildpacks:set git://github.com/hone/heroku-buildpack-static.git`.
+1. Set the app to this buildpack: `$ heroku buildpacks:set https://github.com/heroku/heroku-buildpack-static.git`.
 2. Deploy: `$ git push heroku master`
 
 ### Configuration
@@ -78,6 +82,25 @@ With custom redirects, you can move pages to new routes but still preserve the o
 }
 ```
 
+##### Interpolating Env Var Values
+It's common to want to be able to test the frontend against various backends. The `url` key supports environment variable substitution using `${ENV_VAR_NAME}`. For instance, if there was a staging and production Heroku app for your API, you could setup the config above like the following:
+
+```json
+{
+  "redirects": {
+    "/old/gone/": {
+      "url": "${NEW_SITE_DOMAIN}/new/here/"
+    }
+  }
+}
+```
+
+Then using the [config vars](https://devcenter.heroku.com/articles/config-vars), you can point the frontend app to the appropriate backend. To match the original proxy setup:
+
+```bash
+$ heroku config:set NEW_SITE_DOMAIN="https://example.herokapp.com"
+```
+
 #### Custom Error Pages
 You can replace the default nginx 404 and 500 error pages by defining the path to one in your config.
 
@@ -108,6 +131,25 @@ For single page web applications like Ember, it's common to back the application
     }
   }
 }
+```
+
+##### Interpolating Env Var Values
+It's common to want to be able to test the frontend against various backends. The `origin` key supports environment variable substitution using `${ENV_VAR_NAME}`. For instance, if there was a staging and production Heroku app for your API, you could setup the config above like the following:
+
+```json
+{
+  "proxies": {
+    "/api/": {
+      "origin": "https://${API_APP_NAME}.herokuapp.com/"
+    }
+  }
+}
+```
+
+Then using the [config vars](https://devcenter.heroku.com/articles/config-vars), you can point the frontend app to the appropriate backend. To match the original proxy setup:
+
+```bash
+$ heroku config:set API_APP_NAME="hone-ember-todo-rails"
 ```
 
 #### Custom Headers
