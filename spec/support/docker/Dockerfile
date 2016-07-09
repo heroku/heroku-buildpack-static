@@ -16,3 +16,4 @@ WORKDIR /app
 
 COPY ./spec/support/docker/init.sh /usr/bin/init.sh
 ENTRYPOINT ["/usr/bin/init.sh"]
+CMD "/app/bin/boot"

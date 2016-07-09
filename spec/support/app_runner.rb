@@ -26,7 +26,6 @@ class AppRunner
 
     @container = Docker::Container.create(
       "Image"      => BuildpackBuilder::TAG,
-      "Cmd"        => ["bash", "-c", "cp -rf /src/* /app/ && /app/bin/boot"],
       # Env format is [KEY1=VAL1 KEY2=VAL2]
       "Env"        => env.to_a.map {|i| i.join("=") },
       "HostConfig" => {
