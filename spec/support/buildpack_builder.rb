@@ -1,5 +1,3 @@
-require "tmpdir"
-require "fileutils"
 require "docker"
 require_relative "path_helper"
 
