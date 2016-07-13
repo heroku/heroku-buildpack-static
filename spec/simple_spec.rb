@@ -21,7 +21,7 @@ RSpec.describe "Simple" do
   end
 
   let(:proxy) { nil }
-  let(:app)   { AppRunner.new(name, proxy, env, @debug, ENV['CIRCLECI']) }
+  let(:app)   { AppRunner.new(name, proxy, env, @debug, !ENV['CIRCLECI']) }
 
   let(:name)  { "hello_world" }
   let(:env)   { Hash.new }

@@ -2,12 +2,16 @@ require "fiber"
 require "docker"
 
 class ContainerRunner
-  attr_reader :ip_address
+  extend Forwardable
 
-  def initialize(options)
+  attr_reader :ip_address
+  def_delegators :@container, :id
+
+  def initialize(options, delete = true)
     @container  = Docker::Container.create(options)
     @ip_address = nil
     @thread     = nil
+    @delete     = delete
   end
 
   def start
@@ -24,6 +28,6 @@ class ContainerRunner
   end
 
   def destroy
-    @container.delete(force: true)
+    @container.delete(force: true) if @delete
   end
 end

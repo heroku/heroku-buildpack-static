@@ -14,15 +14,15 @@ class AppRunner
 
   attr_reader :proxy
 
-  def initialize(fixture, proxy = nil, env = {}, debug = false)
-    @run       = false
-    @debug     = debug
-    @tmpdir    = nil
-    @proxy     = nil
+  def initialize(fixture, proxy = nil, env = {}, debug = false, delete = true)
+    @run    = false
+    @debug  = debug
+    @tmpdir = nil
+    @proxy  = nil
+    @delete = delete
     env.merge!("STATIC_DEBUG" => "true") if @debug
 
     app_options = {
-      "name"       => "app",
       "Image"      => BuildpackBuilder::TAG,
       # Env format is [KEY1=VAL1 KEY2=VAL2]
       "Env"        => env.to_a.map {|i| i.join("=") },
@@ -32,7 +32,6 @@ class AppRunner
     }
 
     if proxy
-      app_options["Links"] = ["proxy:proxy"]
       if proxy.is_a?(String)
         @tmpdir = Dir.mktmpdir
         File.open("#{@tmpdir}/config.ru", "w") do |file|
@@ -42,7 +41,8 @@ class AppRunner
         end
       end
 
-      @proxy = ProxyRunner.new(@tmpdir)
+      @proxy = ProxyRunner.new(@tmpdir, @delete)
+      app_options["Links"] = ["#{@proxy.id}:proxy"]
       @proxy.start
 
       # need to interpolate the PROXY_IP_ADDRESS since env is a parameter to this constructor and
@@ -55,7 +55,7 @@ class AppRunner
     end
 
     @app    = Docker::Container.create(app_options)
-    @router = RouterRunner.new
+    @router = RouterRunner.new(@app.id, @delete)
   end
 
   def run(capture_io = false)
@@ -106,7 +106,7 @@ class AppRunner
       @proxy.destroy
     end
     @router.destroy
-    @app.delete(force: true)
+    @app.delete(force: true) if @delete
   ensure
     FileUtils.rm_rf(@tmpdir) if @tmpdir
   end

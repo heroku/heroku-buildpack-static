@@ -11,12 +11,11 @@ class RouterRunner < ContainerRunner
   HTTPS_PORT = "443"
   HOST_IP    = boot2docker_ip || "127.0.0.1"
 
-  def initialize
+  def initialize(app_id, delete = true)
     super({
-      "name"       => "router",
       "Image"      => RouterBuilder::TAG,
       "HostConfig" => {
-        "Links" => ["app:app"],
+        "Links" => ["#{app_id}:app"],
         "PortBindings" => {
           "#{HTTP_PORT}/tcp" => [{
             "HostIp"   => HOST_IP,
@@ -28,6 +27,6 @@ class RouterRunner < ContainerRunner
           }]
         }
       }
-    })
+    }, delete)
   end
 end
