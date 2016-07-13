@@ -115,11 +115,18 @@ class AppRunner
   def get_retry(path, max_retries)
     network_retry(max_retries) do
       uri = URI(path)
-      uri.host   = RouterRunner::HOST_IP   if uri.host.nil?
-      uri.port   = RouterRunner::HOST_PORT if (uri.host == RouterRunner::HOST_IP && uri.port != RouterRunner::HOST_PORT) || uri.port.nil?
-      uri.scheme = "http"    if uri.scheme.nil?
+      uri.host   = RouterRunner::HOST_IP if uri.host.nil?
+      uri.scheme = "http" if uri.scheme.nil?
 
-      Net::HTTP.get_response(URI(uri.to_s))
+      Net::HTTP.start(
+        uri.host,
+        uri.port,
+        use_ssl: uri.scheme == "https",
+        verify_mode: OpenSSL::SSL::VERIFY_NONE
+      ) do |http|
+        request = Net::HTTP::Get.new(uri.to_s)
+        http.request(request)
+      end
     end
   end
 

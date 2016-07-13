@@ -118,11 +118,18 @@ RSpec.describe "Simple" do
     let(:name) { "https_only" }
 
     it "should redirect http to https" do
-      response = app.get("/foo")
-      expect(response.code).to eq("301")
-      uri = URI(response['Location'])
-      expect(uri.scheme).to eq("https")
-      expect(uri.path).to eq("/foo")
+      app.run do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("301")
+        uri = URI(response['Location'])
+        expect(uri.scheme).to eq("https")
+        expect(uri.path).to eq("/foo.html")
+
+        response = app.get(uri)
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foobar")
+      end
+    end
     end
   end
 

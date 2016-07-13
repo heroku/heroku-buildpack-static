@@ -7,9 +7,9 @@ class RouterRunner < ContainerRunner
   rescue Errno::ENOENT
   end
 
-  CONTAINER_PORT = "80"
-  HOST_PORT      = "80"
-  HOST_IP        = boot2docker_ip || "127.0.0.1"
+  HTTP_PORT  = "80"
+  HTTPS_PORT = "443"
+  HOST_IP    = boot2docker_ip || "127.0.0.1"
 
   def initialize
     super({
@@ -18,9 +18,13 @@ class RouterRunner < ContainerRunner
       "HostConfig" => {
         "Links" => ["app:app"],
         "PortBindings" => {
-          "#{CONTAINER_PORT}/tcp" => [{
+          "#{HTTP_PORT}/tcp" => [{
             "HostIp"   => HOST_IP,
-            "HostPort" => HOST_PORT,
+            "HostPort" => HTTP_PORT
+          }],
+          "#{HTTPS_PORT}/tcp" => [{
+            "HostIp"   => HOST_IP,
+            "HostPort" => HTTPS_PORT
           }]
         }
       }
