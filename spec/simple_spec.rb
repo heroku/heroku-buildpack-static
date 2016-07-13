@@ -13,7 +13,7 @@ RSpec.describe "Simple" do
     @debug = true
     BuildpackBuilder.new(@debug, ENV['CIRCLECI'])
     RouterBuilder.new(@debug, ENV['CIRCLECI'])
-    ProxyBuilder.new(@debug, ENV["CIRCLE_CI"])
+    ProxyBuilder.new(@debug, ENV["CIRCLECI"])
   end
 
   after do
@@ -21,7 +21,7 @@ RSpec.describe "Simple" do
   end
 
   let(:proxy) { nil }
-  let(:app)   { AppRunner.new(name, proxy, env, @debug) }
+  let(:app)   { AppRunner.new(name, proxy, env, @debug, ENV['CIRCLECI']) }
 
   let(:name)  { "hello_world" }
   let(:env)   { Hash.new }
