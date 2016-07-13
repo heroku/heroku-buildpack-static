@@ -130,6 +130,16 @@ RSpec.describe "Simple" do
         expect(response.body.chomp).to eq("foobar")
       end
     end
+
+    context "CRLF HTTP Header injection" do
+      let(:cookie) { "malicious=1" }
+
+      it "should not expose cookie" do
+        app.run do
+          response = app.get("/foo.html#{URI.escape("\r\nSet-Cookie: #{cookie}")}")
+          expect(response['set-cookie']).not_to eq(cookie)
+        end
+      end
     end
   end
 
