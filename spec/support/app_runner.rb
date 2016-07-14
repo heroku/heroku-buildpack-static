@@ -92,7 +92,7 @@ class AppRunner
     @run = false
   end
 
-  def get(path, capture_io = false, max_retries = 30)
+  def get(path, capture_io = false, max_retries = 60)
     if @run
       get_retry(path, max_retries)
     else
