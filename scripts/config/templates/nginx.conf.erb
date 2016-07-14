@@ -60,7 +60,7 @@ http {
 
   <% if https_only %>
     if ($http_x_forwarded_proto != "https") {
-      return 301 https://$host$uri;
+      return 301 https://$host$request_uri;
     }
   <% end %>
 

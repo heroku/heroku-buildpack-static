@@ -1,23 +1,30 @@
 require "fileutils"
 require_relative "spec_helper"
 require_relative "support/app_runner"
+require_relative "support/router_runner"
 require_relative "support/buildpack_builder"
+require_relative "support/router_builder"
+require_relative "support/proxy_builder"
+require_relative "support/proxy_runner"
 require_relative "support/path_helper"
 
 RSpec.describe "Simple" do
   before(:all) do
     @debug = true
     BuildpackBuilder.new(@debug, ENV['CIRCLECI'])
+    RouterBuilder.new(@debug, ENV['CIRCLECI'])
+    ProxyBuilder.new(@debug, ENV["CIRCLECI"])
   end
 
   after do
     app.destroy
   end
 
-  let(:app)  { AppRunner.new(name, env, @debug) }
+  let(:proxy) { nil }
+  let(:app)   { AppRunner.new(name, proxy, env, @debug, !ENV['CIRCLECI']) }
 
-  let(:name) { "hello_world" }
-  let(:env)  { Hash.new }
+  let(:name)  { "hello_world" }
+  let(:env)   { Hash.new }
 
   it "should serve out of public_html by default" do
     response = app.get("/")
@@ -49,15 +56,17 @@ RSpec.describe "Simple" do
     let(:name) { "clean_urls" }
 
     it "should drop the .html extension from URLs" do
-      response = app.get("/foo")
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("foobar")
+      app.run do
+        response = app.get("/foo")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foobar")
 
-      response = app.get("/bar")
-      expect(response.code).to eq("301")
-      response = app.get(response["Location"])
-      expect(response.code).to eq("200")
-      expect(response.body.chomp).to eq("bar")
+        response = app.get("/bar")
+        expect(response.code).to eq("301")
+        response = app.get(response["Location"])
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("bar")
+      end
     end
   end
 
@@ -87,7 +96,7 @@ RSpec.describe "Simple" do
     it "should redirect and respect the http code & remove the port" do
       response = app.get("/old/gone")
       expect(response.code).to eq("302")
-      expect(response["location"]).to eq("http://#{AppRunner::HOST_IP}/")
+      expect(response["location"]).to eq("http://#{RouterRunner::HOST_IP}/")
     end
 
     context "interpolation" do
@@ -100,7 +109,7 @@ RSpec.describe "Simple" do
       it "should redirect using interpolated urls" do
         response = app.get("/old/interpolation")
         expect(response.code).to eq("302")
-        expect(response["location"]).to eq("http://#{AppRunner::HOST_IP}/interpolation.html")
+        expect(response["location"]).to eq("http://#{RouterRunner::HOST_IP}/interpolation.html")
       end
     end
   end
@@ -109,11 +118,28 @@ RSpec.describe "Simple" do
     let(:name) { "https_only" }
 
     it "should redirect http to https" do
-      response = app.get("/foo")
-      expect(response.code).to eq("301")
-      uri = URI(response['Location'])
-      expect(uri.scheme).to eq("https")
-      expect(uri.path).to eq("/foo")
+      app.run do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("301")
+        uri = URI(response['Location'])
+        expect(uri.scheme).to eq("https")
+        expect(uri.path).to eq("/foo.html")
+
+        response = app.get(uri)
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("foobar")
+      end
+    end
+
+    context "CRLF HTTP Header injection" do
+      let(:cookie) { "malicious=1" }
+
+      it "should not expose cookie" do
+        app.run do
+          response = app.get("/foo.html#{URI.escape("\r\nSet-Cookie: #{cookie}")}")
+          expect(response['set-cookie']).not_to eq(cookie)
+        end
+      end
     end
   end
 
@@ -131,6 +157,7 @@ RSpec.describe "Simple" do
     include PathHelper
 
     let(:name)              { "proxies" }
+    let(:proxy)             { true }
     let(:static_json_path)  { fixtures_path("proxies/static.json") }
     let(:setup_static_json) do
       Proc.new do |path|
@@ -139,7 +166,7 @@ RSpec.describe "Simple" do
 {
   "proxies": {
     "/api/": {
-      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}#{path}"
+      "origin": "http://#{@proxy_ip_address}#{path}"
     }
   }
 }
@@ -147,6 +174,10 @@ STATIC_JSON
 
         end
       end
+    end
+
+    before do
+      @proxy_ip_address = app.proxy.ip_address
     end
 
     after do
@@ -184,10 +215,10 @@ STATIC_JSON
 {
   "proxies": {
     "/api/": {
-      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+      "origin": "http://#{@proxy_ip_address}/foo"
     },
     "/proxy/": {
-      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}/foo"
+      "origin": "http://#{@proxy_ip_address}/foo"
     }
   },
   "routes": {
@@ -212,6 +243,14 @@ STATIC_JSON
     end
 
     context "env var substitution" do
+      let(:proxy) do
+        <<CONFIG_RU
+get "/foo/bar/" do
+  "api"
+end
+CONFIG_RU
+      end
+
       before do
         File.open(static_json_path, "w") do |file|
           file.puts <<STATIC_JSON
@@ -228,7 +267,7 @@ STATIC_JSON
 
       let(:env) do
         {
-          "PROXY_HOST" => "#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}"
+          "PROXY_HOST" => "${PROXY_IP_ADDRESS}"
         }
       end
 
@@ -345,6 +384,17 @@ STATIC_JSON
 
       let(:name)              { "proxies" }
       let(:static_json_path)  { fixtures_path("proxies/static.json") }
+      let(:proxy) do
+        <<PROXY
+get "/foo/bar/" do
+  "api"
+end
+
+get "/foo/baz/" do
+  "baz"
+end
+PROXY
+      end
       let(:setup_static_json) do
         Proc.new do |path|
           File.open(static_json_path, "w") do |file|
@@ -352,7 +402,7 @@ STATIC_JSON
 {
   "proxies": {
     "/api/": {
-      "origin": "http://#{AppRunner::HOST_IP}:#{AppRunner::HOST_PORT}#{path}"
+      "origin": "http://#{@proxy_ip_address}#{path}"
     }
   },
   "headers": {
@@ -368,6 +418,7 @@ STATIC_JSON
       end
 
       before do
+        @proxy_ip_address = app.proxy.ip_address
         setup_static_json.call("/foo/")
       end
 
