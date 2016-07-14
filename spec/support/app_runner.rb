@@ -17,7 +17,6 @@ class AppRunner
   def initialize(fixture, proxy = nil, env = {}, debug = false, delete = true)
     @run    = false
     @debug  = debug
-    @tmpdir = nil
     @proxy  = nil
     @delete = delete
     env.merge!("STATIC_DEBUG" => "true") if @debug
@@ -32,16 +31,7 @@ class AppRunner
     }
 
     if proxy
-      if proxy.is_a?(String)
-        @tmpdir = Dir.mktmpdir
-        File.open("#{@tmpdir}/config.ru", "w") do |file|
-          file.puts %q{require "sinatra"}
-          file.puts proxy
-          file.puts "run Sinatra::Application"
-        end
-      end
-
-      @proxy = ProxyRunner.new(@tmpdir, @delete)
+      @proxy = ProxyRunner.new(proxy, @delete)
       app_options["Links"] = ["#{@proxy.id}:proxy"]
       @proxy.start
 
@@ -107,8 +97,6 @@ class AppRunner
     end
     @router.destroy
     @app.delete(force: true) if @delete
-  ensure
-    FileUtils.rm_rf(@tmpdir) if @tmpdir
   end
 
   private
