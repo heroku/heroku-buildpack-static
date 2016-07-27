@@ -8,6 +8,7 @@ class NginxConfig
     encoding: "UTF-8",
     clean_urls: false,
     https_only: false,
+    max_body_size: "1M",
     worker_connections: 512
   }
 
@@ -33,6 +34,7 @@ class NginxConfig
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
+    json["max_body_size"] ||= DEFAULT[:max_body_size]
 
     json["routes"] ||= {}
     json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
