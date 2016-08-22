@@ -74,6 +74,10 @@ http {
     <% else %>
       try_files $uri $path $fallback;
     <% end %>
+    <% if basic_auth %>
+      auth_basic "Restricted";
+      auth_basic_user_file /app/.htpasswd;
+    <% end %>
     }
   <% end %>
 
