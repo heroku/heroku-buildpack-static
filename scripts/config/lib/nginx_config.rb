@@ -9,6 +9,7 @@ class NginxConfig
     clean_urls: false,
     https_only: false,
     basic_auth: false,
+    basic_auth_htpasswd_path: "/app/.htpasswd",
     worker_connections: 512
   }
 
@@ -34,7 +35,9 @@ class NginxConfig
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
+
     json["basic_auth"] ||= DEFAULT[:basic_auth]
+    json["basic_auth_htpasswd_path"] ||= DEFAULT[:basic_auth_htpasswd_path]
 
     json["routes"] ||= {}
     json["routes"] = NginxConfigUtil.parse_routes(json["routes"])

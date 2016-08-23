@@ -76,7 +76,7 @@ http {
     <% end %>
     <% if basic_auth %>
       auth_basic "Restricted";
-      auth_basic_user_file /app/.htpasswd;
+      auth_basic_user_file <%= basic_auth_htpasswd_path %>;
     <% end %>
     }
   <% end %>
