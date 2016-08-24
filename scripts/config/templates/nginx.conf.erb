@@ -80,6 +80,7 @@ http {
   <% proxies.each do |location, hash| %>
     location <%= location %> {
       proxy_pass <%= hash['origin'] %>;
+      proxy_ssl_server_name on;
     }
   <% end %>
 
