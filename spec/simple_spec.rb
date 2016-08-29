@@ -155,8 +155,10 @@ RSpec.describe "Simple" do
       }
 
       it "should require authentication" do
-        response = app.get("/foo.html")
-        expect(response.code).to eq("401")
+        app.run do
+          response = app.get("/foo.html")
+          expect(response.code).to eq("401")
+        end
       end
     end
   end
