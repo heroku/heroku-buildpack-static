@@ -143,6 +143,17 @@ RSpec.describe "Simple" do
     end
   end
 
+  describe "basic auth" do
+    let(:name) { "basic_auth" }
+
+    it "should require authentication" do
+      app.run do
+        response = app.get("/")
+        expect(response.code).to eq("401")
+      end
+    end
+  end
+
   describe "custom error pages" do
     let(:name) { "custom_error_pages" }
 
