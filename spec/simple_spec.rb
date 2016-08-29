@@ -143,17 +143,18 @@ RSpec.describe "Simple" do
     end
   end
 
-  describe "basic auth" do
+  describe "basic_auth" do
     let(:name) { "basic_auth" }
-    let(:env) {
-      {
-        "BASIC_AUTH_USERNAME" => "test",
-        "BASIC_AUTH_PASSWORD" => "$apr1$Dnavu2z9$ZFxQn/mXVQoeYGD.tA2bW/"
-      }
-    }
 
-    it "should require authentication" do
-      app.run do
+    context "basic_auth" do
+      let(:env) {
+        {
+          "BASIC_AUTH_USERNAME" => "test",
+          "BASIC_AUTH_PASSWORD" => "$apr1$Dnavu2z9$ZFxQn/mXVQoeYGD.tA2bW/"
+        }
+      }
+
+      it "should require authentication" do
         response = app.get("/foo.html")
         expect(response.code).to eq("401")
       end
