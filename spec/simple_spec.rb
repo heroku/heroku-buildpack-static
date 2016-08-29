@@ -145,6 +145,12 @@ RSpec.describe "Simple" do
 
   describe "basic auth" do
     let(:name) { "basic_auth" }
+    let(:env) {
+      {
+        "BASIC_AUTH_USERNAME" => "test",
+        "BASIC_AUTH_PASSWORD" => "$apr1$Dnavu2z9$ZFxQn/mXVQoeYGD.tA2bW/"
+      }
+    }
 
     it "should require authentication" do
       app.run do
