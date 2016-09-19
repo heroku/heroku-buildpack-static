@@ -42,6 +42,11 @@ http {
     error_page 404 500 /<%= error_page %>;
   <% end %>
 
+  <% if basic_auth %>
+    auth_basic "Restricted";
+    auth_basic_user_file <%= basic_auth_htpasswd_path %>;
+  <% end %>
+
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
@@ -73,10 +78,6 @@ http {
       try_files $uri $uri/ /$uri.html $path $fallback;
     <% else %>
       try_files $uri $path $fallback;
-    <% end %>
-    <% if basic_auth %>
-      auth_basic "Restricted";
-      auth_basic_user_file <%= basic_auth_htpasswd_path %>;
     <% end %>
     }
   <% end %>
