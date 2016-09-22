@@ -160,7 +160,7 @@ RSpec.describe "Simple" do
       end
     end
 
-    context "static.json with static.json" do
+    context "static.json with basic_auth key and .htpasswd" do
       let(:name) { "basic_auth" }
 
       let(:env) {
