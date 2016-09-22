@@ -36,6 +36,7 @@ class NginxConfig
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
 
+    json["basic_auth"] = true unless ENV['BASIC_AUTH_USERNAME'].nil?
     json["basic_auth"] ||= DEFAULT[:basic_auth]
     json["basic_auth_htpasswd_path"] ||= DEFAULT[:basic_auth_htpasswd_path]
 

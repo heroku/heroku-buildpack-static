@@ -144,9 +144,9 @@ RSpec.describe "Simple" do
   end
 
   describe "basic_auth" do
-    let(:name) { "basic_auth" }
+    context "static.json without basic_auth key" do
+      let(:name) { "hello_world" }
 
-    context "basic_auth" do
       let(:env) {
         {
           "BASIC_AUTH_USERNAME" => "test",
@@ -155,10 +155,24 @@ RSpec.describe "Simple" do
       }
 
       it "should require authentication" do
-        app.run do
-          response = app.get("/foo.html")
-          expect(response.code).to eq("401")
-        end
+        response = app.get("/index.html")
+        expect(response.code).to eq("401")
+      end
+    end
+
+    context "static.json with basic_auth key and .htpasswd" do
+      let(:name) { "basic_auth" }
+
+      let(:env) {
+        {
+          "BASIC_AUTH_USERNAME" => "test",
+          "BASIC_AUTH_PASSWORD" => "$apr1$/pb2/xQR$cn7UPcTOLymIH1ZMe.NfO."
+        }
+      }
+
+      it "should require authentication" do
+        response = app.get("/foo.html")
+        expect(response.code).to eq("401")
       end
     end
   end
