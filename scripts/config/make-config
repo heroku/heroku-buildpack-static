@@ -4,9 +4,15 @@ require 'fileutils'
 require 'erb'
 require_relative 'lib/nginx_config'
 
-TEMPLATE     = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
-USER_CONFIG  = 'static.json'
-NGINX_CONFIG = 'config/nginx.conf'
+TEMPLATE               = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
+TEMPLATE_PRERENDER     = File.join(File.dirname(__FILE__), 'templates/prerender.conf.erb')
+USER_CONFIG            = 'static.json'
+NGINX_CONFIG           = 'config/nginx.conf'
+PRERENDER_CONFIG       = 'config/prerender.conf'
 
-erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
+context = NginxConfig.new(USER_CONFIG).context
+erb = ERB.new(File.read(TEMPLATE)).result(context)
 File.write(NGINX_CONFIG, erb)
+
+erb = ERB.new(File.read(TEMPLATE_PRERENDER)).result(context)
+File.write(PRERENDER_CONFIG, erb)

@@ -45,31 +45,39 @@ http {
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
-    <% if clean_urls %>
+    <% if prerender %>
+      try_files $uri @prerender;
+    <% elsif clean_urls %>
       try_files $uri $uri/ $uri.html $fallback;
     <% else %>
       try_files $uri $uri/ $fallback;
     <% end %>
     }
 
-  <% if clean_urls %>
-    location ~ \.html$ {
-      try_files $uri =404;
-    }
-  <% end %>
+    <% if prerender %>
+      include prerender.conf;
+    <% end %>
 
-  <% if https_only %>
-    if ($http_x_forwarded_proto != "https") {
-      return 301 https://$host$request_uri;
-    }
-  <% end %>
+    <% if clean_urls %>
+      location ~ \.html$ {
+        try_files $uri =404;
+      }
+    <% end %>
+
+    <% if https_only %>
+      if ($http_x_forwarded_proto != "https") {
+        return 301 https://$host$request_uri;
+      }
+    <% end %>
 
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
       set $route <%= route %>;
       mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
-    <% if clean_urls %>
+    <% if prerender %>
+      try_files $uri @prerender;
+    <% elsif clean_urls %>
       try_files $uri $uri/ /$uri.html $path $fallback;
     <% else %>
       try_files $uri $path $fallback;
@@ -94,6 +102,7 @@ http {
     location @<%= location %> {
       rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
       proxy_pass <%= hash['host'] %>;
+      proxy_ssl_server_name on;
     }
   <% end %>
 
