@@ -68,6 +68,18 @@ You can define custom routes that combine to a single file. This allows you to p
 }
 ```
 
+##### Browser history and asset files
+When serving a single page app, it's useful to support wildcard URLs that serves the index.html file, while also continuing to serve JS and CSS files correctly. Route ordering allows you to do both:
+
+```json
+{
+  "routes": {
+    "/assets/*": "/assets/",
+    "/**": "index.html"
+  }
+}
+```
+
 #### Custom Redirects
 With custom redirects, you can move pages to new routes but still preserve the old routes for SEO purposes. By default, we return a `301` status code, but you can specify the status code you want.
 
