@@ -8,7 +8,8 @@ class NginxConfig
     encoding: "UTF-8",
     clean_urls: false,
     https_only: false,
-    worker_connections: 512
+    worker_connections: 512,
+    resolver: 172.16.0.23
   }
 
   def initialize(json_file)
@@ -25,6 +26,7 @@ class NginxConfig
         json["proxies"][loc].merge!("origin" => evaled_origin + "/")
       end
 
+      json["proxies"][loc]["resolver"] ||= DEFAULT[:resolver]
       uri = URI(evaled_origin)
       json["proxies"][loc]["path"] = uri.path
       uri.path = ""
