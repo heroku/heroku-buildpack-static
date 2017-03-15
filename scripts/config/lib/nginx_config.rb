@@ -29,6 +29,9 @@ class NginxConfig
       json["proxies"][loc]["path"] = uri.path
       uri.path = ""
       json["proxies"][loc]["host"] = uri.to_s
+      redirect_scheme = uri.scheme == "https" ? "http" : "https"
+      json["proxies"][loc]["redirect"] = uri.dup.tap {|u| u.scheme = redirect_scheme }.to_s
+      json["proxies"][loc]["redirect"] += "/" if !uri.to_s.end_with?("/")
     end
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
