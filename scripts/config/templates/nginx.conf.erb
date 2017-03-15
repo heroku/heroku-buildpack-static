@@ -94,6 +94,7 @@ http {
     location @<%= location %> {
       rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
       proxy_pass <%= hash['host'] %>;
+      proxy_ssl_server_name on;
     }
   <% end %>
 
