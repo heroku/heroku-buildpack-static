@@ -68,6 +68,23 @@ RSpec.describe "Simple" do
         expect(response.body.chomp).to eq("bar")
       end
     end
+
+    context "when there is a conflict" do
+      let(:name) { "clean_urls_conflict" }
+
+
+      it "should be able to handle when a directory and .html file share the same name" do
+        app.run do
+          response = app.get("/foo/bar")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foobar")
+        end
+      end
+    end
   end
 
   describe "routes" do
@@ -548,9 +565,13 @@ STATIC_JSON
           expect(response.code).to eq("302")
           expect(app.get(response["location"]).body.chomp).to eq("goodbye")
 
-          response = app.get("/foo")
+          response = app.get("/hello")
           expect(response.code).to eq("200")
           expect(response.body.chomp).to eq("hello world")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foo")
         end
       end
     end
