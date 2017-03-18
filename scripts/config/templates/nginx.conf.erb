@@ -77,9 +77,13 @@ http {
     }
   <% end %>
 
+
   <% proxies.each do |location, hash| %>
+    resolver <%= hash['resolver'] %>;
+    set $upstream_endpoint <%= hash['origin'] %>;
+
     location <%= location %> {
-      proxy_pass <%= hash['origin'] %>;
+      proxy_pass $upstream_endpoint;
       proxy_ssl_server_name on;
       proxy_redirect default;
       proxy_redirect <%= hash["redirect"] %>  <%= location %>;
