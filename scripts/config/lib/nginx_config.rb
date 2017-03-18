@@ -8,7 +8,8 @@ class NginxConfig
     encoding: "UTF-8",
     clean_urls: false,
     https_only: false,
-    worker_connections: 512
+    worker_connections: 512,
+    resolver: "8.8.8.8"
   }
 
   def initialize(json_file)
@@ -18,20 +19,23 @@ class NginxConfig
     json["port"] ||= ENV["PORT"] || 5000
     json["root"] ||= DEFAULT[:root]
     json["encoding"] ||= DEFAULT[:encoding]
+
+    index = 0
     json["proxies"] ||= {}
     json["proxies"].each do |loc, hash|
       evaled_origin = NginxConfigUtil.interpolate(hash['origin'], ENV)
-      if evaled_origin != "/"
-        json["proxies"][loc].merge!("origin" => evaled_origin + "/")
-      end
+      uri           = URI(evaled_origin)
 
-      uri = URI(evaled_origin)
-      json["proxies"][loc]["path"] = uri.path
-      uri.path = ""
-      json["proxies"][loc]["host"] = uri.to_s
-      redirect_scheme = uri.scheme == "https" ? "http" : "https"
-      json["proxies"][loc]["redirect"] = uri.dup.tap {|u| u.scheme = redirect_scheme }.to_s
-      json["proxies"][loc]["redirect"] += "/" if !uri.to_s.end_with?("/")
+      json["proxies"][loc]["name"] = "upstream_endpoint_#{index}"
+      cleaned_path = uri.path
+      cleaned_path.chop! if cleaned_path.end_with?("/")
+      json["proxies"][loc]["path"] = cleaned_path
+      json["proxies"][loc]["host"] = uri.dup.tap {|u| u.path = '' }.to_s
+      %w(http https).each do |scheme|
+        json["proxies"][loc]["redirect_#{scheme}"] = uri.dup.tap {|u| u.scheme = scheme }.to_s
+        json["proxies"][loc]["redirect_#{scheme}"] += "/" if !uri.to_s.end_with?("/")
+      end
+      index += 1
     end
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
@@ -47,6 +51,17 @@ class NginxConfig
 
     json["error_page"] ||= nil
     json["debug"] ||= ENV['STATIC_DEBUG']
+
+    nameservers = []
+    if File.exist?("/etc/resolv.conf")
+      File.open("/etc/resolv.conf", "r").each do |line|
+        next unless md = line.match(/^nameserver\s*(\S*)/)
+        nameservers << md[1]
+      end
+    end
+    nameservers << [DEFAULT[:resolver]] unless nameservers.empty?
+    json["resolver"] = nameservers.join(" ")
+
     json.each do |key, value|
       self.class.send(:define_method, key) { value }
     end
