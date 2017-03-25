@@ -41,6 +41,9 @@ http {
   <% if error_page %>
     error_page 404 500 /<%= error_page %>;
   <% end %>
+  <% if proxies.any? %>
+    resolver <%= resolver %>;
+  <% end %>
 
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
@@ -78,11 +81,15 @@ http {
   <% end %>
 
   <% proxies.each do |location, hash| %>
+    set $<%= hash['name'] %> <%= hash['host'] %>;
     location <%= location %> {
-      proxy_pass <%= hash['origin'] %>;
+      rewrite ^<%= location %>/?(.*) <%= hash['path'] %>/$1 break;
+      proxy_pass $<%= hash['name'] %>;
       proxy_ssl_server_name on;
-      proxy_redirect default;
-      proxy_redirect <%= hash["redirect"] %>  <%= location %>;
+      # handle Location rewrites from the proxy properly
+      <% %w(http https).each do |scheme| %>
+      proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
+      <% end %>
     }
   <% end %>
 
@@ -94,11 +101,13 @@ http {
   # fallback proxy named match
   <% proxies.each do |location, hash| %>
     location @<%= location %> {
-      rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
-      proxy_pass <%= hash['host'] %>;
+      rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>/$1 break;
+      # can reuse variable set above
+      proxy_pass $<%= hash['name'] %>;
       proxy_ssl_server_name on;
-      proxy_redirect default;
-      proxy_redirect <%= hash["redirect"] %>  <%= location %>;
+      <% %w(http https).each do |scheme| %>
+      proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
+      <% end %>
     }
   <% end %>
 
