@@ -1,0 +1,9 @@
+{
+  "redirects": {
+    "/old/gone": {
+      "url": "/",
+      "status": 302
+    }
+  },
+  "https_only": true
+}

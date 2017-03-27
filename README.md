@@ -216,6 +216,7 @@ when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not 
 
 ### Route Ordering
 
+* HTTPS redirect
 * Root Files
 * Clean URLs
 * Proxies

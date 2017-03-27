@@ -80,19 +80,6 @@ http {
     }
   <% end %>
 
-  <% proxies.each do |location, hash| %>
-    set $<%= hash['name'] %> <%= hash['host'] %>;
-    location <%= location %> {
-      rewrite ^<%= location %>/?(.*) <%= hash['path'] %>/$1 break;
-      proxy_pass $<%= hash['name'] %>;
-      proxy_ssl_server_name on;
-      # handle Location rewrites from the proxy properly
-      <% %w(http https).each do |scheme| %>
-      proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
-      <% end %>
-    }
-  <% end %>
-
   # need this b/c setting $fallback to =404 will try #{root}=404 instead of returning a 404
   location @404 {
     return 404;
@@ -100,6 +87,7 @@ http {
 
   # fallback proxy named match
   <% proxies.each do |location, hash| %>
+    set $<%= hash['name'] %> <%= hash['host'] %>;
     location @<%= location %> {
       rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>/$1 break;
       # can reuse variable set above
