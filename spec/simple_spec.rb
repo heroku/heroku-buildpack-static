@@ -129,6 +129,16 @@ RSpec.describe "Simple" do
         expect(response["location"]).to eq("http://#{RouterRunner::HOST_IP}/interpolation.html")
       end
     end
+
+    context "https_only" do
+      let(:name) { "redirects_https_only" }
+
+      it "should redirect to https first" do
+        response = app.get("/old/gone")
+        expect(response.code).to eq("301")
+        expect(response["location"]).to eq("https://#{RouterRunner::HOST_IP}/old/gone")
+      end
+    end
   end
 
   describe "https only" do
@@ -256,6 +266,35 @@ STATIC_JSON
         response = app.get("/proxy/bar/")
         expect(response.code).to eq("200")
         expect(response.body.chomp).to eq("api")
+      end
+    end
+
+    context "https_only" do
+      let(:setup_static_json) do
+        Proc.new do |path|
+          File.open(static_json_path, "w") do |file|
+            file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{@proxy_ip_address}#{path}"
+    }
+  },
+  "https_only": true
+}
+STATIC_JSON
+          end
+        end
+      end
+
+      before do
+        setup_static_json.call("/")
+      end
+
+      it "should not redirect direct to the proxy" do
+        response = app.get("/api/bar")
+        expect(response.code).to eq("301")
+        expect(response["Location"]).to eq("https://#{RouterRunner::HOST_IP}/api/bar")
       end
     end
 
