@@ -53,6 +53,22 @@ For SEO purposes, you can drop the `.html` extension from URLs for say a blog si
 
 By default this is set to `false`.
 
+
+#### Logging
+You can disable the access log and change the severity level for the error log.
+
+```json
+{
+  "logging": {
+    "access": false,
+    "error": "warn"
+  }
+}
+```
+
+By default `access` is set to `true` and `error` is set to `error`.
+
+
 #### Custom Routes
 You can define custom routes that combine to a single file. This allows you to preserve routing for a single page web application. The following operators are supported:
 

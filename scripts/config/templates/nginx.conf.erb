@@ -17,12 +17,17 @@ http {
 
   server_tokens off;
 
-  access_log  logs/access.log;
+<% if logging.fetch('access') %>
+  access_log logs/access.log;
+<% else %>
+  access_log off;
+<% end %>
+
 <% if debug %>
   error_log stderr debug;
   rewrite_log on;
 <% else %>
-  error_log   stderr;
+  error_log stderr <%= logging.fetch('error') %>;
 <% end %>
 
   include mime.types;
