@@ -54,7 +54,7 @@ class NginxConfig
     end
 
     json["error_page"] ||= nil
-    json["debug"] ||= ENV['STATIC_DEBUG']
+    json["debug"] = ENV['STATIC_DEBUG']
 
     logging = json["logging"] || {}
     json["logging"] = DEFAULT[:logging].merge(logging)

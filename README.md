@@ -68,6 +68,8 @@ You can disable the access log and change the severity level for the error log.
 
 By default `access` is set to `true` and `error` is set to `error`.
 
+The environment variable `STATIC_DEBUG` can be set, to override the `error` log level to `error`.
+
 
 #### Custom Routes
 You can define custom routes that combine to a single file. This allows you to preserve routing for a single page web application. The following operators are supported:
