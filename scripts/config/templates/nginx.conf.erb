@@ -17,7 +17,7 @@ http {
 
   server_tokens off;
 
-<% if logging.fetch('access') %>
+<% if logging['access'] %>
   access_log logs/access.log;
 <% else %>
   access_log off;
@@ -27,7 +27,7 @@ http {
   error_log stderr debug;
   rewrite_log on;
 <% else %>
-  error_log stderr <%= logging.fetch('error') %>;
+  error_log stderr <%= logging['error'] %>;
 <% end %>
 
   include mime.types;
