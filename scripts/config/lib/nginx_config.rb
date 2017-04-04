@@ -9,7 +9,11 @@ class NginxConfig
     clean_urls: false,
     https_only: false,
     worker_connections: 512,
-    resolver: "8.8.8.8"
+    resolver: "8.8.8.8",
+    logging: {
+      "access" => true,
+      "error" => "error"
+    }
   }
 
   def initialize(json_file)
@@ -50,7 +54,10 @@ class NginxConfig
     end
 
     json["error_page"] ||= nil
-    json["debug"] ||= ENV['STATIC_DEBUG']
+    json["debug"] = ENV['STATIC_DEBUG']
+
+    logging = json["logging"] || {}
+    json["logging"] = DEFAULT[:logging].merge(logging)
 
     nameservers = []
     if File.exist?("/etc/resolv.conf")
