@@ -10,7 +10,7 @@ require_relative "support/path_helper"
 
 RSpec.describe "Simple" do
   before(:all) do
-    @debug = true
+    @debug = false
     BuildpackBuilder.new(@debug, ENV['CIRCLECI'])
     RouterBuilder.new(@debug, ENV['CIRCLECI'])
     ProxyBuilder.new(@debug, ENV["CIRCLECI"])
@@ -814,23 +814,44 @@ STATIC_JSON
     end
   end
 
-  describe "debug" do
-    let(:name) { "debug" }
+  describe "logs" do
+    let(:name) { "info" }
 
-    context "when debug is set" do
+    context "when error log is set to info" do
+      it "should display info logs" do
+        _, io_stream = app.get("/", true)
+        expect(io_stream.string).to include("[info]")
+      end
+    end
+
+    context "override debug when env var is set" do
+      let(:app) { AppRunner.new(name, proxy, env, true, !ENV['CIRCLECI']) }
+      let(:name) { "hello_world" }
+
       it "should display debug info" do
         _, io_stream = app.get("/", true)
         expect(io_stream.string).to include("[info]")
       end
     end
 
-    context "when debug isn't set" do
+    context "should default to normal logging" do
       let(:name) { "hello_world" }
 
-      it "should not display debug info" do
+      it "should not display debug info and display access logs" do
         skip if @debug
         _, io_stream = app.get("/", true)
         expect(io_stream.string).not_to include("[info]")
+        expect(io_stream.string).to include("GET /")
+      end
+    end
+
+    context "turn off all logging" do
+      let(:name) { "logging_access_off" }
+
+      it "should not log access" do
+        _, io_stream = app.get("/", true)
+        expect(io_stream.string).not_to include("[info]")
+        expect(io_stream.string).not_to include("GET /")
       end
     end
   end
