@@ -41,7 +41,7 @@ http {
     listen <%= port %> reuseport;
     charset <%= encoding %>;
     port_in_redirect off;
-    server_name_in_redirect off;
+    absolute_redirect off;
     keepalive_timeout 5;
     root <%= root %>;
   <% if error_page %>
