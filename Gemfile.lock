@@ -4,11 +4,11 @@ GEM
     concurrent-ruby (0.8.0)
       ref (~> 1.0, >= 1.0.5)
     diff-lcs (1.2.5)
-    docker-api (1.22.4)
+    docker-api (1.33.1)
       excon (>= 0.38.0)
       json
-    excon (0.45.4)
-    json (1.8.3)
+    excon (0.54.0)
+    json (2.0.2)
     rake (10.4.0)
     ref (1.0.5)
     rspec (3.2.0)
@@ -35,4 +35,4 @@ DEPENDENCIES
   rspec
 
 BUNDLED WITH
-   1.10.2
+   1.13.6

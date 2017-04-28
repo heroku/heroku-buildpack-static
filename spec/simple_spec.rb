@@ -10,7 +10,7 @@ require_relative "support/path_helper"
 
 RSpec.describe "Simple" do
   before(:all) do
-    @debug = true
+    @debug = false
     BuildpackBuilder.new(@debug, ENV['CIRCLECI'])
     RouterBuilder.new(@debug, ENV['CIRCLECI'])
     ProxyBuilder.new(@debug, ENV["CIRCLECI"])
@@ -68,6 +68,23 @@ RSpec.describe "Simple" do
         expect(response.body.chomp).to eq("bar")
       end
     end
+
+    context "when there is a conflict" do
+      let(:name) { "clean_urls_conflict" }
+
+
+      it "should be able to handle when a directory and .html file share the same name" do
+        app.run do
+          response = app.get("/foo/bar")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foobar")
+        end
+      end
+    end
   end
 
   describe "routes" do
@@ -110,6 +127,16 @@ RSpec.describe "Simple" do
         response = app.get("/old/interpolation")
         expect(response.code).to eq("302")
         expect(response["location"]).to eq("http://#{RouterRunner::HOST_IP}/interpolation.html")
+      end
+    end
+
+    context "https_only" do
+      let(:name) { "redirects_https_only" }
+
+      it "should redirect to https first" do
+        response = app.get("/old/gone")
+        expect(response.code).to eq("301")
+        expect(response["location"]).to eq("https://#{RouterRunner::HOST_IP}/old/gone")
       end
     end
   end
@@ -276,6 +303,35 @@ STATIC_JSON
       end
     end
 
+    context "https_only" do
+      let(:setup_static_json) do
+        Proc.new do |path|
+          File.open(static_json_path, "w") do |file|
+            file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "http://#{@proxy_ip_address}#{path}"
+    }
+  },
+  "https_only": true
+}
+STATIC_JSON
+          end
+        end
+      end
+
+      before do
+        setup_static_json.call("/")
+      end
+
+      it "should not redirect direct to the proxy" do
+        response = app.get("/api/bar")
+        expect(response.code).to eq("301")
+        expect(response["Location"]).to eq("https://#{RouterRunner::HOST_IP}/api/bar")
+      end
+    end
+
     context "env var substitution" do
       let(:proxy) do
         <<CONFIG_RU
@@ -309,6 +365,321 @@ STATIC_JSON
         response = app.get("/api/bar/")
         expect(response.code).to eq("200")
         expect(response.body.chomp).to eq("api")
+      end
+    end
+
+    context "proxy to a pathed URI" do
+      let(:proxy) do
+        <<PROXY
+get "/foo/hello" do
+  "hello"
+end
+
+get "/foo/http_redirect/" do
+  uri = URI("http://\#{request.host}/foo/redirect")
+  redirect URI(uri), 307
+end
+
+get "/foo/https_redirect/" do
+  uri = URI("https://\#{request.host}/foo/redirect")
+  redirect URI(uri), 307
+end
+PROXY
+      end
+
+      let(:proxy_scheme) { "http" }
+      let(:setup_static_json) do
+        Proc.new do |path|
+          File.open(static_json_path, "w") do |file|
+            file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
+    },
+    "/api_no_slash": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
+    },
+    "/api_origin_no_slash/": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path.chop}"
+    },
+    "/api_no_slash_origin_no_slash": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path.chop}"
+    }
+  }
+}
+STATIC_JSON
+          end
+        end
+      end
+
+      before do
+        setup_static_json.call("/foo/")
+      end
+
+      it "proxies properly" do
+        response = app.get("/api/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_origin_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_no_slash_origin_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+      end
+
+      it "should handle redirects regardless of scheme" do
+        app.run do
+          response = app.get("/api/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_origin_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_origin_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash_origin_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash_origin_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+        end
+      end
+    end
+
+    context "proxy to a domain" do
+      let(:proxy) do
+          <<PROXY
+get "/hello" do
+  "hello"
+end
+
+get "/http_redirect/" do
+  uri = URI("http://\#{request.host}/foo/redirect")
+  redirect URI(uri), 307
+end
+
+get "/https_redirect/" do
+  uri = URI("https://\#{request.host}/foo/redirect")
+  redirect URI(uri), 307
+end
+PROXY
+      end
+
+      let(:proxy_scheme) { "http" }
+      let(:setup_static_json) do
+        Proc.new do |path|
+          File.open(static_json_path, "w") do |file|
+            file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
+    },
+    "/api_no_slash": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
+    },
+    "/api_origin_no_slash/": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path.chop}"
+    },
+    "/api_no_slash_origin_no_slash": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path.chop}"
+    }
+  }
+}
+STATIC_JSON
+          end
+        end
+      end
+
+      before do
+        setup_static_json.call("/")
+      end
+
+      it "proxies properly" do
+        response = app.get("/api/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_origin_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_no_slash_origin_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+      end
+
+      it "should handle redirects regardless of scheme" do
+        app.run do
+          response = app.get("/api/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_origin_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_origin_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash_origin_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash_origin_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+        end
+      end
+    end
+
+    context "fallback" do
+      let(:proxy) do
+          <<PROXY
+get "/hello" do
+  "hello"
+end
+
+get "/http_redirect/" do
+  uri = URI("http://\#{request.host}/foo/redirect")
+  redirect URI(uri), 307
+end
+
+get "/https_redirect/" do
+  uri = URI("https://\#{request.host}/foo/redirect")
+  redirect URI(uri), 307
+end
+PROXY
+      end
+
+      let(:proxy_scheme) { "http" }
+      let(:setup_static_json) do
+        Proc.new do |path|
+          File.open(static_json_path, "w") do |file|
+            file.puts <<STATIC_JSON
+{
+  "proxies": {
+    "/api/": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
+    },
+    "/api_no_slash": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
+    },
+    "/api_origin_no_slash/": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path.chop}"
+    },
+    "/api_no_slash_origin_no_slash": {
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path.chop}"
+    }
+  },
+  "routes": {
+    "/**": "index.html"
+  }
+}
+STATIC_JSON
+          end
+        end
+      end
+
+      before do
+        setup_static_json.call("/")
+      end
+
+      it "should proxy properly" do
+        response = app.get("/api/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_origin_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+
+        response = app.get("/api_no_slash_origin_no_slash/hello")
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("hello")
+      end
+
+      it "should handle redirects regardless of scheme" do
+        app.run do
+          response = app.get("/api/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_origin_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_origin_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash_origin_no_slash/http_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+
+          response = app.get("/api_no_slash_origin_no_slash/https_redirect/")
+          expect(response.code).to eq("307")
+          expect(response["Location"]).not_to include(@proxy_ip_address)
+        end
       end
     end
   end
@@ -417,6 +788,7 @@ STATIC_JSON
       include PathHelper
 
       let(:name)              { "proxies" }
+      let(:proxy_scheme)      { "http" }
       let(:static_json_path)  { fixtures_path("proxies/static.json") }
       let(:proxy) do
         <<PROXY
@@ -436,7 +808,7 @@ PROXY
 {
   "proxies": {
     "/api/": {
-      "origin": "http://#{@proxy_ip_address}#{path}"
+      "origin": "#{proxy_scheme}://#{@proxy_ip_address}#{path}"
     }
   },
   "headers": {
@@ -453,7 +825,7 @@ STATIC_JSON
 
       before do
         @proxy_ip_address = app.proxy.ip_address
-        setup_static_json.call("/foo/")
+        setup_static_json.call("/foo")
       end
 
       after do
@@ -476,23 +848,44 @@ STATIC_JSON
     end
   end
 
-  describe "debug" do
-    let(:name) { "debug" }
+  describe "logs" do
+    let(:name) { "info" }
 
-    context "when debug is set" do
+    context "when error log is set to info" do
+      it "should display info logs" do
+        _, io_stream = app.get("/", true)
+        expect(io_stream.string).to include("[info]")
+      end
+    end
+
+    context "override debug when env var is set" do
+      let(:app) { AppRunner.new(name, proxy, env, true, !ENV['CIRCLECI']) }
+      let(:name) { "hello_world" }
+
       it "should display debug info" do
         _, io_stream = app.get("/", true)
         expect(io_stream.string).to include("[info]")
       end
     end
 
-    context "when debug isn't set" do
+    context "should default to normal logging" do
       let(:name) { "hello_world" }
 
-      it "should not display debug info" do
+      it "should not display debug info and display access logs" do
         skip if @debug
         _, io_stream = app.get("/", true)
         expect(io_stream.string).not_to include("[info]")
+        expect(io_stream.string).to include("GET /")
+      end
+    end
+
+    context "turn off all logging" do
+      let(:name) { "logging_access_off" }
+
+      it "should not log access" do
+        _, io_stream = app.get("/", true)
+        expect(io_stream.string).not_to include("[info]")
+        expect(io_stream.string).not_to include("GET /")
       end
     end
   end
@@ -559,9 +952,13 @@ STATIC_JSON
           expect(response.code).to eq("302")
           expect(app.get(response["location"]).body.chomp).to eq("goodbye")
 
-          response = app.get("/foo")
+          response = app.get("/hello")
           expect(response.code).to eq("200")
           expect(response.body.chomp).to eq("hello world")
+
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foo")
         end
       end
     end

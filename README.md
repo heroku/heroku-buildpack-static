@@ -53,6 +53,24 @@ For SEO purposes, you can drop the `.html` extension from URLs for say a blog si
 
 By default this is set to `false`.
 
+
+#### Logging
+You can disable the access log and change the severity level for the error log.
+
+```json
+{
+  "logging": {
+    "access": false,
+    "error": "warn"
+  }
+}
+```
+
+By default `access` is set to `true` and `error` is set to `error`.
+
+The environment variable `STATIC_DEBUG` can be set, to override the `error` log level to `error`.
+
+
 #### Custom Routes
 You can define custom routes that combine to a single file. This allows you to preserve routing for a single page web application. The following operators are supported:
 
@@ -64,6 +82,18 @@ You can define custom routes that combine to a single file. This allows you to p
   "routes": {
     "/*.html": "index.html",
     "/route/**": "bar/baz.html"
+  }
+}
+```
+
+##### Browser history and asset files
+When serving a single page app, it's useful to support wildcard URLs that serves the index.html file, while also continuing to serve JS and CSS files correctly. Route ordering allows you to do both:
+
+```json
+{
+  "routes": {
+    "/assets/*": "/assets/",
+    "/**": "index.html"
   }
 }
 ```
@@ -218,6 +248,7 @@ when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not 
 
 ### Route Ordering
 
+* HTTPS redirect
 * Root Files
 * Clean URLs
 * Proxies

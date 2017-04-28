@@ -28,11 +28,16 @@ module NginxConfigUtil
   def self.match_proxies(proxies, uri)
     return false unless proxies
 
-    proxies.each do |proxy|
-      return proxy if Regexp.compile("^#{proxy}") =~ uri
+    matched = proxies.select do |proxy|
+      Regexp.compile("^#{proxy}") =~ uri
     end
 
-    false
+    # return the longest matched proxy
+    if matched.any?
+      matched.max_by {|proxy| proxy.size }
+    else
+      false
+    end
   end
 
   def self.match_redirects(redirects, uri)

@@ -17,12 +17,17 @@ http {
 
   server_tokens off;
 
-  access_log  logs/access.log;
+<% if logging['access'] %>
+  access_log logs/access.log;
+<% else %>
+  access_log off;
+<% end %>
+
 <% if debug %>
   error_log stderr debug;
   rewrite_log on;
 <% else %>
-  error_log   stderr;
+  error_log stderr <%= logging['error'] %>;
 <% end %>
 
   include mime.types;
@@ -41,6 +46,9 @@ http {
   <% if error_page %>
     error_page 404 500 /<%= error_page %>;
   <% end %>
+  <% if proxies.any? %>
+    resolver <%= resolver %>;
+  <% end %>
 
   <% if basic_auth %>
     auth_basic "Restricted";
@@ -51,7 +59,7 @@ http {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
     <% if clean_urls %>
-      try_files $uri $uri/ $uri.html $fallback;
+      try_files $uri.html $uri $uri/ $fallback;
     <% else %>
       try_files $uri $uri/ $fallback;
     <% end %>
@@ -75,16 +83,10 @@ http {
       mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
     <% if clean_urls %>
-      try_files $uri $uri/ /$uri.html $path $fallback;
+      try_files $uri.html $uri $uri/ $path $fallback;
     <% else %>
       try_files $uri $path $fallback;
     <% end %>
-    }
-  <% end %>
-
-  <% proxies.each do |location, hash| %>
-    location <%= location %> {
-      proxy_pass <%= hash['origin'] %>;
     }
   <% end %>
 
@@ -95,9 +97,15 @@ http {
 
   # fallback proxy named match
   <% proxies.each do |location, hash| %>
+    set $<%= hash['name'] %> <%= hash['host'] %>;
     location @<%= location %> {
-      rewrite ^<%= location %>(.*)$ <%= hash['path'] %>/$1 break;
-      proxy_pass <%= hash['host'] %>;
+      rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>/$1 break;
+      # can reuse variable set above
+      proxy_pass $<%= hash['name'] %>;
+      proxy_ssl_server_name on;
+      <% %w(http https).each do |scheme| %>
+      proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
+      <% end %>
     }
   <% end %>
 
