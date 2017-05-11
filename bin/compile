@@ -25,8 +25,7 @@ fetch_nginx_tarball() {
 mkdir -p $build_dir/bin
 $(fetch_nginx_tarball) | tar xzC $build_dir/bin
 nginx_version=$($build_dir/bin/nginx-$STACK -V 2>&1 | head -1 | awk '{ print $NF }')
-cp -a $bp_dir/scripts/boot $build_dir/bin/boot
-cp -a $bp_dir/scripts/config $build_dir/bin/config
+cp -a $bp_dir/scripts/{boot,config} -t $build_dir/bin/
 echo "-----> Installed ${nginx_version} to /app/bin"
 
 mkdir -p $build_dir/config
