@@ -41,6 +41,7 @@ http {
     listen <%= port %> reuseport;
     charset <%= encoding %>;
     port_in_redirect off;
+    absolute_redirect off;
     keepalive_timeout 5;
     root <%= root %>;
   <% if error_page %>
@@ -94,7 +95,7 @@ http {
   <% proxies.each do |location, hash| %>
     set $<%= hash['name'] %> <%= hash['host'] %>;
     location @<%= location %> {
-      rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>/$1 break;
+      rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>$1 break;
       # can reuse variable set above
       proxy_pass $<%= hash['name'] %>;
       proxy_ssl_server_name on;
