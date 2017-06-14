@@ -32,6 +32,18 @@ RSpec.describe "Simple" do
     expect(response.body.chomp).to eq("Hello World")
   end
 
+  describe "mime/types" do
+    let(:name) { "mime_types_json" }
+
+    context "json" do
+      it "should serve json as application/json content type" do
+        response = app.get("/foo.json")
+        expect(response.code).to eq("200")
+        expect(response["Content-Type"]).to eq("application/json")
+      end
+    end
+  end
+
   describe "no config" do
     let(:name) { "no_config" }
 
