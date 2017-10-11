@@ -99,7 +99,7 @@ http {
     <% end %>
   }
 
-  set $statusboard https://ember-learn.github.io/statusboard/
+  set $statusboard https://ember-learn.github.io/statusboard/;
   location @/statusboard {
     proxy_pass $statusboard;
     proxy_ssl_server_name on;
