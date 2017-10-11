@@ -90,17 +90,23 @@ http {
     return 404;
   }
 
-  # fallback proxy named match
-  <% proxies.each do |location, hash| %>
-    set $<%= hash['name'] %> <%= hash['host'] %>/<%= hash['path'] %>;
-    location @<%= location %> {
-      proxy_pass $<%= hash['name'] %>;
-      proxy_ssl_server_name on;
-      <% %w(http https).each do |scheme| %>
-      proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
-      <% end %>
-    }
-  <% end %>
+  set $api https://ember-api-docs.herokuapp.com;
+  location @/api/ {
+    proxy_pass $api;
+    proxy_ssl_server_name on;
+    <% %w(http https).each do |scheme| %>
+    proxy_redirect <%= hash["redirect_#{scheme}"] %> /api/;
+    <% end %>
+  }
+
+  set $statusboard https://ember-learn.github.io/statusboard/
+  location @/statusboard {
+    proxy_pass $statusboard;
+    proxy_ssl_server_name on;
+    <% %w(http https).each do |scheme| %>
+    proxy_redirect <%= hash["redirect_#{scheme}"] %> /statusboard;
+    <% end %>
+  }
 
   # fallback redirects named match
   <% redirects.each do |path, hash| %>
