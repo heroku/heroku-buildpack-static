@@ -92,10 +92,8 @@ http {
 
   # fallback proxy named match
   <% proxies.each do |location, hash| %>
-    set $<%= hash['name'] %> <%= hash['host'] %>;
+    set $<%= hash['name'] %> <%= hash['host'] %>/<%= hash['path'] %>;
     location @<%= location %> {
-      rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>/$1 break;
-      # can reuse variable set above
       proxy_pass $<%= hash['name'] %>;
       proxy_ssl_server_name on;
       <% %w(http https).each do |scheme| %>
