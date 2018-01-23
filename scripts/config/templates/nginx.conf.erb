@@ -66,6 +66,10 @@ http {
     }
   <% end %>
 
+  <% if canonical_host %>
+    server_name <%= canonical_host %>;
+  <% end %>
+
   <% if https_only %>
     if ($http_x_forwarded_proto != "https") {
       return 301 https://$host$request_uri;
@@ -112,4 +116,17 @@ http {
   <% end %>
 
   }
+
+  <% if canonical_host %>
+  server {
+    listen <%= port %> reuseport;
+    server_name _;
+    
+    <% if https_only %>
+      return 301 https://<%= canonical_host %>$request_uri;
+    <% else %>
+      return 301 $scheme://<%= canonical_host %>$request_uri;
+    <% end %>
+  }
+  <% end %>
 }
