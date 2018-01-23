@@ -45,7 +45,7 @@ class NginxConfig
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
-    json["canonical_host"] ||= DEFAULT[:canonical_host],
+    json["canonical_host"] ||= DEFAULT[:canonical_host]
     
 
     json["routes"] ||= {}
