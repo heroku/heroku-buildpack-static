@@ -242,6 +242,10 @@ when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not 
 * Custom Routes
 * 404
 
+### Procfile / multiple buildpacks
+
+In case you have multiple buildpacks for the application you can ensure static rendering in `Procfile` with `web: bin/boot`.
+
 ## Testing
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 
