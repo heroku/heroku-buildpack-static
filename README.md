@@ -32,6 +32,16 @@ This allows you to specify a different asset root for the directory of your appl
 
 By default this is set to `public_html/`
 
+
+#### Directory Listing
+This allows you to list the contents of the directory, and not only return an `403 Forbidden` error
+
+```json
+{
+  directory_listing: true
+}
+```
+
 #### Default Character Set
 This allows you to specify a character set for your text assets (HTML, Javascript, CSS, and so on). For most apps, this should be the default value of "UTF-8", but you can override it by setting `encoding`:
 
