@@ -64,6 +64,17 @@ RSpec.describe "Simple" do
     end
   end
 
+  describe "directory" do
+    let(:name) { "directory_listing_enabled" }
+
+    it "should list the files if no index present" do
+      response = app.get("/")
+      expect(response.code).to eq("200")
+      expect(response.body).to include("foo.html")
+      expect(response.body).to include("bar.html")
+    end
+  end
+
   describe "clean_urls" do
     let(:name) { "clean_urls" }
 
