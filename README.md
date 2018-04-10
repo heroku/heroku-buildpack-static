@@ -150,6 +150,17 @@ You can redirect all HTTP requests to HTTPS.
 }
 ```
 
+#### Client Max Body Size
+By default, nginx has a default max body size of 1 megabyte. Any request above this size (e.g. uploading a 2m file) will result in a `413 Request Entity too Large` error. You can configure this value by setting `max_body_size:`
+
+```json
+{
+  "max_body_size": "10m"
+}
+```
+The size setting follows nginx's convention of bytes, kilobytes and megabytes (1024, 8k, 1m).
+
+
 #### Proxy Backends
 For single page web applications like Ember, it's common to back the application with another app that's hosted on Heroku. The down side of separating out these two applications is that now you have to deal with CORS. To get around this (but at the cost of some latency) you can have the static buildpack proxy apps to your backend at a mountpoint. For instance, we can have all the api requests live at `/api/` which actually are just requests to our API server.
 
