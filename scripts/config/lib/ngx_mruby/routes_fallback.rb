@@ -3,14 +3,15 @@ eval(File.read('/app/bin/config/lib/nginx_config_util.rb'))
 
 USER_CONFIG = "/app/static.json"
 
-config    = {}
-config    = JSON.parse(File.read(USER_CONFIG)) if File.exist?(USER_CONFIG)
-req       = Nginx::Request.new
-uri       = req.var.uri
-proxies   = config["proxies"] || {}
-redirects = config["redirects"] || {}
+config       = {}
+config       = JSON.parse(File.read(USER_CONFIG)) if File.exist?(USER_CONFIG)
+req          = Nginx::Request.new
+uri          = req.var.uri
+proxies      = config["proxies"] || {}
+redirects    = config["redirects"] || {}
+should_proxy = NginxConfigUtil.should_proxy(config["accept"])
 
-if proxy = NginxConfigUtil.match_proxies(proxies.keys, uri)
+if (proxy = NginxConfigUtil.match_proxies(proxies.keys, uri)) && should_proxy
   "@#{proxy}"
 elsif redirect = NginxConfigUtil.match_redirects(redirects.keys, uri)
   "@#{redirect}"
