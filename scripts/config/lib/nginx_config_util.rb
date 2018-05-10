@@ -62,8 +62,8 @@ module NginxConfigUtil
     end
   end
 
-  def self.should_proxy(json)
-    return false unless json["accept"]
+  def self.should_proxy(accept)
+    return false unless accept
 
     hin = Nginx::Headers_in.new
     hac = hin['Accept'].find { |h| h.include? accept }
