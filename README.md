@@ -112,6 +112,26 @@ With custom redirects, you can move pages to new routes but still preserve the o
 }
 ```
 
+If you would like to use [nginx regex locations](https://nginx.org/en/docs/http/ngx_http_core_module.html#location) for redirects you can add the `regex` boolean:
+
+```json
+{
+  "redirects": {
+    "/old/gone/": {
+      "url": "/",
+      "status": 302
+    },
+    "/some/subfolder(.*)": {
+      "url": "https://newdomain.example.com$1",
+      "status": 301,
+      "regex": true
+    }
+  }
+}
+```
+
+as you can see in the example this is quite useful when migrating a subfolder to a new subdomain but still allowing you to keep part of the url structure.
+
 ##### Interpolating Env Var Values
 It's common to want to be able to test the frontend against various backends. The `url` key supports environment variable substitution using `${ENV_VAR_NAME}`. For instance, if there was a staging and production Heroku app for your API, you could setup the config above like the following:
 
