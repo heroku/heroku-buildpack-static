@@ -105,10 +105,16 @@ http {
   <% end %>
 
   # fallback redirects named match
-  <% redirects.each do |path, hash| %>
-    location @<%= path %> {
-      return <%= hash['status'] || 301 %> <%= hash['url'] %>;
-    }
+  <% redirects.each do |path, hash, regex| %>
+    <% if hash['regex'] %>
+      location ~ <%= path %> {
+        return <%= hash['status'] || 301 %> <%= hash['url'] %>;
+      }
+    <% else %>
+      location @<%= path %> {
+        return <%= hash['status'] || 301 %> <%= hash['url'] %>;
+      }
+    <% end %>
   <% end %>
 
   }
