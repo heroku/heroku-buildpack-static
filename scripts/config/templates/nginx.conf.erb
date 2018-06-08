@@ -105,7 +105,7 @@ http {
   <% end %>
 
   # fallback redirects named match
-  <% redirects.each do |path, hash, regex| %>
+  <% redirects.each do |path, hash| %>
     <% if hash['regex'] %>
       location ~ <%= path %> {
         return <%= hash['status'] || 301 %> <%= hash['url'] %>;
