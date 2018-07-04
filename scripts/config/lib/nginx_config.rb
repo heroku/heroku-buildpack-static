@@ -39,6 +39,13 @@ class NginxConfig
         json["proxies"][loc]["redirect_#{scheme}"] = uri.dup.tap {|u| u.scheme = scheme }.to_s
         json["proxies"][loc]["redirect_#{scheme}"] += "/" if !uri.to_s.end_with?("/")
       end
+
+      json["proxies"][loc]["headers"] ||= {}
+      json["proxies"][loc]["headers"].each do |key, value|
+        evaled_value = NginxConfigUtil.interpolate(value, ENV)
+        json["proxies"][loc]["headers"][key] = evaled_value
+      end
+
       index += 1
     end
 
