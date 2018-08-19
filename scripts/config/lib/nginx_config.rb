@@ -44,6 +44,7 @@ class NginxConfig
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
+    json["https_only"] ||= !ENV["FORCE_HTTPS"].nil? && ENV["FORCE_HTTPS"] === "true"
 
     json["routes"] ||= {}
     json["routes"] = NginxConfigUtil.parse_routes(json["routes"])
