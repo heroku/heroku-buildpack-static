@@ -14,7 +14,5 @@ TEMPLATE     = if File.exists?('config/nginx.conf.erb') then
 USER_CONFIG  = 'static.json'
 NGINX_CONFIG = 'config/nginx.conf'
 
-if
-
 erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
 File.write(NGINX_CONFIG, erb)
