@@ -66,7 +66,7 @@ class NginxConfig
         nameservers << md[1]
       end
     end
-    nameservers << [DEFAULT[:resolver]] unless nameservers.empty?
+    nameservers << [DEFAULT[:resolver]] if nameservers.empty?
     json["resolver"] = nameservers.join(" ")
 
     json.each do |key, value|
