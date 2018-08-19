@@ -4,7 +4,7 @@ require 'fileutils'
 require 'erb'
 require_relative 'lib/nginx_config'
 
-TEMPLATE     = if File.exists?('config/nginx.conf.erb')) then
+TEMPLATE     = if File.exists?('config/nginx.conf.erb') then
         puts 'Using custom config file'
         'config/nginx.conf.erb'
     else
