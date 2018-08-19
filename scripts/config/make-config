@@ -5,12 +5,16 @@ require 'erb'
 require_relative 'lib/nginx_config'
 
 TEMPLATE     = if File.exists?('config/nginx.conf.erb')) then
+        puts 'Using custom config file'
         'config/nginx.conf.erb'
     else
+        puts 'using regular config file'
         File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
     end
 USER_CONFIG  = 'static.json'
 NGINX_CONFIG = 'config/nginx.conf'
+
+if
 
 erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
 File.write(NGINX_CONFIG, erb)
