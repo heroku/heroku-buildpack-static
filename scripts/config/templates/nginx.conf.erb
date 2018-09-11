@@ -49,6 +49,9 @@ http {
   <% if proxies.any? %>
     resolver <%= resolver %>;
   <% end %>
+  <% if canonical_host %>
+    server_name <%= canonical_host %>;
+  <% end %>
 
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
@@ -112,4 +115,16 @@ http {
   <% end %>
 
   }
+
+<% if canonical_host %>
+  server {
+    listen <%= port %> default_server;
+    server_name _;
+    <% if https_only %>
+      return 301 https://<%= canonical_host %>$request_uri;
+    <% else %>
+      return 301 $scheme://<%= canonical_host %>$request_uri;
+    <% end %>
+  }
+<% end %>
 }
