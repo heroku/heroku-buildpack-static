@@ -61,4 +61,12 @@ module NginxConfigUtil
       acc
     end
   end
+
+  def self.should_proxy(accept)
+    return false unless accept
+
+    hin = Nginx::Headers_in.new
+    hac = hin['Accept'].find { |h| h.include? accept }
+    !hac.nil?
+  end
 end
