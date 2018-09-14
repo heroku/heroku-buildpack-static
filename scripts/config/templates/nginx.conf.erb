@@ -101,6 +101,9 @@ http {
       <% %w(http https).each do |scheme| %>
       proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
       <% end %>
+      <% hash['headers'].each do |key, value| %>
+      proxy_set_header <%= key %> "<%= value %>";
+      <% end %>
     }
   <% end %>
 
