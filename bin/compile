@@ -3,9 +3,9 @@
 
 set -e
 
-build_dir=$1
-cache_dir=$2
-env_dir=$3
+build_dir=${1:-}
+cache_dir=${2:-}
+env_dir=${3:-}
 bp_dir=$(dirname $(dirname $0))
 
 fetch_nginx_tarball() {
