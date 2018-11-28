@@ -3,3 +3,7 @@ services:
   - docker
 rvm:
   - 2.2.3
+script:
+  - bundle install
+  - bundle exec rspec
+cache: bundler
