@@ -89,6 +89,9 @@ echo "Starting nginx..." >&2
     wait
 ) & pids+=($!)
 
+# on Heroku, there is a "state changed from starting to up", but for local execution, we want a "ready" message
+[[ -z ${DYNO:-} || $verbose ]] && echo "Application ready for connections on port $PORT." >&2
+
 # wait for something to come from the FIFO attached to FD 3, which means that
 # the given process was killed or has failed this will be interrupted by a
 # SIGTERM or SIGINT in the traps further up if the pipe unblocks and this
