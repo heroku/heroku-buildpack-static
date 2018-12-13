@@ -81,6 +81,11 @@ echo "Starting log redirection..." >&2
     wait
 ) & pids+=($!)
 
+# print config if env var PRINT_NGINX_CONF is set to true 
+if [ "$PRINT_NGINX_CONF" = "true" ]; then
+    cat config/nginx.conf
+fi
+
 echo "Starting nginx..." >&2
 (
     trap 'echo "nginx" >&3;' EXIT
