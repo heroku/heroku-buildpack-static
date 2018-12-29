@@ -7,6 +7,7 @@ class NginxConfig
     root: "public_html/",
     encoding: "UTF-8",
     clean_urls: false,
+    remove_trailing_slashes_from_directories: false,
     https_only: false,
     worker_connections: 512,
     resolver: "8.8.8.8",
@@ -43,6 +44,7 @@ class NginxConfig
     end
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
+    json["remove_trailing_slashes_from_directories"] ||= DEFAULT[:remove_trailing_slashes_from_directories]
     json["https_only"] ||= DEFAULT[:https_only]
 
     json["routes"] ||= {}

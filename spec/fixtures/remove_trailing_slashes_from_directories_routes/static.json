@@ -1,0 +1,8 @@
+{
+  "remove_trailing_slashes_from_directories": true,
+  "routes": {
+    "/bar": "foo.html",
+    "/bar/": "foo.html",
+    "/foobar": "foo.html"
+  }
+}

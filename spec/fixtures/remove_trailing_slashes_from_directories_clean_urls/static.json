@@ -1,0 +1,4 @@
+{
+  "clean_urls": true,
+  "remove_trailing_slashes_from_directories": true
+}

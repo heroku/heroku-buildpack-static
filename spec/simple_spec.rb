@@ -99,6 +99,95 @@ RSpec.describe "Simple" do
     end
   end
 
+  describe "remove_trailing_slashes_from_directories" do
+    let(:name) { "remove_trailing_slashes_from_directories" }
+
+    it "should serve 200 without slash" do
+      app.run do
+        response = app.get("/bar")
+        expect(response.code).to eq("200")
+      end
+    end
+
+    it "should serve 200 if index.html specified" do
+      app.run do
+        response = app.get("/bar/index.html")
+        expect(response.code).to eq("200")
+      end
+    end
+
+    it "should remove slash by redirecting" do
+      app.run do
+        response = app.get("/bar/")
+        expect(response.code).to eq("301")
+        response = app.get(response["Location"])
+        expect(response.code).to eq("200")
+        expect(response.body.chomp).to eq("bar")
+      end
+    end
+
+    context "when combined with clean_urls" do
+      let(:name) { "remove_trailing_slashes_from_directories_clean_urls" }
+
+      it "should serve 200 without slash" do
+        app.run do
+          response = app.get("/bar")
+          expect(response.code).to eq("200")
+        end
+      end
+
+      it "should drop the .html extension from URLs" do
+        app.run do
+          response = app.get("/foo")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foobar")
+        end
+      end
+    end
+
+    context "when combined with routes" do
+      let(:name) { "remove_trailing_slashes_from_directories_routes" }
+
+      it "should serve directory rather than route" do
+        app.run do
+          response = app.get("/bar")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+        end
+      end
+
+      it "should remove slash by redirecting rather than serve route" do
+        app.run do
+          response = app.get("/bar/")
+          expect(response.code).to eq("301")
+          response = app.get(response["Location"])
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar")
+        end
+      end
+
+      it 'should support custom routes' do
+        app.run do
+          response = app.get("/foobar")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("foobar")
+        end
+      end
+    end
+
+    context "when there is a conflict" do
+      let(:name) { "remove_trailing_slashes_from_directories_conflict" }
+
+      it "should serve directory index.html when a directory and .html file share the same name" do
+        app.run do
+          response = app.get("/bar")
+          expect(response.code).to eq("200")
+          expect(response.body.chomp).to eq("bar directory")
+        end
+      end
+    end
+  end
+
   describe "routes" do
     let(:name) { "routes" }
 
