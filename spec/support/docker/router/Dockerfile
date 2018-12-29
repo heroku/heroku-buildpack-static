@@ -1,4 +1,4 @@
-FROM matsumotory/ngx-mruby:latest
+FROM matsumotory/ngx_mruby:master
 
 RUN echo $'\nUS\nTexas\nAustin\nHeroku\n\nexample.com\n\n' \
   | openssl req -x509 -nodes -days 365 -newkey rsa:1024 \
