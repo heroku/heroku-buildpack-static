@@ -21,7 +21,7 @@ class NginxConfig
     json = JSON.parse(File.read(json_file)) if File.exist?(json_file)
     json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || DEFAULT[:worker_connections]
     json["port"] ||= ENV["PORT"] || 5000
-    json["root"] ||= DEFAULT[:root]
+    json["root"] ||= ENV["ROOT"] || DEFAULT[:root]
     json["encoding"] ||= DEFAULT[:encoding]
 
     index = 0
