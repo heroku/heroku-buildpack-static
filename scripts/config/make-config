@@ -9,4 +9,5 @@ USER_CONFIG  = 'static.json'
 NGINX_CONFIG = 'config/nginx.conf'
 
 erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
+# File.write('scripts/config/templates/test.config', erb)
 File.write(NGINX_CONFIG, erb)
