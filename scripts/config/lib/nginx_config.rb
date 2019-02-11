@@ -17,16 +17,13 @@ class NginxConfig
   }
 
   def initialize(json_file)
-    p '////////////////////////////'
-    p ENV
-    p '////////////////////////////'
     json = {}
     json = JSON.parse(File.read(json_file)) if File.exist?(json_file)
     json["worker_connections"] ||= ENV["WORKER_CONNECTIONS"] || DEFAULT[:worker_connections]
     json["port"] ||= ENV["PORT"] || 5000
     json["root"] ||= DEFAULT[:root]
     json["encoding"] ||= DEFAULT[:encoding]
-    json["rendertron_api_base"] ||= ENV["RENDERTRON_API_BASE"] || DEFAULT[:rendertron_api_base]
+    json["rendertron_api_base"] ||= ENV["RENDERTRON_API_BASE"]
 
     index = 0
     json["proxies"] ||= {}

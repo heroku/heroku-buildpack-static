@@ -60,6 +60,8 @@ http {
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
       proxy_read_timeout 11s;
+      add_header X-Rendertron-redirect "$rendertron_redirect";
+      add_header X-Should-Prerender "$http_x_should_prerender";
       proxy_pass $rendertron_redirect;
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $fallback;
