@@ -59,9 +59,10 @@ http {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-      proxy_read_timeout 11s;
       add_header X-Route "1"
+      proxy_read_timeout 11s;
       proxy_pass $rendertron_redirect;
+
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $fallback;
     <% else %>
@@ -86,7 +87,11 @@ http {
       set $route <%= route %>;
       mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+
       add_header X-Route "2"
+      proxy_read_timeout 11s;
+      proxy_pass $rendertron_redirect;
+
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $path $fallback;
     <% else %>
@@ -105,7 +110,6 @@ http {
     set $<%= hash['name'] %> <%= hash['host'] %>;
     location @<%= location %> {
       rewrite ^<%= location %>/?(.*)$ <%= hash['path'] %>/$1 break;
-      add_header X-Route "3"
       # can reuse variable set above
       proxy_pass $<%= hash['name'] %>;
       proxy_ssl_server_name on;
