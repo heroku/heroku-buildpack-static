@@ -90,6 +90,14 @@ http {
     return 404;
   }
 
+  # redirect all prerender requests to our rendertron app
+  if ($http_x_should_prerender == "true") {
+    location / {
+      proxy_read_timeout 11s
+      proxy_pass <%= ENV['RENDERTRON_API_BASE'] %>$protocol://$host$request_uri;
+    }
+  }
+
   # fallback proxy named match
   <% proxies.each do |location, hash| %>
     set $<%= hash['name'] %> <%= hash['host'] %>;
