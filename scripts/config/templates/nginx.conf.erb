@@ -39,11 +39,25 @@ http {
 
   map $http_x_should_prerender $rendertron_redirect {
     true    <%= rendertron_api_base %>$http_host$request_uri;
-    default $http_host$request_uri;
+    default $host:5001$request_uri;
   }
 
+	server {
+  	listen <%= port %> reuseport;
+
+		location / {
+      add_header X-Rendertron-Redirect $rendertron_redirect;
+      add_header X-Should-Prerender $http_x_should_prerender;
+      proxy_read_timeout 11s;
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_pass $rendertron_redirect;
+    }
+	}
+
   server {
-    listen <%= port %> reuseport;
+    listen 5001 reuseport;
     charset <%= encoding %>;
     port_in_redirect off;
     keepalive_timeout 5;
@@ -87,8 +101,8 @@ http {
 
       add_header X-Rendertron-Redirect $rendertron_redirect;
       add_header X-Should-Prerender $http_x_should_prerender;
-      <%# proxy_read_timeout 11s;
-      proxy_pass $rendertron_redirect; %>
+      proxy_read_timeout 11s;
+      proxy_pass $rendertron_redirect;
 
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $path $fallback;
