@@ -39,7 +39,7 @@ http {
 
   map $http_x_should_prerender $rendertron_redirect {
     true    <%= rendertron_api_base %>$http_host$request_uri;
-    default "";
+    default $http_host$request_uri;
   }
 
   server {
@@ -58,10 +58,6 @@ http {
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
-
-      add_header X-Route 1;
-      proxy_read_timeout 11s;
-      proxy_pass $rendertron_redirect;
 
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $fallback;
@@ -88,7 +84,6 @@ http {
       mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-      add_header X-Route 2;
       proxy_read_timeout 11s;
       proxy_pass $rendertron_redirect;
 
