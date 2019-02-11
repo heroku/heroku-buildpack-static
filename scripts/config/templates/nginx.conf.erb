@@ -37,6 +37,11 @@ http {
   #Must read the body in 5 seconds.
   client_body_timeout 5;
 
+  map $http_x_should_prerender $rendertron_redirect {
+    true    <%= rendertron_api_base %>$http_host$request_uri;
+    default "";
+  }
+
   server {
     listen <%= port %> reuseport;
     charset <%= encoding %>;
@@ -53,6 +58,9 @@ http {
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+
+      proxy_read_timeout 11s;
+      proxy_pass $rendertron_redirect;
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $fallback;
     <% else %>
@@ -88,14 +96,6 @@ http {
   # need this b/c setting $fallback to =404 will try #{root}=404 instead of returning a 404
   location @404 {
     return 404;
-  }
-
-  # redirect all prerender requests to our rendertron app
-  if ($http_x_should_prerender = "true") {
-    location / {
-      proxy_read_timeout 11s
-      proxy_pass <%= ENV['RENDERTRON_API_BASE'] %>$protocol://$host$request_uri;
-    }
   }
 
   # fallback proxy named match

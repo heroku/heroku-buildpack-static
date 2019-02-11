@@ -1,2 +1,4 @@
 vendor/
 .bundle/
+test.conf
+static.json
