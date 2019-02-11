@@ -91,7 +91,7 @@ http {
   }
 
   # redirect all prerender requests to our rendertron app
-  if ($http_x_should_prerender == "true") {
+  if ($http_x_should_prerender = "true") {
     location / {
       proxy_read_timeout 11s
       proxy_pass <%= ENV['RENDERTRON_API_BASE'] %>$protocol://$host$request_uri;
