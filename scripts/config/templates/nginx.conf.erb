@@ -39,7 +39,7 @@ http {
 
   map $http_x_should_prerender $rendertron_proxy {
     true    <%= rendertron_api_base %>$http_host$request_uri;
-		default https://static_server;
+		default http://static_server;
   }
 
 	upstream static_server {
