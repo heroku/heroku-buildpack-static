@@ -5,9 +5,14 @@ require 'erb'
 require_relative 'lib/nginx_config'
 
 TEMPLATE     = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
-USER_CONFIG  = 'static.json'
-NGINX_CONFIG = 'config/nginx.conf'
+USER_CONFIG  = 'static.json'.freeze
+NGINX_CONFIG = 'config/nginx.conf'.freeze
 
 erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
-# File.write('scripts/config/templates/test.conf', erb)
-File.write(NGINX_CONFIG, erb)
+pwd = FileUtils.pwd
+
+if pwd == '/home/sean/neighbor/heroku-buildpack-static'
+  File.write('scripts/config/templates/test.conf', erb)
+else
+  File.write(NGINX_CONFIG, erb)
+end
