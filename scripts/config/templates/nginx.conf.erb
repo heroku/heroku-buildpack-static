@@ -39,8 +39,12 @@ http {
 
   map $http_x_should_prerender $rendertron_proxy {
     true    <%= rendertron_api_base %>$http_host$request_uri;
-    default https://$host:5001$request_uri;
+		default https://static_server;
   }
+
+	upstream static_server {
+		server localhost:5001;
+	}
 
 	server {
   	listen <%= port %> reuseport;
@@ -55,7 +59,7 @@ http {
 	}
 
   server {
-    listen 5001 reuseport;
+  	listen localhost:5001;
     charset <%= encoding %>;
     port_in_redirect off;
     keepalive_timeout 5;
