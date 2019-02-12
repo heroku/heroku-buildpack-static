@@ -85,7 +85,7 @@ http {
       add_header X-Rendertron-Redirect-Base $redirect_base_api;
       add_header X-Should-Prerender $http_x_should_prerender;
 			if ($http_x_should_prerender) {
-				proxy_pass $redirect_base_api$scheme$http_host$request_uri;
+				proxy_pass $redirect_base_api$http_host$request_uri;
 				break;
 			}
 
