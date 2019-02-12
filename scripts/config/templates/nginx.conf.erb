@@ -51,6 +51,8 @@ http {
   <% end %>
 
     set $redirect_base_api <%= rendertron_api_base %>;
+    set $url_encoded_protocol_merge %3A%2F%2F;
+		set $url_encoded_scheme $scheme$url_encoded_protocol_merge;
 
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
@@ -85,7 +87,7 @@ http {
       add_header X-Rendertron-Redirect-Base $redirect_base_api;
       add_header X-Should-Prerender $http_x_should_prerender;
 			if ($http_x_should_prerender) {
-				proxy_pass $redirect_base_api$http_host$request_uri;
+				proxy_pass $redirect_base_api$url_encoded_scheme$http_host$request_uri;
 				break;
 			}
 
