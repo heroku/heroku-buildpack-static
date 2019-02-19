@@ -9,10 +9,5 @@ USER_CONFIG  = 'static.json'.freeze
 NGINX_CONFIG = 'config/nginx.conf'.freeze
 
 erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
-pwd = FileUtils.pwd
 
-if pwd == '/home/sean/neighbor/heroku-buildpack-static'
-  File.write('scripts/config/templates/test.conf', erb)
-else
-  File.write(NGINX_CONFIG, erb)
-end
+File.write(NGINX_CONFIG, erb)
