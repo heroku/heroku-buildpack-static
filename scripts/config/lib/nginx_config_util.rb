@@ -19,7 +19,7 @@ module NginxConfigUtil
 
   def self.parse_routes(json)
     routes = json.map do |route, target|
-      [to_regex(route), target]
+      [to_regex(route), interpolate(target, ENV)]
     end
 
     Hash[routes]
