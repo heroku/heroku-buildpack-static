@@ -64,6 +64,7 @@ http {
     location ~* ^.*js.map$ {
       auth_basic "Stealth Mode";
       auth_basic_user_file /app/config/.htpasswd;
+      default_type text/plain;
     }
 
   <% if clean_urls %>
