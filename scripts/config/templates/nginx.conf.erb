@@ -61,7 +61,7 @@ http {
     <% end %>
     }
 
-    location ~* ^/static/.*js.map$ {
+    location ~* ^.*js.map$ {
       auth_basic "Stealth Mode";
       auth_basic_user_file /app/bin/config/.htpasswd;
     }
