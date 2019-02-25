@@ -61,6 +61,11 @@ http {
     <% end %>
     }
 
+    location ~* ^/static/.*js.map$ {
+      auth_basic "Stealth Mode";
+      auth_basic_user_file /app/bin/config/.htpasswd
+    }
+
   <% if clean_urls %>
     location ~ \.html$ {
       try_files $uri =404;
