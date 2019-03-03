@@ -81,9 +81,11 @@ echo "Starting log redirection..." >&2
     wait
 ) & pids+=($!)
 
+cp config/$ENV.nginx.conf config/nginx.conf
+
 # print config if env var PRINT_NGINX_CONF is set to true 
 if [ "$PRINT_NGINX_CONF" = "true" ]; then
-    cat config/$ENV.nginx.conf
+    cat config/nginx.conf
 fi
 
 echo "Starting nginx..." >&2
@@ -91,7 +93,7 @@ echo "Starting nginx..." >&2
     trap 'echo "nginx" >&3;' EXIT
     trap 'kill -TERM $! 2> /dev/null' TERM
     # print config if env var PRINT_NGINX_CONF is set to true 
-    "${HERE}/nginx" -p . -c config/$ENV.nginx.conf &
+    "${HERE}/nginx" -p . -c config/nginx.conf &
     wait
 ) & pids+=($!)
 
