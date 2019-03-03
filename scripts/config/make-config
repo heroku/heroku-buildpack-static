@@ -5,8 +5,20 @@ require 'erb'
 require_relative 'lib/nginx_config'
 
 TEMPLATE     = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
-USER_CONFIG  = 'static.json'
-NGINX_CONFIG = 'config/nginx.conf'
+USER_CONFIG_DEV  = 'dev.static.json'
+NGINX_CONFIG_DEV = 'config/dev.nginx.conf'
 
-erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
-File.write(NGINX_CONFIG, erb)
+erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG_DEV).context)
+File.write(NGINX_CONFIG_DEV, erb)
+
+USER_CONFIG_TEST  = 'test.static.json'
+NGINX_CONFIG_TEST = 'config/test.nginx.conf'
+
+erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG_TEST).context)
+File.write(NGINX_CONFIG_TEST, erb)
+
+USER_CONFIG_PROD  = 'prod.static.json'
+NGINX_CONFIG_PROD = 'config/prod.nginx.conf'
+
+erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG_PROD).context)
+File.write(NGINX_CONFIG_PROD, erb)
