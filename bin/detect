@@ -3,7 +3,7 @@
 
 build_dir=$1
 files=$(ls $build_dir/*static.json 2> /dev/null | wc -l)
-if [ "$files" == "0" ]
+if [ "$files" == "0" ]; then
     exit 1
 fi
 
