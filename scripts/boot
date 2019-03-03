@@ -80,7 +80,8 @@ echo "Starting log redirection..." >&2
     cat "logs/access.log" 1>&2 &
     wait
 ) & pids+=($!)
-
+ls -l config
+pwd
 cp config/$ENV.nginx.conf config/nginx.conf
 
 # print config if env var PRINT_NGINX_CONF is set to true 
