@@ -2,8 +2,8 @@
 # bin/detect <build-dir>
 
 build_dir=$1
-
-if [ ! -f "$build_dir/static.json" ]; then
+files=$(ls $build_dir/*static.json 2> /dev/null | wc -l)
+if [ "$files" == "0" ]
     exit 1
 fi
 

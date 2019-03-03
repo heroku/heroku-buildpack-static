@@ -82,16 +82,8 @@ echo "Starting log redirection..." >&2
 ) & pids+=($!)
 
 # print config if env var PRINT_NGINX_CONF is set to true 
-if [ "$PRINT_NGINX_CONF" = "true" && "$ENV" = "dev"]; then
-    cat config/dev.nginx.conf
-fi
-# print config if env var PRINT_NGINX_CONF is set to true 
-if [ "$PRINT_NGINX_CONF" = "true" && "$ENV" = "test"]; then
-    cat config/test.nginx.conf
-fi
-# print config if env var PRINT_NGINX_CONF is set to true 
-if [ "$PRINT_NGINX_CONF" = "true" && "$ENV" = "prod"]; then
-    cat config/prod.nginx.conf
+if [ "$PRINT_NGINX_CONF" = "true" ]; then
+    cat config/$ENV.nginx.conf
 fi
 
 echo "Starting nginx..." >&2
@@ -99,15 +91,7 @@ echo "Starting nginx..." >&2
     trap 'echo "nginx" >&3;' EXIT
     trap 'kill -TERM $! 2> /dev/null' TERM
     # print config if env var PRINT_NGINX_CONF is set to true 
-    if [ "$ENV" = "dev" ]; then
-      "${HERE}/nginx" -p . -c config/dev.nginx.conf &
-    fi
-    if [ "$ENV" = "test" ]; then
-      "${HERE}/nginx" -p . -c config/test.nginx.conf &
-    fi
-    if [ "$ENV" = "prod" ]; then
-      "${HERE}/nginx" -p . -c config/prod.nginx.conf &
-    fi
+    "${HERE}/nginx" -p . -c config/$ENV.nginx.conf &
     wait
 ) & pids+=($!)
 
