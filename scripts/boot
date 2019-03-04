@@ -14,7 +14,7 @@ case $(ulimit -u) in
   export WORKER_CONNECTIONS=2048
   ;;
 esac
-cp config/$ENV.static.json config/static.json
+cp $ENV.static.json static.json
 
 "${HERE}/config/make-config"
 
