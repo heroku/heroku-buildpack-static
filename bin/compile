@@ -31,6 +31,10 @@ echo "-----> Installed ${nginx_version} to /app/bin"
 mkdir -p $build_dir/config
 cp $bp_dir/scripts/config/templates/mime.types $build_dir/config
 
+echo "~~~~~> Create .htpasswd file for source maps"
+touch $build_dir/config/.htpasswd
+cat $env_dir/SOURCE_MAP_HTPASSWD > $build_dir/config/.htpasswd
+
 mkdir -p $build_dir/logs
 
 exit 0
