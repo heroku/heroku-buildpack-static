@@ -77,6 +77,14 @@ http {
       return 301 https://$host$request_uri;
     }
   <% end %>
+  
+  location ~ ^/static/ {
+    try_files $uri @s3;
+  }
+
+  location @s3 {
+    proxy_pass https://s3.amazonaws.com/neighbor-build-production/frontend$uri;
+  }
 
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
