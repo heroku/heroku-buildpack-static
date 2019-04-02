@@ -51,6 +51,7 @@ http {
   <% end %>
 
     set $rendertron_url <%= rendertron_api_base %>;
+    set $environment <%= environment %>;
     set $url_encoded_colon_slashes %3A%2F%2F;
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
@@ -77,6 +78,14 @@ http {
       return 301 https://$host$request_uri;
     }
   <% end %>
+  
+  location ~ ^/static/ {
+    try_files $uri @s3;
+  }
+
+  location @s3 {
+    proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
+  }
 
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
