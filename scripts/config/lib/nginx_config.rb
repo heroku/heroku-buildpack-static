@@ -25,6 +25,7 @@ class NginxConfig
     json["encoding"] ||= DEFAULT[:encoding]
     json["rendertron_api_base"] ||= ENV["RENDERTRON_API_BASE"]
     json["environment"] ||= ENV["ENVIRONMENT"]
+    json["redirect_target"] ||= ENV["REACT_APP_REDIRECT_TARGET"]
 
     index = 0
     json["proxies"] ||= {}
