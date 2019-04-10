@@ -82,6 +82,10 @@ http {
   location ~ ^/static/ {
     try_files $uri @s3;
   }
+  
+  location ~ ^/assets/ {
+    try_files /public/$uri @s3;
+  }
 
   location @s3 {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
