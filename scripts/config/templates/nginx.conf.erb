@@ -38,6 +38,7 @@ http {
   client_body_timeout 5;
 
   server {
+    server_name <%= redirect_target %>;
   	listen <%= port %> reuseport;
     charset <%= encoding %>;
     port_in_redirect off;
@@ -49,6 +50,9 @@ http {
   <% if proxies.any? %>
     resolver <%= resolver %>;
   <% end %>
+
+    # redirect trailing /
+    rewrite ^/(.*)/$ /$1 permanent;
 
     set $rendertron_url <%= rendertron_api_base %>;
     set $environment <%= environment %>;
@@ -136,5 +140,12 @@ http {
     }
   <% end %>
 
+  }
+
+  server {
+    server_name _;
+  	listen <%= port %> default_server;
+
+    return 301 https://<%= redirect_target %>$request_uri;
   }
 }
