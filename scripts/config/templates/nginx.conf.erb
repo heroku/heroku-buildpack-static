@@ -41,7 +41,9 @@ http {
     listen <%= port %> default_server;
     server_name _;
 
-    return 301 https://<%= redirect_target %>$request_uri;
+    if ($http_host != "<%= redirect_target %>") {
+      return 301 https://<%= redirect_target %>$request_uri;
+    }
   }
 
   server {
@@ -58,6 +60,7 @@ http {
     resolver <%= resolver %>;
   <% end %>
 
+    return 200 $http_host$http_x_forwarded_proto$http_x_forwarded_host;
     # redirect trailing /
     rewrite ^/(.*)/$ /$1 permanent;
 
