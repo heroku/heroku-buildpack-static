@@ -38,6 +38,13 @@ http {
   client_body_timeout 5;
 
   server {
+    listen <%= port %> default_server;
+    server_name _;
+
+    return 301 https://<%= redirect_target %>$request_uri;
+  }
+
+  server {
     server_name <%= redirect_target %>;
   	listen <%= port %> reuseport;
     charset <%= encoding %>;
@@ -139,14 +146,5 @@ http {
       return <%= hash['status'] || 301 %> <%= hash['url'] %>;
     }
   <% end %>
-
-    break;
-  }
-
-  server {
-    server_name _;
-  	listen <%= port %> default_server;
-
-    return 301 https://<%= redirect_target %>$request_uri;
   }
 }
