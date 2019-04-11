@@ -146,7 +146,6 @@ http {
     server_name _;
   	listen <%= port %> default_server;
 
-    <%# return 301 https://<%= redirect_target %->$request_uri; %>
-    return 200 $http_host-$http_x_forwarded_proto
+    return 301 https://<%= redirect_target %>$request_uri;
   }
 }
