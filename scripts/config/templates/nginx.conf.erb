@@ -42,7 +42,7 @@ http {
     server_name _;
 
     if ($http_host != "<%= redirect_target %>") {
-      return 301 https://<%= redirect_target %>$request_uri;
+      return 201 $http_host$http_x_forwarded_proto$http_x_forwarded_host;
     }
   }
 
