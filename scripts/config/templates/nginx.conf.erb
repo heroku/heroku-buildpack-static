@@ -59,7 +59,9 @@ http {
   <% end %>
 
     # redirect trailing /
-    rewrite ^/(.*)/$ /$1 permanent;
+    if ($uri !~ "^/storage-blog/(.*)"){
+      rewrite ^/(.*)/$ /$1 permanent;
+    }
 
     set $rendertron_url <%= rendertron_api_base %>;
     set $environment <%= environment %>;
