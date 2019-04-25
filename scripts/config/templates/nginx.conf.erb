@@ -58,11 +58,6 @@ http {
     resolver <%= resolver %>;
   <% end %>
 
-    # redirect trailing /
-    <%# if ($uri !~ "^/storage-blog/(.*)"){
-      rewrite ^/(.*)/$ /$1 permanent;
-    } %>
-
     set $rendertron_url <%= rendertron_api_base %>;
     set $environment <%= environment %>;
     set $url_encoded_colon_slashes %3A%2F%2F;
