@@ -32,6 +32,23 @@ This allows you to specify a different asset root for the directory of your appl
 
 By default this is set to `public_html/`
 
+#### Canonical Host
+This allows you to perform 301 redirects to a specific hostname, which can be useful for redirecting www to non-www (or vice versa).
+
+```json
+{
+  "canonical_host": "www.example.com"
+}
+```
+
+You can use environment variables as well:
+
+```json
+{
+  "canonical_host": "${HOST}"
+}
+```
+
 #### Default Character Set
 This allows you to specify a character set for your text assets (HTML, Javascript, CSS, and so on). For most apps, this should be the default value of "UTF-8", but you can override it by setting `encoding`:
 
