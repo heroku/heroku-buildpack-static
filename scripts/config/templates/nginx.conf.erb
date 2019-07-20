@@ -79,7 +79,7 @@ http {
 
   <% if canonical_host %>
     if ($host != <%= canonical_host %>) {
-      return 301 $scheme://<%= canonical_host %>$request_uri;
+      return 301 $http_x_forwarded_proto://<%= canonical_host %>$request_uri;
     }
   <% end %>
 
