@@ -6,6 +6,7 @@ class NginxConfig
   DEFAULT = {
     root: "public_html/",
     encoding: "UTF-8",
+    canonical_host: false,
     clean_urls: false,
     https_only: false,
     basic_auth: false,
@@ -25,6 +26,9 @@ class NginxConfig
     json["port"] ||= ENV["PORT"] || 5000
     json["root"] ||= DEFAULT[:root]
     json["encoding"] ||= DEFAULT[:encoding]
+
+    json["canonical_host"] ||= DEFAULT[:canonical_host]
+    json["canonical_host"] = NginxConfigUtil.interpolate(json["canonical_host"], ENV) if json["canonical_host"]
 
     index = 0
     json["proxies"] ||= {}
