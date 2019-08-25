@@ -37,13 +37,11 @@ class NginxConfig
       uri           = URI(evaled_origin)
 
       json["proxies"][loc]["name"] = "upstream_endpoint_#{index}"
-      cleaned_path = uri.path
-      cleaned_path.chop! if cleaned_path.end_with?("/")
+      cleaned_path = uri.path.to_s + "?" + uri.query.to_s
       json["proxies"][loc]["path"] = cleaned_path
-      json["proxies"][loc]["host"] = uri.dup.tap {|u| u.path = '' }.to_s
+      json["proxies"][loc]["host"] = uri.scheme.to_s + "://" + uri.host.to_s
       %w(http https).each do |scheme|
         json["proxies"][loc]["redirect_#{scheme}"] = uri.dup.tap {|u| u.scheme = scheme }.to_s
-        json["proxies"][loc]["redirect_#{scheme}"] += "/" if !uri.to_s.end_with?("/")
       end
       index += 1
     end
