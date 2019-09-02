@@ -77,7 +77,7 @@ http {
     }
   <% end %>
 
-  <% if canonical_host %>
+  <% if canonical_host && !ENV['HEROKU_PARENT_APP_NAME'] %>
     if ($host != <%= canonical_host %>) {
       return 301 $http_x_forwarded_proto://<%= canonical_host %>$request_uri;
     }
