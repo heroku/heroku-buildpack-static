@@ -87,6 +87,10 @@ http {
     }
   <% end %>
   
+  location ~ ^/.well-known/ {
+    try_files $uri @s3;
+  }
+  
   location ~ ^/static/ {
     try_files $uri @s3;
   }
