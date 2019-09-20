@@ -17,6 +17,12 @@ http {
 
   server_tokens off;
 
+  ## AB Test Rendertron vs. Static Bundle for Dynamic Landing Pages + Google Bot ##
+  split_clients "${request_uri}" $show_rendertron {
+    50%     true; # must be true so matches X-Should-Prerender header
+    50%     hide; # cannot be false b/c could match X-Should-Prerender header
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log;
 <% else %>
@@ -104,22 +110,25 @@ http {
   }
 
   <% routes.each do |route, path| %>
-    location ~ ^<%= route %>$ {
-      set $route <%= route %>;
-      mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
-      mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+  location ~ ^<%= route %>$ {
+    set $route <%= route %>;
+    mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
+    mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-      if ($http_x_should_prerender) {
-        proxy_pass $rendertron_url$neighbor_url;
-        break;
-      }
-
-    <% if clean_urls %>
-      try_files $uri.html $uri $uri/ $path $fallback;
-    <% else %>
-      try_files $uri $path $fallback;
-    <% end %>
+    # There is no && in nginx and multiple 'if's in a location directive
+    # cause ISSUES, so must hack with different show_rendertron values
+    # Assumes x_should_prerender will never be 'hide'
+    if ($http_x_should_prerender = $show_rendertron) {
+      proxy_pass $rendertron_url$neighbor_url;
+      break;
     }
+
+  <% if clean_urls %>
+    try_files $uri.html $uri $uri/ $path $fallback;
+  <% else %>
+    try_files $uri $path $fallback;
+  <% end %>
+  }
   <% end %>
 
   # need this b/c setting $fallback to =404 will try #{root}=404 instead of returning a 404
