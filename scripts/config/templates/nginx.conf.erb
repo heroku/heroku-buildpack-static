@@ -18,10 +18,10 @@ http {
   server_tokens off;
 
   ## AB Test Rendertron vs. Static Bundle for Dynamic Landing Pages + Google Bot ##
-  split_clients "${request_uri}" $show_rendertron {
-    50%     true; # must be true so matches X-Should-Prerender header
-    50%     hide; # cannot be false b/c could match X-Should-Prerender header
-  }
+  # split_clients "${request_uri}" $show_rendertron {
+  #   50%     true; # must be true so matches X-Should-Prerender header
+  #   50%     hide; # cannot be false b/c could match X-Should-Prerender header
+  # }
 
 <% if logging['access'] %>
   access_log logs/access.log;
@@ -118,7 +118,7 @@ http {
     # There is no && in nginx and multiple 'if's in a location directive
     # cause ISSUES, so must hack with different show_rendertron values
     # Assumes x_should_prerender will never be 'hide'
-    if ($http_x_should_prerender = $show_rendertron) {
+    if ($http_x_should_prerender) { # = $show_rendertron
       proxy_pass $rendertron_url$neighbor_url;
       break;
     }
