@@ -17,11 +17,11 @@ http {
 
   server_tokens off;
 
-  ## AB Test Rendertron vs. Static Bundle for Dynamic Landing Pages + Google Bot ##
-  # split_clients "${request_uri}" $show_rendertron {
-  #   50%     true; # must be true so matches X-Should-Prerender header
-  #   50%     hide; # cannot be false b/c could match X-Should-Prerender header
-  # }
+  ## AB Test Rendertron v1 vs. Rendertron v2 ##
+  split_clients "${request_uri}" $rendertron_base {
+    50%     <%= rendertron_api_base %>;
+    50%     <%= rendertron2_api_base %>;
+  }
 
 <% if logging['access'] %>
   access_log logs/access.log;
@@ -64,7 +64,6 @@ http {
     resolver <%= resolver %>;
   <% end %>
 
-    set $rendertron_url <%= rendertron_api_base %>;
     set $environment <%= environment %>;
     set $url_encoded_colon_slashes %3A%2F%2F;
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
@@ -115,11 +114,8 @@ http {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    # There is no && in nginx and multiple 'if's in a location directive
-    # cause ISSUES, so must hack with different show_rendertron values
-    # Assumes x_should_prerender will never be 'hide'
-    if ($http_x_should_prerender) { # = $show_rendertron
-      proxy_pass $rendertron_url$neighbor_url;
+    if ($http_x_should_prerender) {
+      proxy_pass $rendertron_base$neighbor_url;
       break;
     }
 
