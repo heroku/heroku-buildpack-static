@@ -26,7 +26,7 @@ class NginxConfig
     json['rendertron_api_base'] ||= ENV['RENDERTRON_API_BASE']
     json['rendertron2_api_base'] ||= ENV['RENDERTRON2_API_BASE']
     json['environment'] ||= ENV['ENVIRONMENT']
-    json['redirect_target'] ||= ENV['REACT_APP_REDIRECT_TARGET']
+    json['redirect_target'] ||= ENV['REACT_APP_HOSTNAME']
 
     index = 0
     json['proxies'] ||= {}
