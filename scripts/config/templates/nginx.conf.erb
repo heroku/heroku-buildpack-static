@@ -114,7 +114,7 @@ http {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    location ~ \.xml {
+    location ~ \.xml$ {
       # bypass rendertron
       try_files $uri =404;
     }
