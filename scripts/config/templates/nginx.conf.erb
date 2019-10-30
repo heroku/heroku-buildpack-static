@@ -108,6 +108,10 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
   }
 
+  location ~ \.xml {
+    try_files $uri =404;
+  }
+
   <% routes.each do |route, path| %>
   location ~ ^<%= route %>$ {
     set $route <%= route %>;
