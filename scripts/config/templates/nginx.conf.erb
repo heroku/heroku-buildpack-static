@@ -108,15 +108,16 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
   }
 
-  location ~ \.xml {
-    try_files $uri =404;
-  }
-
   <% routes.each do |route, path| %>
   location ~ ^<%= route %>$ {
     set $route <%= route %>;
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+
+    location ~ \.xml {
+      # bypass rendertron
+      try_files $uri =404;
+    }
 
     if ($http_x_should_prerender) {
       proxy_pass $rendertron_base$neighbor_url;
