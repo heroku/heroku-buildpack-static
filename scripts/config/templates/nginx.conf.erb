@@ -17,12 +17,6 @@ http {
 
   server_tokens off;
 
-  ## AB Test Rendertron v1 vs. Rendertron v2 ##
-  split_clients "${request_uri}" $rendertron_base {
-    50%     <%= rendertron_api_base %>;
-    50%     <%= rendertron2_api_base %>;
-  }
-
 <% if logging['access'] %>
   access_log logs/access.log;
 <% else %>
@@ -68,6 +62,7 @@ http {
     set $url_encoded_colon_slashes %3A%2F%2F;
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
+    set $rendertron_base <%= rendertron_api_base %>;
 
     location / {
       mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
