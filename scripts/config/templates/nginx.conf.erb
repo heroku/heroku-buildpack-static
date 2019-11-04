@@ -15,10 +15,14 @@ http {
   gzip_vary on;
   gzip_proxied any;
 
+  log_format custom_agent '$remote_addr - $remote_user [$time_local] '
+                           '"$request" $status $body_bytes_sent '
+                           '"$http_referer" "$http_user_agent" "$http_x_original_user_agent"';
+
   server_tokens off;
 
 <% if logging['access'] %>
-  access_log logs/access.log;
+  access_log logs/access.log custom_agent;
 <% else %>
   access_log off;
 <% end %>
