@@ -118,6 +118,11 @@ http {
       try_files $uri =404;
     }
 
+    location ~ \.txt$ {
+      # bypass rendertron
+      try_files $uri =404;
+    }
+    
     if ($http_x_should_prerender) {
       proxy_pass $rendertron_base$neighbor_url;
       break;
