@@ -21,6 +21,11 @@ http {
 
   server_tokens off;
 
+  split_clients "${request_uri}" $is_static_rendered {
+    50%     false;
+    50%     true;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -40,11 +45,6 @@ http {
 
   #Must read the body in 5 seconds.
   client_body_timeout 5;
-
-  split_clients "${request_uri}" $is_static_rendered {
-    50%       false;
-    50%       true;
-  }
 
   server {
     listen <%= port %> default_server;
@@ -123,10 +123,10 @@ http {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    # if ($is_static_rendered = true) {
-    #   proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
-    #   break;
-    # }
+    if ($is_static_rendered = true) {
+      proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
+      break;
+    }
     
     if ($http_x_should_prerender) {
       proxy_pass $rendertron_base$neighbor_url;
