@@ -112,12 +112,7 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
   }
 
-  location ~ \.xml$ {
-    # bypass rendertron
-    try_files $uri =404;
-  }
-
-  location ~ \.txt$ {
+  location ~ \.xml$|\.txt$ {
     # bypass rendertron
     try_files $uri =404;
   }
