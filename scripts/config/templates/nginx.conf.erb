@@ -41,6 +41,11 @@ http {
   #Must read the body in 5 seconds.
   client_body_timeout 5;
 
+  split_clients "${request_uri}" $is_static_rendered {
+    50%       false;
+    50%       true;
+  }
+
   server {
     listen <%= port %> default_server;
     server_name _;
@@ -107,21 +112,26 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
   }
 
+  location ~ \.xml$ {
+    # bypass rendertron
+    try_files $uri =404;
+  }
+
+  location ~ \.txt$ {
+    # bypass rendertron
+    try_files $uri =404;
+  }
+
   <% routes.each do |route, path| %>
   location ~ ^<%= route %>$ {
     set $route <%= route %>;
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    location ~ \.xml$ {
-      # bypass rendertron
-      try_files $uri =404;
-    }
-
-    location ~ \.txt$ {
-      # bypass rendertron
-      try_files $uri =404;
-    }
+    # if ($is_static_rendered = true) {
+    #   proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
+    #   break;
+    # }
     
     if ($http_x_should_prerender) {
       proxy_pass $rendertron_base$neighbor_url;
