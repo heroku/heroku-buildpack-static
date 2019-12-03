@@ -22,8 +22,8 @@ http {
   server_tokens off;
 
   split_clients "${request_uri}_PRERENDERED" $is_static_rendered {
-    50%     false;
-    50%     true;
+    100%     false;
+    *        true;
   }
 
 <% if logging['access'] %>
@@ -123,12 +123,11 @@ http {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    set $static_render_condition "${http_x_neighbor_rendertron}---${request_uri}${is_static_rendered}";
-    add_header X-Debug $http_x_neighbor_rendertron;
     # Only proxy to prerendered page if:
     # 1. There is not a neighbor rendertron header
     # 2. The $request_uri has some kind of :city--:state- match
     # 3. The $request_uri is on the correct arm of the A/B test
+    set $static_render_condition "${http_x_neighbor_rendertron}---${request_uri}${is_static_rendered}";
     if ($static_render_condition ~ ^---.*[A-Z][a-z].*--[A-Z][a-z].*-.*true$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
