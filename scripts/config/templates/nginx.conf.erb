@@ -123,7 +123,10 @@ http {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    if ($is_static_rendered = true) {
+    set $static_render_condition "${request_uri}${is_static_rendered}";
+    # only proxy to prerendered page if has some kind of :city--:state- match in the $request_uri
+    # AND is on the correct arm of the A/B test
+    if ($static_render_condition ~ [A-Z][a-z].*--[A-Z][a-z].*-.*true$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
