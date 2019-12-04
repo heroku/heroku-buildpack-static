@@ -21,6 +21,11 @@ http {
 
   server_tokens off;
 
+  split_clients "${request_uri}_PRERENDERED" $is_static_rendered {
+    100%     false;
+    *        true;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -107,20 +112,25 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
   }
 
+  location ~ \.xml$|\.txt$ {
+    # bypass rendertron
+    try_files $uri =404;
+  }
+
   <% routes.each do |route, path| %>
   location ~ ^<%= route %>$ {
     set $route <%= route %>;
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
-    location ~ \.xml$ {
-      # bypass rendertron
-      try_files $uri =404;
-    }
-
-    location ~ \.txt$ {
-      # bypass rendertron
-      try_files $uri =404;
+    # Only proxy to prerendered page if:
+    # 1. There is not a neighbor rendertron header
+    # 2. The $request_uri is on the correct arm of the A/B test
+    # 3. The $request_uri has some kind of /:city--:state-:suffix (no numbers) match
+    set $static_render_condition "${http_x_neighbor_rendertron}---${is_static_rendered}---${request_uri}";
+    if ($static_render_condition ~ ^---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
+      proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
+      break;
     }
     
     if ($http_x_should_prerender) {
