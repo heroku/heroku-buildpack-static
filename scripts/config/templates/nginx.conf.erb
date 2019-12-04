@@ -125,10 +125,10 @@ http {
 
     # Only proxy to prerendered page if:
     # 1. There is not a neighbor rendertron header
-    # 2. The $request_uri has some kind of :city--:state- match
-    # 3. The $request_uri is on the correct arm of the A/B test
-    set $static_render_condition "${http_x_neighbor_rendertron}---${request_uri}${is_static_rendered}";
-    if ($static_render_condition ~ ^---.*[A-Z][a-z].*--[A-Z][a-z].*-.*true$) {
+    # 2. The $request_uri is on the correct arm of the A/B test
+    # 3. The $request_uri has some kind of /:city--:state-:suffix (no numbers) match
+    set $static_render_condition "${http_x_neighbor_rendertron}---${is_static_rendered}---${request_uri}";
+    if ($static_render_condition ~ ^---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
