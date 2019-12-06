@@ -22,7 +22,7 @@ http {
   server_tokens off;
 
   split_clients "${request_uri}_PRERENDERED" $is_static_rendered {
-    50%     false;
+    100%     false;
     *        true;
   }
 
