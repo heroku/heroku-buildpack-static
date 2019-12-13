@@ -103,6 +103,10 @@ http {
         proxy_set_header Upgrade "websocket";
         proxy_set_header Connection "Upgrade";
       <% end %>
+      <% if hash['sse'] == true %>
+        proxy_http_version 1.1;
+        proxy_set_header Connection '';
+      <% end %>
       proxy_ssl_server_name on;
       <% %w(http https).each do |scheme| %>
       proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
