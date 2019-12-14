@@ -123,6 +123,7 @@ http {
       return <%= hash['status'] || 301 %> <%= hash['url'] %>;
     }
   <% end %>
+    add_header 'X-Accel-Buffering' 'no';
 
   }
 }
