@@ -7,7 +7,7 @@ GEM
     docker-api (1.33.1)
       excon (>= 0.38.0)
       json
-    excon (0.54.0)
+    excon (0.71.0)
     json (2.0.2)
     rake (10.4.0)
     ref (1.0.5)
