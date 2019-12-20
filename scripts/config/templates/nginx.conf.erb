@@ -58,6 +58,7 @@ http {
   	listen <%= port %> reuseport;
     charset <%= encoding %>;
     port_in_redirect off;
+    error_page 404 =200 @proxy_fallback;
     keepalive_timeout 5;
     root <%= root %>;
   <% if error_page %>
@@ -117,6 +118,13 @@ http {
     try_files $uri =404;
   }
 
+  location @proxy_fallback {
+    mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
+    mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+    add_header x-is-proxy-fallback "true";
+    try_files $uri $path $fallback;
+  }
+
   <% routes.each do |route, path| %>
   location ~ ^<%= route %>$ {
     set $route <%= route %>;
@@ -128,6 +136,7 @@ http {
     # 2. The $request_uri is on the correct arm of the A/B test
     # 3. The $request_uri has some kind of /:city--:state-:suffix (no numbers) match
     set $static_render_condition "${http_x_neighbor_rendertron}---${is_static_rendered}---${request_uri}";
+    proxy_intercept_errors on;
     if ($static_render_condition ~ ^---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
