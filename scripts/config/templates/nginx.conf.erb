@@ -106,9 +106,9 @@ http {
       <% if hash['sse'] == true %>
         proxy_set_header Connection '';
         proxy_http_version 1.1;
-        chunked_transfer_encoding off;
-        proxy_buffering off;
-        proxy_cache off;
+        # chunked_transfer_encoding off;
+        # proxy_buffering off;
+        # proxy_cache off;
       <% end %>
       proxy_ssl_server_name on;
       <% %w(http https).each do |scheme| %>
