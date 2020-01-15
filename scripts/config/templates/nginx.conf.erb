@@ -104,14 +104,16 @@ http {
         proxy_set_header Connection "Upgrade";
       <% end %>
       <% if hash['sse'] == true %>
-        proxy_set_header Connection '';
-        proxy_http_version 1.1;
-        include uwsgi_params;
-        uwsgi_pass eventsource-botbot-backend;
-        uwsgi_buffering off;
+        # proxy_set_header Connection '';
+        # proxy_http_version 1.1;
+        proxy_set_header Connection keep-alive;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        proxy_read_timeout 3600;
+        keepalive_timeout 3600;
         chunked_transfer_encoding off;
+        proxy_buffering off;
         proxy_cache off;
-        error_page 504 =200 @eventsource-close-graceful;
       <% end %>
       proxy_ssl_server_name on;
       <% %w(http https).each do |scheme| %>
@@ -119,11 +121,6 @@ http {
       <% end %>
     }
   <% end %>
-
-  location @eventsource-close-graceful {
-    add_header Content-Type text/event-stream;
-    return 200;
-  }
 
   # fallback redirects named match
   <% redirects.each do |path, hash| %>
