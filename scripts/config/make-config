@@ -3,10 +3,21 @@
 require 'fileutils'
 require 'erb'
 require_relative 'lib/nginx_config'
+require 'json'
 
 TEMPLATE     = File.join(File.dirname(__FILE__), 'templates/nginx.conf.erb')
 USER_CONFIG  = 'static.json'
 NGINX_CONFIG = 'config/nginx.conf'
+ENV_CONFIG   = 'config/.env.json'
 
 erb = ERB.new(File.read(TEMPLATE)).result(NginxConfig.new(USER_CONFIG).context)
 File.write(NGINX_CONFIG, erb)
+
+json = {}
+File.open(ENV_CONFIG,"w", 0600) do |f|
+    ENV.each do |key,value|
+      json[key] = value 
+    end
+    
+    f.write(json.to_json)
+end
