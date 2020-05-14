@@ -4,6 +4,7 @@
 build_dir=$1
 
 if [ ! -f "$build_dir/static.json" ]; then
+    echo "file named 'static.json' missing in $build_dir"
     exit 1
 fi
 
