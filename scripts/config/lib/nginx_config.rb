@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'uri'
 require_relative 'nginx_config_util'
@@ -40,7 +42,9 @@ class NginxConfig
       json['proxies'][loc]['host'] = uri.dup.tap { |u| u.path = '' }.to_s
       %w[http https].each do |scheme|
         json['proxies'][loc]["redirect_#{scheme}"] = uri.dup.tap { |u| u.scheme = scheme }.to_s
-        json['proxies'][loc]["redirect_#{scheme}"] += '/' unless uri.to_s.end_with?('/')
+        unless uri.to_s.end_with?('/')
+          json['proxies'][loc]["redirect_#{scheme}"] += '/'
+        end
       end
       index += 1
     end
@@ -51,9 +55,10 @@ class NginxConfig
     json['routes'] ||= {}
     json['routes'] = NginxConfigUtil.parse_routes(json['routes'])
 
-    json['redirects'] ||= {}
-    json['redirects'].each do |loc, hash|
-      json['redirects'][loc].merge!('url' => NginxConfigUtil.interpolate(hash['url'], ENV))
+    redirects = json['redirects'] || {}
+    redirects.merge! json['redirects2019'] || {}
+    redirects.each do |loc, hash|
+      redirects[loc].merge!('url' => NginxConfigUtil.interpolate(hash['url'], ENV))
     end
 
     json['error_page'] ||= nil
