@@ -178,5 +178,9 @@ http {
       return <%= hash['status'] || 301 %> <%= hash['url'] %>;
     }
   <% end %>
+
+    location = "/rentals/search/New York City, NY, USA" {
+      return 301 https://www.neighbor.com/New-York--New-York-self-storage;
+    }
   }
 }
