@@ -117,6 +117,11 @@ http {
     try_files $uri =404;
   }
 
+  # insert a slash between /storage-blog/ and the article names
+  location ~ \/storage-blog([^\/].*) {
+    return 301 https://www.neighbor.com/storage-blog/$1;
+  }
+
   location @proxy_fallback {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
