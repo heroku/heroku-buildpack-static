@@ -187,5 +187,14 @@ http {
     location = "/rentals/search/New York City, NY, USA" {
       return 301 https://www.neighbor.com/New-York--New-York-self-storage;
     }
+
+  <% pathsToProxyToPrerenderedS3.each do |path| %>
+    # <%= upstream_var_name = "upstream_endpoint_#{path[1..-1].gsub(/-/, '_')}" %>
+    set $<%= upstream_var_name %> https://neighbor-build-production.s3.amazonaws.com;
+    location = "<%= path %>" {
+      proxy_pass $<%= upstream_var_name %>/prerendered<%= path %>;
+      proxy_redirect $<%= upstream_var_name %><%= path %> <%= path %>;
+    }
+  <% end %>
   }
 }
