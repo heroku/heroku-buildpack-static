@@ -194,9 +194,9 @@ http {
     }
 
   # Redirect /links/x/state to /x/state
-  location ~ ^/links/(.*){
-    return 301 https://$host/$1;
-  }
+    location ~ ^/links/(.*){
+      return 301 https://$host/$1;
+    }
 
   }
 }
