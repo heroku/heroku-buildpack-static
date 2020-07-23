@@ -91,6 +91,11 @@ http {
       return 301 https://$host$request_uri;
     }
   <% end %>
+
+  # Redirect /links/x/state to /x/state
+  location ~ ^/links/(.*){
+    return 301 https://$host/$1;
+  }
   
   location ~ ^/.well-known/ {
     try_files $uri @s3;
@@ -191,11 +196,6 @@ http {
 
     location = "/rentals/search/New York City, NY, USA" {
       return 301 https://www.neighbor.com/New-York--New-York-self-storage;
-    }
-
-    # Redirect /links/x/state to /x/state
-    location ~ ^/links/(.*){
-      return 301 https://$host/$1;
     }
 
   }
