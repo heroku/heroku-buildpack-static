@@ -144,6 +144,11 @@ http {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
+
+    if ($static_render_condition ~ ^---(<%= pathsToProxyToPrerenderedS3.join('|') %>)$) {
+      proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
+      break;
+    }
     
     if ($http_x_should_prerender) {
       proxy_pass $rendertron_base$neighbor_url;
