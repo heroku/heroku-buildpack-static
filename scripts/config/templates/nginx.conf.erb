@@ -90,11 +90,15 @@ http {
     }
   <% end %>
 
+  location ~ ^.*(static|assets|images)\/.*\.(jpg|jpeg|png|gif|ico|css|js|jsx|ts|tsx|woff|woff2|ttf|otf|eot)$ {}
+
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
       set $route <%= route %>;
       mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+      etag off;
+      add_header Last-Modified "";
     <% if clean_urls %>
       try_files $uri.html $uri $uri/ $path $fallback;
     <% else %>
