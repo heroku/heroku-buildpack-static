@@ -90,7 +90,7 @@ http {
     }
   <% end %>
 
-  location ~ ^.*(static|assets|images)\/.*\.(jpg|jpeg|png|gif|ico|css|js|jsx|ts|tsx|woff|woff2|ttf|otf|eot)$ {}
+  location ~ ^.*(static|assets|images)\/.*\.(svg|jpg|jpeg|png|gif|ico|css|js|jsx|ts|tsx|woff|woff2|ttf|otf|eot)$ {}
 
   <% routes.each do |route, path| %>
     location ~ ^<%= route %>$ {
