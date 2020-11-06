@@ -36,5 +36,3 @@ touch $build_dir/config/.htpasswd
 cat $env_dir/SOURCE_MAP_HTPASSWD > $build_dir/config/.htpasswd
 
 mkdir -p $build_dir/logs
-
-exit 0
