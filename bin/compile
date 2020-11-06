@@ -10,7 +10,9 @@ bp_dir=$(dirname $(dirname $0))
 
 case "${STACK}" in
   cedar-14|heroku-16|heroku-18)
-    # Supported stack
+    # The buildpack for some time has used binaries meant for Cedar-14 on all stacks (see #165).
+    # In the future these stacks should be migrated to newer nginx built against the correct stack.
+    nginx_archive_url='https://s3-external-1.amazonaws.com/heroku-buildpack-ruby/nginx/cedar-14/nginx-1.9.7-ngx_mruby.tgz'
     ;;
   *)
     echo "Stack ${STACK} is not supported!"
@@ -18,22 +20,8 @@ case "${STACK}" in
     ;;
 esac
 
-fetch_nginx_tarball() {
-    local version="1.9.7"
-    local tarball_file="nginx-$version.tgz"
-    local stack="cedar-14"
-    local nginx_tarball_url="https://s3-external-1.amazonaws.com/heroku-buildpack-ruby/nginx/$stack/nginx-$version-ngx_mruby.tgz"
-    local dest_path="$cache_dir/$stack/$tarball_file"
-
-    if [ -f "$dest_path" ]; then
-        echo -n "cat $dest_path"
-    else
-        echo -n "curl -L $nginx_tarball_url"
-    fi
-}
-
 mkdir -p $build_dir/bin
-$(fetch_nginx_tarball) | tar xzC $build_dir/bin
+curl -sSf "${nginx_archive_url}" | tar -xzC "${build_dir}/bin"
 nginx_version=$($build_dir/bin/nginx-$STACK -V 2>&1 | head -1 | awk '{ print $NF }')
 cp -a $bp_dir/scripts/{boot,config} -t $build_dir/bin/
 echo "-----> Installed ${nginx_version} to /app/bin"
