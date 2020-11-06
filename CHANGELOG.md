@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Fix the printing of the installed nginx version
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Switch to the recommended S3 URL format
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Remove unused archive caching
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Fail the build early on unsupported stacks

@@ -22,9 +22,9 @@ esac
 
 mkdir -p $build_dir/bin
 curl -sSf "${nginx_archive_url}" | tar -xzC "${build_dir}/bin"
-nginx_version=$($build_dir/bin/nginx-$STACK -V 2>&1 | head -1 | awk '{ print $NF }')
+nginx_version=$("${build_dir}/bin/nginx" -v |& cut -d '/' -f 2-)
 cp -a $bp_dir/scripts/{boot,config} -t $build_dir/bin/
-echo "-----> Installed ${nginx_version} to /app/bin"
+echo "-----> Installed nginx ${nginx_version} to /app/bin"
 
 mkdir -p $build_dir/config
 cp $bp_dir/scripts/config/templates/mime.types $build_dir/config
