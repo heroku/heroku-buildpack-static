@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [#178](https://github.com/heroku/heroku-buildpack-static/pull/178) Exclude unnecessary files when publishing the buildpack
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Make curl retry in case of a failed download
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Fix the printing of the installed nginx version
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Switch to the recommended S3 URL format
