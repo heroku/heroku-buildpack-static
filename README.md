@@ -303,3 +303,17 @@ You need to forward the docker's port 3000 to the virtual machine's port though.
 ```
 VBoxManage modifyvm "boot2docker-vm" --natpf1 "tcp-port3000,tcp,,3000,,3000";
 ```
+
+## Releasing new binaries
+
+The steps buildpack maintainers need to perform when releasing new nginx
+binaries (either for a new stack or `ngx_mruby` version), are:
+
+1. Update the stacks list in `Makefile` and/or the ngx_mruby version
+  in `scripts/build_ngx_mruby.sh`.
+2. Run `make build` to build all stacks or `make build-heroku-NN` to build just one stack.
+3. Ensure the AWS CLI is installed (eg `brew install awscli`).
+4. Authenticate with the relevant AWS account (typically by setting the environment variables from PCSK).
+5. Run `make sync` (or if using a custom S3 bucket, `S3_BUCKET=... make sync`).
+6. Update `bin/compile` to reference the new stacks and/or nginx version URLs.
+7. Open a PR with the changes from (1) and (6).

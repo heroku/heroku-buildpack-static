@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [#182](https://github.com/heroku/heroku-buildpack-static/pull/182) Add support for Heroku-20
 * [#181](https://github.com/heroku/heroku-buildpack-static/pull/181) Fix compatibility with ngx_mruby 1.18.4+
 * [#178](https://github.com/heroku/heroku-buildpack-static/pull/178) Exclude unnecessary files when publishing the buildpack
 * [#177](https://github.com/heroku/heroku-buildpack-static/pull/177) Make curl retry in case of a failed download
