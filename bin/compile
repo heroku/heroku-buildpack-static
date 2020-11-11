@@ -9,6 +9,9 @@ env_dir=$3
 bp_dir=$(dirname $(dirname $0))
 
 case "${STACK}" in
+  heroku-20)
+    nginx_archive_url="https://heroku-buildpack-static.s3.amazonaws.com/${STACK}/nginx-1.19.0-ngx_mruby-2.2.3.tgz"
+    ;;
   cedar-14|heroku-16|heroku-18)
     # The buildpack for some time has used binaries meant for Cedar-14 on all stacks (see #165).
     # In the future these stacks should be migrated to newer nginx built against the correct stack.
