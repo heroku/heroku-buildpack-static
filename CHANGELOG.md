@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [#186](https://github.com/heroku/heroku-buildpack-static/pull/186) Ensure the SSL module is enabled
 
 ## v5 (2020-11-11)
 
