@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [#190](https://github.com/heroku/heroku-buildpack-static/pull/190) Update nginx for Heroku-16 and Heroku-18 to 1.19.0
 * [#186](https://github.com/heroku/heroku-buildpack-static/pull/186) Ensure the SSL module is enabled
 
 ## v5 (2020-11-11)
