@@ -181,6 +181,9 @@ http {
       # can reuse variable set above
       proxy_pass $<%= hash['name'] %>;
       proxy_ssl_server_name on;
+      <% hash['hide_headers'].each do |header_name|%>
+      proxy_hide_header <%= header_name %>;
+      <% end %>
       <% %w(http https).each do |scheme| %>
       proxy_redirect <%= hash["redirect_#{scheme}"] %> <%= location %>;
       <% end %>
