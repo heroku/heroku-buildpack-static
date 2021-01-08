@@ -53,7 +53,7 @@ http {
   	listen <%= port %> reuseport;
     charset <%= encoding %>;
     port_in_redirect off;
-    error_page 404 =200 @proxy_fallback;
+    error_page 404 @proxy_fallback;
     keepalive_timeout 5;
     root <%= root %>;
   <% if error_page %>
@@ -131,7 +131,13 @@ http {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
     add_header x-is-proxy-fallback "true";
-    try_files $uri $path $fallback;
+
+    if ($http_x_should_prerender) {
+      proxy_pass $rendertron_base$neighbor_url;
+      break;
+    }
+
+    try_files $uri $path $fallback =200;
   }
 
   <% routes.each do |route, path| %>
