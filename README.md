@@ -14,7 +14,7 @@ For a guide, read the [Getting Started with Single Page Apps on Heroku](https://
 ## Deploying
 The `static.json` file is required to use this buildpack. This file handles all the configuration described below.
 
-1. Set the app to this buildpack: `$ heroku buildpacks:set https://github.com/heroku/heroku-buildpack-static.git`.
+1. Set the app to this buildpack: `$ heroku buildpacks:set heroku-community/static`.
 2. Deploy: `$ git push heroku master`
 
 ### Configuration
