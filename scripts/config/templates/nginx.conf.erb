@@ -67,9 +67,15 @@ http {
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
     set $rendertron_base <%= rendertron_api_base %>;
+    
+  <% if basic_auth %>
+    auth_basic "Restricted";
+    auth_basic_user_file <%= basic_auth_htpasswd_path %>;
+  <% end %>
+
+    mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
 
     location / {
-      mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
       mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
 
     <% if clean_urls %>
@@ -142,6 +148,11 @@ http {
 
     try_files $uri $path $fallback =200;
   }
+  <% if canonical_host %>
+    if ($host != <%= canonical_host %>) {
+      return 301 $http_x_forwarded_proto://<%= canonical_host %>$request_uri;
+    }
+  <% end %>
 
   <% routes.each do |route, path| %>
   location ~ ^<%= route %>$ {
