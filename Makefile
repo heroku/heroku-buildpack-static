@@ -1,4 +1,4 @@
-S3_BUCKET ?= heroku-buildpack-static
+S3_BUCKET ?= neiybor-public
 
 .PHONY: build build-heroku-16 build-heroku-18 build-heroku-20 sync
 
