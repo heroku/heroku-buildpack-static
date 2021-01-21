@@ -1,0 +1,15 @@
+[buildpack]
+name = "Static HTML"
+
+  [publish.Ignore]
+  files = [
+    ".github/",
+    "spec/",
+    ".gitignore",
+    ".rspec",
+    "circle.yml",
+    "Gemfile",
+    "Gemfile.lock",
+    "Makefile",
+    "Rakefile"
+  ]
