@@ -191,6 +191,7 @@ http {
       break;
     }
     
+    # if it is a rendertron request and on the dlp v2 arm, then redirect rendertron with query param
     set $dlp_version "${http_x_neighbor_rendertron}---${is_dlp_v2}";
     if ($dlp_version ~ ^v[0-9]*---true$) {
       add_header x-dlp-version $dlp_version;
