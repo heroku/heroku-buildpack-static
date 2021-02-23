@@ -22,9 +22,10 @@ http {
   server_tokens off;
 
   split_clients "${request_uri}_DLP_VERSION" $is_dlp_v2 { 
-    50%     false;
-    *        true;
+  <%= dlp_v2_hide_percentage %>%   false;
+    *                             true;
   }
+  add_header x-hide-percent  <%= dlp_v2_hide_percentage %>;
 
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;

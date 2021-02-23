@@ -31,6 +31,7 @@ class NginxConfig
     json['rendertron_api_base'] ||= ENV['RENDERTRON_API_BASE']
     json['environment'] ||= ENV['ENVIRONMENT']
     json['redirect_target'] ||= ENV['REACT_APP_HOSTNAME']
+    json['dlp_v2_hide_percentage'] ||= (ENV['DLP_V2_HIDE_PERCENT'] || 100)
 
     json['canonical_host'] ||= DEFAULT[:canonical_host]
     if json['canonical_host']
