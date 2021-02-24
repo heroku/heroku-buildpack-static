@@ -21,7 +21,7 @@ http {
 
   server_tokens off;
 
-  split_clients "${uri}_DLP_VERSION" $is_dlp_v2 { 
+  split_clients "${request_uri}_DLP_VERSION" $is_dlp_v2 { 
   <%= dlp_v2_hide_percentage %>%   false;
     *                             true;
   }
@@ -193,10 +193,8 @@ http {
     
     # if it is a rendertron request, on the dlp v2 arm, and has a DLP-like URL, then redirect rendertron with query param
     set $dlp_v2_test_condition "${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
-    add_header x-uri $uri;
-    add_header x-dlp-condition $dlp_v2_test_condition;
     if ($dlp_v2_test_condition ~ ^v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
-      return 302 "${uri}?v=2";
+      return 302 "${request_uri}?ab=1";
     }
 
   <% if clean_urls %>
