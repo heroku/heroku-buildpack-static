@@ -21,6 +21,11 @@ http {
 
   server_tokens off;
 
+  split_clients "${request_uri}_DLP_VERSION" $is_dlp_v2 { 
+  <%= dlp_v2_hide_percentage %>%   false;
+    *                             true;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -167,19 +172,29 @@ http {
     # 2. The $request_uri has some kind of /:city--:state-:suffix (no numbers) match
     set $static_render_condition "${http_x_neighbor_rendertron}---${request_uri}";
     proxy_intercept_errors on;
+
+    # this proxies the request to the prerendered dlp bucket folder if it is not a rendertron request and the URL is DLP-like
     if ($static_render_condition ~ ^---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
 
+    # this proxies the specified URLs requests to the dlp bucket folder if they are not a rendertron request
     if ($static_render_condition ~ ^---(<%= pathsToProxyToPrerenderedS3.join('|') %>)$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
-    
+
+    # this proxies the request to the live render service
     if ($http_x_should_prerender) {
       proxy_pass $rendertron_base$neighbor_url;
       break;
+    }
+    
+    # if it is a rendertron request, on the dlp v2 arm, and has a DLP-like URL, then redirect rendertron with query param
+    set $dlp_v2_test_condition "${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
+    if ($dlp_v2_test_condition ~ ^v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
+      return 302 "${request_uri}?v=2";
     }
 
   <% if clean_urls %>
