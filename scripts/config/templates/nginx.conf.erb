@@ -79,9 +79,7 @@ http {
   <% end %>
 
   <% if canonical_host %>
-    if ($host != <%= canonical_host %>) {
-      return 301 $http_x_forwarded_proto://<%= canonical_host %>$request_uri;
-    }
+    server_name <%= canonical_host %>;
   <% end %>
 
   <% routes.each do |route, path| %>
@@ -124,4 +122,16 @@ http {
   <% end %>
 
   }
+
+  <% if canonical_host %>
+    server {
+      listen <%= port %> default_server;
+      server_name _;
+      <% if https_only %>
+        return 301 https://<%= canonical_host %>$request_uri;
+      <% else %>
+        return 301 $scheme://<%= canonical_host %>$request_uri;
+      <% end %>
+    }
+  <% end %>
 }
