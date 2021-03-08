@@ -192,8 +192,8 @@ http {
     }
     
     # if it is a rendertron request, on the dlp v2 arm, and has a DLP-like URL, then redirect rendertron with query param
-    set $dlp_v2_test_condition "${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
-    if ($dlp_v2_test_condition ~ ^v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
+    set $dlp_v2_test_condition "${args}---${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
+    if ($dlp_v2_test_condition ~ ^---v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-]*$) {
       return 302 "${request_uri}?v=2";
     }
 
