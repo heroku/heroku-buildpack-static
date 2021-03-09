@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## v7 (2021-03-09)
+
 * [#202](https://github.com/heroku/heroku-buildpack-static/pull/202) Output a helpful error message when no `static.json` is found
 
 ## v6 (2020-12-09)
