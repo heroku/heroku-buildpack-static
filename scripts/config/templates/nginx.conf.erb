@@ -141,6 +141,13 @@ http {
     return 404;
   }
 
+  <% if listing_routing_version == '2' %>
+    location ~ \/rentals\/[A-z\-']*--[A-z\-']*-self-storage-space-[0-9]*$ {
+      mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_path.rb cache;
+      return 301 https://$host/listings/$listing_path;
+    }
+  <% end %>
+
   location @proxy_fallback {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
