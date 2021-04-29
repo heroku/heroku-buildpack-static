@@ -32,11 +32,10 @@ class NginxConfig
     json['environment'] ||= ENV['ENVIRONMENT']
     json['redirect_target'] ||= ENV['REACT_APP_HOSTNAME']
     json['dlp_v2_hide_percentage'] ||= (ENV['DLP_V2_HIDE_PERCENT'] || 100)
+    json['listing_routing_version'] ||= (ENV['REACT_APP_LISTING_ROUTING_VERSION'])
 
     json['canonical_host'] ||= DEFAULT[:canonical_host]
-    if json['canonical_host']
-      json['canonical_host'] = NginxConfigUtil.interpolate(json['canonical_host'], ENV)
-    end
+    json['canonical_host'] = NginxConfigUtil.interpolate(json['canonical_host'], ENV) if json['canonical_host']
 
     index = 0
     json['proxies'] ||= {}
@@ -52,9 +51,7 @@ class NginxConfig
       json['proxies'][loc]['hide_headers'] = hash['hideHeaders'] || []
       %w[http https].each do |scheme|
         json['proxies'][loc]["redirect_#{scheme}"] = uri.dup.tap { |u| u.scheme = scheme }.to_s
-        unless uri.to_s.end_with?('/')
-          json['proxies'][loc]["redirect_#{scheme}"] += '/'
-        end
+        json['proxies'][loc]["redirect_#{scheme}"] += '/' unless uri.to_s.end_with?('/')
       end
       index += 1
     end
