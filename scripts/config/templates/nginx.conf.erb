@@ -143,30 +143,30 @@ http {
 
   <% if listing_routing_version == '2' %>
     # Redirect our listing detail pages to the new url structure
-    location ~ \/rentals\/[A-z\-']*--[A-z\-']*-self-storage-space-[0-9]*$ {
+    location ~ "(*UTF8)^\/rentals\/[A-z\-\p{L}'%]*--[A-z\-\p{L}'%]*-self-storage-space-[0-9]*$" {
       mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_path.rb cache;
       return 301 https://$host/listings/$listing_path;
     }
 
     # Redirect for double dashed dlp pages. Must be above the regions since the slash is optional
-    location ~ \/[A-z\-']*--[A-z\-']*--([A-z\-]*)\/*[A-z]*$ {
+    location ~ "(*UTF8)^\/[A-z\-\p{L}'%]*--[A-z\-\p{L}}'%]*--([A-z\-]*)\/*[A-z]*$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_double_path.rb cache;
       return 301 https://$host/locations/$locations_path;
     }
     
     # Redirect our state topic pages with storage and parking in the name to the new url structure
-    location ~ \/[A-z\-]*(-storage|-parking)\/[A-z\-']+$ {
+    location ~ "(*UTF8)^\/[A-z\-]*(-storage|-parking)\/[A-z\-\p{L}'%]+$" {
       mruby_set $regions_path /app/bin/config/lib/ngx_mruby/regions_path.rb cache;
       return 301 https://$host/regions/$regions_path;
     }
 
     # Redirect our garage and parking spaces state topic pages to the new url structure
-    location ~ \/(garages|parking-spaces)\/([A-z\-']+)$ {
+    location ~ "(*UTF8)^\/(garages|parking-spaces)\/([A-z\-\p{L}'%]+)$" {
       return 301 https://$host/regions/$2/$1;
     }
     
     # Redirect for single dash dlps
-    location ~* \/([A-z\-']*)--([A-z\-']*)-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$ {
+    location ~* "(*UTF8)^\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_single_path.rb cache;
       return 301 https://$host/locations/$locations_path;
     }
