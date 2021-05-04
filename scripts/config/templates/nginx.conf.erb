@@ -164,15 +164,9 @@ http {
     location ~ \/(garages|parking-spaces)\/([A-z\-']+)$ {
       return 301 https://$host/regions/$2/$1;
     }
-
+    
     # Redirect for single dash dlps
-    location ~* \/([A-z\-']*)--([A-z\-']*)-(garages|parking-spaces)$ {
-      mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_single_path.rb cache;
-      return 301 https://$host/locations/$locations_path;
-    }
-
-    # Redirect for single dash dlps
-    location ~* \/([A-z\-']*)--([A-z\-']*)-(long-term-parking|monthly-parking|self-storage|driveway-parking)$ {
+    location ~* \/([A-z\-']*)--([A-z\-']*)-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$ {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_single_path.rb cache;
       return 301 https://$host/locations/$locations_path;
     }
