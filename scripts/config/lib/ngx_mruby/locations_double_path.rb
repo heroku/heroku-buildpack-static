@@ -8,6 +8,6 @@ USER_CONFIG = '/app/static.json'
 req         = Nginx::Request.new
 uri         = req.var.uri
 
-city, state, type, subtype = uri.match(%r{\/([A-z\-']*)--([A-z\-']*)--([A-z\-]*)\/*([A-z]*)$}i).captures
+city, state, type, subtype = uri.match(%r{\/([A-z\-\p{L}'%]*)--([A-z\-\p{L}'%]*)--([A-z\-]*)\/*([A-z]*)$}mi).captures
 
 "#{state.downcase}/#{city.downcase}/#{type.downcase}#{ "/#{subtype}" unless subtype.empty? }"

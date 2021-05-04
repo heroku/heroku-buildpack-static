@@ -8,6 +8,6 @@ USER_CONFIG = '/app/static.json'
 req         = Nginx::Request.new
 uri         = req.var.uri
 
-city, state, type = uri.match(%r{\/([A-z\-']*)--([A-z\-']*)-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$}i).captures
+city, state, type = uri.match(%r{\/([A-z0-9\-\p{L}'%]*)--([A-z0-9\-\p{L}'%]*)-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$}mi).captures
 
 "#{state.downcase}/#{city.downcase}/#{type.downcase}"
