@@ -147,6 +147,12 @@ http {
       mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_path.rb cache;
       return 301 https://$host/listings/$listing_path;
     }
+
+    # Redirect for double dashed dlp pages. Must be above the regions since the slash is optional
+    location ~ \/[A-z\-']*--[A-z\-']*--([A-z\-]*)\/*[A-z]*$ {
+      mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_double_path.rb cache;
+      return 301 https://$host/locations/$locations_path;
+    }
     
     # Redirect our state topic pages with storage and parking in the name to the new url structure
     location ~ \/[A-z\-]*(-storage|-parking)\/[A-z\-']+$ {
@@ -157,12 +163,6 @@ http {
     # Redirect our garage and parking spaces state topic pages to the new url structure
     location ~ \/(garages|parking-spaces)\/([A-z\-']+)$ {
       return 301 https://$host/regions/$2/$1;
-    }
-
-    # Redirect for double dashed dlp pages
-    location ~ \/[A-z\-']*--[A-z\-']*--([A-z\-]*)\/*[A-z]*$ {
-      mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_double_path.rb cache;
-      return 301 https://$host/locations/$locations_path;
     }
 
     # Redirect for single dash dlps
