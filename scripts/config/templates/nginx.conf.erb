@@ -15,9 +15,9 @@ http {
   gzip_vary on;
   gzip_proxied any;
 
-  log_format custom_agent '$remote_addr - $remote_user [$time_local] '
-                           '"$request" $status $body_bytes_sent '
-                           '"$http_referer" "$http_user_agent" "$http_x_original_user_agent"';
+  log_format custom_agent  'ip=$remote_addr timestamp=$time_iso8601 log_timing="incoming" '
+                           'method=$request_method path="$request_uri" status=$status bytes=$body_bytes_sent request_id=$request_id '
+                           'referrer="$http_referer" user_agent="$http_user_agent" original_user_agent="$http_x_original_user_agent"';
 
   server_tokens off;
 
