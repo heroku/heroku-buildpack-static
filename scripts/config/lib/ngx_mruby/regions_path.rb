@@ -8,7 +8,7 @@ USER_CONFIG = '/app/static.json'
 req         = Nginx::Request.new
 uri         = req.var.uri
 
-storage_type, suffix, state = uri.match(%r{\/([A-z\-]*)(-storage|-parking)\/([A-z\-\p{L}'%]+)$}i).captures
+storage_type, suffix, state = uri.match(%r{\/([A-z\-]*)(-storage|-parking)\/([A-z0-9\-\p{L}'%]+)$}i).captures
 types = storage_type.split('-')
 
 if types.length > 1
