@@ -128,6 +128,10 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/sitemaps$request_uri;
   }
 
+  location ~ ^\/v2/sitemap.[A-Za-z_]*.xml$ {
+    proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/sitemaps$request_uri;
+  }
+
   location ~ \.xml$|\.txt$ {
     # bypass rendertron
     try_files $uri =404;
