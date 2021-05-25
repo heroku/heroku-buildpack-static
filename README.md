@@ -21,7 +21,7 @@ The `static.json` file is required to use this buildpack. This file handles all 
 You can configure different options for your static application by writing a `static.json` in the root folder of your application.
 
 #### Root
-This allows you to specify a different asset root for the directory of your application. For instance, if you're using ember-cli, it naturally builds a `dist/` directory, so you might want to use that intsead.
+This allows you to specify a different asset root for the directory of your application. For instance, if you're using ember-cli, it naturally builds a `dist/` directory, so you might want to use that instead.
 
 ```json
 {
