@@ -16,7 +16,8 @@ class NginxConfig
     logging: {
       "access" => true,
       "error" => "error"
-    }
+    },
+    absolute_redirect: true
   }
 
   def initialize(json_file)
@@ -50,6 +51,7 @@ class NginxConfig
 
     json["clean_urls"] ||= DEFAULT[:clean_urls]
     json["https_only"] ||= DEFAULT[:https_only]
+    json["absolute_redirect"] = true unless json[:absolute_redirect].nil?
 
     json["basic_auth"] = true unless ENV['BASIC_AUTH_USERNAME'].nil?
     json["basic_auth"] ||= DEFAULT[:basic_auth]

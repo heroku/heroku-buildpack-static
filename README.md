@@ -70,6 +70,16 @@ For SEO purposes, you can drop the `.html` extension from URLs for say a blog si
 
 By default this is set to `false`.
 
+#### Absolute redirect
+By default nginx issues absolute redirects. If you need them to be relative set the `absolute_redirect` to `false`.
+
+```json
+{
+  "absolute_redirect": false
+}
+```
+
+By default this is set to `true`.
 
 #### Logging
 You can disable the access log and change the severity level for the error log.

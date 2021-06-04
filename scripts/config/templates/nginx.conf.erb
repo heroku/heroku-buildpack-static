@@ -43,6 +43,13 @@ http {
     port_in_redirect off;
     keepalive_timeout 5;
     root <%= root %>;
+
+  <% if absolute_redirect %>
+    absolute_redirect on;
+  <% else %>
+    absolute_redirect off;
+  <% end %>
+
   <% if error_page %>
     error_page 404 500 /<%= error_page %>;
   <% end %>
@@ -54,6 +61,7 @@ http {
     auth_basic "Restricted";
     auth_basic_user_file <%= basic_auth_htpasswd_path %>;
   <% end %>
+
 
     mruby_post_read_handler /app/bin/config/lib/ngx_mruby/headers.rb cache;
 
