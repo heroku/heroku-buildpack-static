@@ -206,7 +206,7 @@ http {
     # Only proxy to prerendered page if:
     # 1. There is not a neighbor rendertron header
     # 2. The $request_uri has some kind of /:city--:state-:suffix (no numbers) match
-    set $static_render_condition "${http_x_neighbor_rendertron}---${request_uri}";
+    set $static_render_condition "${http_x_neighbor_rendertron}---${uri}";
     proxy_intercept_errors on;
 
     # this proxies the request to the prerendered dlp bucket folder if it is not a rendertron request and the URL is DLP-like
