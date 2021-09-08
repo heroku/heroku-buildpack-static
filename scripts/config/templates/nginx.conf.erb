@@ -142,7 +142,7 @@ http {
     return 301 https://www.neighbor.com/storage-blog/$1;
   }
 
-  location ^~ /storage-blog/ {
+  location ^ /storage-blog/ {
     access_log off;
     proxy_pass http://storageblog.neighbor.com;
     proxy_set_header X-Real-IP $remote_addr;
