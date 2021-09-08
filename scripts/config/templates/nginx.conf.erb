@@ -142,6 +142,14 @@ http {
     return 301 https://www.neighbor.com/storage-blog/$1;
   }
 
+  location ^~ /storage-blog/ {
+    access_log off;
+    proxy_pass http://storageblog.neighbor.com;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+
   location ~ \/rentals\/[A-z\-]*--[A-z\-]*-self-storage-space--[0-9]*$ {
     return 404;
   }
