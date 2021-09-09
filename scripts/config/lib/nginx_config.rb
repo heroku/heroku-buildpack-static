@@ -64,6 +64,7 @@ class NginxConfig
       File.open("/etc/resolv.conf", "r").each do |line|
         next unless md = line.match(/^nameserver\s*(\S*)/)
         nameservers << md[1]
+        break
       end
     end
     nameservers << [DEFAULT[:resolver]] if nameservers.empty?
