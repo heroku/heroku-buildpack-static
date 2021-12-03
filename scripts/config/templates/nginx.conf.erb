@@ -132,9 +132,8 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/sitemaps$request_uri;
   }
 
-  location ~ \.xml$|\.txt$ {
-    # bypass rendertron
-    try_files $uri =404;
+  location ~* ^/[^/]+\.(?:png|ico|txt|xml|json|svg|webmanifest)$ {
+    try_files /public/$uri @s3 =404;
   }
 
   # insert a slash between /storage-blog/ and the article names
