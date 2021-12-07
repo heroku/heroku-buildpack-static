@@ -117,7 +117,7 @@ http {
   }
   
   location ~ ^/assets/ {
-    try_files /public/$uri @s3;
+    try_files $uri @s3;
   }
 
   location @s3 {
@@ -133,7 +133,7 @@ http {
   }
 
   location ~* ^/[^/]+\.(?:png|ico|txt|xml|json|svg|webmanifest)$ {
-    try_files /public/$uri @s3 =404;
+    try_files $uri @s3;
   }
 
   # insert a slash between /storage-blog/ and the article names
