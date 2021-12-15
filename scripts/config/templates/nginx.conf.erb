@@ -60,6 +60,7 @@ http {
     charset <%= encoding %>;
     port_in_redirect off;
     keepalive_timeout 5;
+    rewrite ^/(.*)/$ /$1 permanent;
     root <%= root %>;
   <% if error_page %>
     error_page 404 500 /<%= error_page %>;
@@ -124,7 +125,7 @@ http {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/frontend$uri;
   }
 
-  location ~ ^\/sitemap.[A-Za-z_]*.xml$ {
+  location ~ ^\/sitemap.[A-Za-z_0-9]*.xml$ {
     proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/sitemaps$request_uri;
   }
 
