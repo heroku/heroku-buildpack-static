@@ -107,11 +107,6 @@ http {
   location ~ ^/links/(.*){
     return 301 https://$host/$1;
   }
-
-# Redirect all urls with a trailing slash that are not the storage blog
-  location ~ ^/(?!(storage-blog)){
-    rewrite ^/(.*)/$ /$1 permanent;
-  }
   
   location ~ ^/.well-known/ {
     try_files $uri @s3;
