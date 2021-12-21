@@ -14,14 +14,14 @@ For a guide, read the [Getting Started with Single Page Apps on Heroku](https://
 ## Deploying
 The `static.json` file is required to use this buildpack. This file handles all the configuration described below.
 
-1. Set the app to this buildpack: `$ heroku buildpacks:set https://github.com/heroku/heroku-buildpack-static.git`.
+1. Set the app to this buildpack: `$ heroku buildpacks:set heroku-community/static`.
 2. Deploy: `$ git push heroku master`
 
 ### Configuration
 You can configure different options for your static application by writing a `static.json` in the root folder of your application.
 
 #### Root
-This allows you to specify a different asset root for the directory of your application. For instance, if you're using ember-cli, it naturally builds a `dist/` directory, so you might want to use that intsead.
+This allows you to specify a different asset root for the directory of your application. For instance, if you're using ember-cli, it naturally builds a `dist/` directory, so you might want to use that instead.
 
 ```json
 {
@@ -31,6 +31,23 @@ This allows you to specify a different asset root for the directory of your appl
 ```
 
 By default this is set to `public_html/`
+
+#### Canonical Host
+This allows you to perform 301 redirects to a specific hostname, which can be useful for redirecting www to non-www (or vice versa).
+
+```json
+{
+  "canonical_host": "www.example.com"
+}
+```
+
+You can use environment variables as well:
+
+```json
+{
+  "canonical_host": "${HOST}"
+}
+```
 
 #### Default Character Set
 This allows you to specify a character set for your text assets (HTML, Javascript, CSS, and so on). For most apps, this should be the default value of "UTF-8", but you can override it by setting `encoding`:
@@ -150,6 +167,20 @@ You can redirect all HTTP requests to HTTPS.
 }
 ```
 
+#### Basic Authentication
+
+You can enable Basic Authentication so all requests require authentication.
+
+```
+{
+  "basic_auth": true
+}
+```
+
+This will generate `.htpasswd` using environment variables `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` if they are present. Otherwise it will use a standard `.htpasswd` file present in the `app` directory.
+
+Passwords set via `BASIC_AUTH_PASSWORD` can be generated using OpenSSL or Apache Utils. For instance: `openssl passwd -apr1`.
+
 #### Proxy Backends
 For single page web applications like Ember, it's common to back the application with another app that's hosted on Heroku. The down side of separating out these two applications is that now you have to deal with CORS. To get around this (but at the cost of some latency) you can have the static buildpack proxy apps to your backend at a mountpoint. For instance, we can have all the api requests live at `/api/` which actually are just requests to our API server.
 
@@ -242,6 +273,10 @@ when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not 
 * Custom Routes
 * 404
 
+### Procfile / multiple buildpacks
+
+In case you have multiple buildpacks for the application you can ensure static rendering in `Procfile` with `web: bin/boot`.
+
 ## Testing
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 
@@ -268,3 +303,17 @@ You need to forward the docker's port 3000 to the virtual machine's port though.
 ```
 VBoxManage modifyvm "boot2docker-vm" --natpf1 "tcp-port3000,tcp,,3000,,3000";
 ```
+
+## Releasing new binaries
+
+The steps buildpack maintainers need to perform when releasing new nginx
+binaries (either for a new stack or `ngx_mruby` version), are:
+
+1. Update the stacks list in `Makefile` and/or the ngx_mruby version
+  in `scripts/build_ngx_mruby.sh`.
+2. Run `make build` to build all stacks or `make build-heroku-NN` to build just one stack.
+3. Ensure the AWS CLI is installed (eg `brew install awscli`).
+4. Authenticate with the relevant AWS account (typically by setting the environment variables from PCSK).
+5. Run `make sync` (or if using a custom S3 bucket, `S3_BUCKET=... make sync`).
+6. Update `bin/compile` to reference the new stacks and/or nginx version URLs.
+7. Open a PR with the changes from (1) and (6).

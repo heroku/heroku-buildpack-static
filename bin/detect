@@ -4,6 +4,7 @@
 build_dir=$1
 
 if [ ! -f "$build_dir/static.json" ]; then
+    echo "Could not find 'static.json'! Please ensure it exists and is checked into Git." >&2
     exit 1
 fi
 
