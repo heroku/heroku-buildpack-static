@@ -103,6 +103,8 @@ http {
     }
   <% end %>
 
+  rewrite ^/embed/(.*)$ /$1.html last;
+
   location ~ ^/(((?!storage-blog).)*)/$ { 
     return 301 $scheme://$http_host/$1;
   }
