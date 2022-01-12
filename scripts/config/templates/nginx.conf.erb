@@ -103,8 +103,8 @@ http {
     }
   <% end %>
 
-  location ~ ^(((?!storage-blog).)*)/$ { 
-    return 301 $scheme://$host$1;
+  location ~ ^/(((?!storage-blog).)*)/$ { 
+    return 301 $scheme://$http_host/$1;
   }
 
   # Redirect /links/x/state to /x/state
