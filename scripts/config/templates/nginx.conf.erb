@@ -150,15 +150,21 @@ http {
   }
 
   # Redirect our discover pages to the new url structure
-  location ~ "(*UTF8)^\/discover\/[A-z\-\/]*$" {
+  location ~ "(*UTF8)^\/discover\/[A-z0-9\-\p{L}\/'%]*$" {
     mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_path.rb cache;
     return 301 https://$host/$discover_path$is_args$args;
   }
 
   # Redirect our regions pages to the new url structure
-  location ~ "(*UTF8)^\/regions\/[A-z\-\/]*$" {
+  location ~ "(*UTF8)^\/regions\/[A-z0-9\-\p{L}\/'%]*$" {
     mruby_set $regions_path /app/bin/config/lib/ngx_mruby/regions_redirect_path.rb cache;
     return 301 https://$host/$regions_path$is_args$args;
+  }
+
+  # Redirect our locations pages to the new url structure
+  location ~ "(*UTF8)^\/locations\/[A-z0-9\-\p{L}\/'%]*$" {
+    mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_redirect_path.rb cache;
+    return 301 https://$host/$locations_path$is_args$args;
   }
 
   <% if listing_routing_version == '2' %>

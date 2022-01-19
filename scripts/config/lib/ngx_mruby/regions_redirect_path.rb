@@ -9,9 +9,9 @@ req         = Nginx::Request.new
 uri         = req.var.uri
 
 if uri.include?("indoor") || uri.include?("outdoor") || uri.include?("covered")
-    state, type, subtype = uri.match(%r{/regions/([A-z\-]*)\/([A-z\-]*)\/([A-z\-]*)$}mi).captures
+    state, type, subtype = uri.match(%r{/regions/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)$}mi).captures
     "#{type.downcase}-near-me/#{subtype}/#{state}"
 else
-    state, type = uri.match(%r{/regions/([A-z\-]*)\/([A-z\-]*)$}mi).captures
+    state, type = uri.match(%r{/regions/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)$}mi).captures
     "#{type.downcase}-near-me/#{state}"
 end
