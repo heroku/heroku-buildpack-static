@@ -10,7 +10,7 @@ uri         = req.var.uri
 
 type, subtype = uri.match(%r{/discover/([A-z\-]*)\/*([A-z]*)$}mi).captures
 
-if subtype
+if not (subtype.nil? || subtype.empty?)
     "#{type.downcase}-near-me/#{subtype.downcase}"
 else
     "#{type.downcase}-near-me"
