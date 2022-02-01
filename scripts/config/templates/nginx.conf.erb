@@ -250,7 +250,7 @@ http {
 
     # this proxies the request to the live render service
     if ($http_x_should_prerender) {
-      proxy_pass $rendertron_base$neighbor_url;
+      proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
     
