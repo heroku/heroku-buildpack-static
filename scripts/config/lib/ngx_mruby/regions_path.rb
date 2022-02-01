@@ -10,14 +10,15 @@ uri         = req.var.uri
 
 storage_type, suffix, state = uri.match(%r{\/([A-z\-]*)(-storage|-parking)\/([A-z0-9\-\p{L}'%]+)$}i).captures
 types = storage_type.split('-')
-
+puts storage_type, suffix, state
+puts types
 if types.length > 1
   if %w[indoor outdoor covered].include? types[0]
-    "#{state.downcase}/#{types[1]}#{suffix}/#{types[0]}"
+    "#{types[1]}#{suffix}-near-me/#{types[0]}/#{state.downcase}"
   else
     # case climate-controlled storage, long term storage, long term parking
-    "#{state.downcase}/#{storage_type}#{suffix}"
+    "#{storage_type}#{suffix}-near-me/#{state.downcase}"
   end
 else
-  "#{state.downcase}/#{types[0]}#{suffix}"
+  "#{types[0]}#{suffix}-near-me/#{state.downcase}"
 end

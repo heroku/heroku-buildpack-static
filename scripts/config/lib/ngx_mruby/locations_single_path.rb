@@ -10,4 +10,4 @@ uri         = req.var.uri
 
 city, state, type = uri.match(%r{\/([A-z0-9\-\p{L}'%]*)--([A-z0-9\-\p{L}'%]*)-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$}mi).captures
 
-"#{state.downcase}/#{city.downcase}/#{type.downcase}"
+"#{type.downcase}-near-me/#{state.downcase}/#{city.downcase}"
