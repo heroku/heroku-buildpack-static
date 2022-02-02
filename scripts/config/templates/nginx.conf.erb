@@ -102,7 +102,7 @@ http {
       return 301 https://$host$request_uri;
     }
   <% end %>
-  
+
   rewrite ^/embed/(.*)$ /$1.html last;
 
   location ~ ^/(((?!storage-blog).)*)/$ { 
