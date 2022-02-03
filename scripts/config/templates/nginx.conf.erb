@@ -73,7 +73,7 @@ http {
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
     set $rendertron_base <%= rendertron_api_base %>;
-    
+
   <% if basic_auth %>
     auth_basic "Restricted";
     auth_basic_user_file <%= basic_auth_htpasswd_path %>;
@@ -154,7 +154,7 @@ http {
   # Redirect our listings pages to the new url structure
   location ~ "(*UTF8)^\/listings\/[A-z0-9\-]*\/[A-z0-9\-]*\/[0-9]*$" {
     mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_redirect_path.rb cache;
-    proxy_pass https://url-proxy.production.neighbor.com/listings/$host/$listing_path$is_args$args;
+    proxy_pass https://url-proxy.<%= environment == "production" ? "production" : "staging "%>.neighbor.com/listings/$host/$listing_path$is_args$args;
   }
 
   # Redirect our discover pages to the new url structure
