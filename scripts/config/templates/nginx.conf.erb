@@ -15,7 +15,7 @@ http {
   gzip_vary on;
   gzip_proxied any;
 
-  log_format custom_agent  'network.client.ip=$remote_addr ip.forward-chain=$http_x_forwarded_for timestamp=$time_iso8601 log_source="nginx" '
+  log_format custom_agent  'network.client.ip=$remote_addr ip.forward_chain=$http_x_forwarded_for timestamp=$time_iso8601 log_source="nginx" '
                            'http.method=$request_method http.url="$request_uri" http.status_code=$status network.bytes_written=$body_bytes_sent http.request_id=$http_x_request_id '
                            'referrer="$http_referer" http.user_agent="$http_user_agent" http.downstream_user_agent="$http_x_original_user_agent" '
                            'duration=$request_time upstream_duration=$upstream_response_time';
