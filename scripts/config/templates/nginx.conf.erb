@@ -158,21 +158,9 @@ http {
   }
 
   # Redirect our discover pages to the new url structure
-  location ~ "(*UTF8)^\/discover\/[A-z0-9\-\p{L}\/'%]*$" {
+  location ~ "(*UTF8)^\/discover\/[A-z\-\/]*$" {
     mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_path.rb cache;
     return 301 https://$host/$discover_path$is_args$args;
-  }
-
-  # Redirect our regions pages to the new url structure
-  location ~ "(*UTF8)^\/regions\/[A-z0-9\-\p{L}\/'%]*$" {
-    mruby_set $regions_path /app/bin/config/lib/ngx_mruby/regions_redirect_path.rb cache;
-    return 301 https://$host/$regions_path$is_args$args;
-  }
-
-  # Redirect our locations pages to the new url structure
-  location ~ "(*UTF8)^\/locations\/[A-z0-9\-\p{L}\/'%]*$" {
-    mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_redirect_path.rb cache;
-    return 301 https://$host/$locations_path$is_args$args;
   }
 
   <% if listing_routing_version == '2' %>
@@ -185,24 +173,24 @@ http {
     # Redirect for double dashed dlp pages. Must be above the regions since the slash is optional
     location ~ "(*UTF8)^\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*--([A-z\-]*)\/*[A-z]*$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_double_path.rb cache;
-      return 301 https://$host/$locations_path$is_args$args;
+      return 301 https://$host/locations/$locations_path$is_args$args;
     }
     
     # Redirect our state topic pages with storage and parking in the name to the new url structure
     location ~ "(*UTF8)^\/[A-z\-]*(-storage|-parking)\/[A-z0-9\-\p{L}'%]+$" {
       mruby_set $regions_path /app/bin/config/lib/ngx_mruby/regions_path.rb cache;
-      return 301 https://$host/$regions_path$is_args$args;
+      return 301 https://$host/regions/$regions_path$is_args$args;
     }
 
     # Redirect our garage and parking spaces state topic pages to the new url structure
     location ~ "(*UTF8)^\/(garages|parking-spaces)\/([A-z0-9\-\p{L}'%]+)$" {
-      return 301 https://$host/$1-near-me/$2$is_args$args;
+      return 301 https://$host/regions/$2/$1$is_args$args;
     }
     
     # Redirect for single dash dlps
     location ~* "(*UTF8)^\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_single_path.rb cache;
-      return 301 https://$host/$locations_path$is_args$args;
+      return 301 https://$host/locations/$locations_path$is_args$args;
     }
   <% end %>
 
