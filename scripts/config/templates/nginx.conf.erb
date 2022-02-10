@@ -151,6 +151,18 @@ http {
     return 404;
   }
 
+  location ^~ /test-blog {
+    <% if environment == 'staging' || environment == 'development'%>
+      proxy_pass                          https://staging-newstorageblog.kinsta.cloud;
+    <% else %>
+      proxy_pass                          https://newstorageblog.kinsta.cloud;
+    <% end %>
+
+    proxy_set_header X-Real-IP          $remote_addr;
+    proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto  $scheme;
+  }
+
   # Redirect our listings pages to the new url structure
   location ~ "(*UTF8)^\/listings\/[A-z0-9\-]*\/[A-z0-9\-]*\/[0-9]*$" {
     mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_redirect_path.rb cache;
