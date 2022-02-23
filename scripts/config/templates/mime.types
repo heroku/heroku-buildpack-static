@@ -1,11 +1,11 @@
 types {
     text/html                             html htm shtml;
     text/css                              css;
+    text/javascript                       js;
     text/xml                              xml;
     text/cache-manifest                   manifest appcache;
     image/gif                             gif;
     image/jpeg                            jpeg jpg;
-    application/x-javascript              js;
     application/atom+xml                  atom;
     application/rss+xml                   rss;
 
