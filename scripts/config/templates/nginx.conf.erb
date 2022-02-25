@@ -163,6 +163,16 @@ http {
     proxy_set_header X-Forwarded-Proto  $scheme;
   }
 
+  # Redirect nar page to host investor page
+  location ^~ /nar {
+    return 301 https://neighbor.pxf.io/c/3202044/1263793/14066?sharedid=nar;
+  }
+
+  # Redirect ambassador page to host realtor ambassador page
+  location ^~ /ambassador {
+    return 301 https://host.neighbor.com/realtor-ambassador/;
+  }
+
   # Redirect our listings pages to the new url structure
   location ~ "(*UTF8)^\/listings\/[A-z0-9\-]*\/[A-z0-9\-]*\/[0-9]*$" {
     mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_redirect_path.rb cache;
