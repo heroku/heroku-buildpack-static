@@ -22,7 +22,7 @@ http {
 
   server_tokens off;
 
-  split_clients "${request_uri}_DLP_VERSION" $is_dlp_v2 { 
+  split_clients "${request_uri}_DLP_VERSION" $is_dlp_v2 {
   <%= dlp_v2_hide_percentage %>%   false;
     *                             true;
   }
@@ -73,7 +73,7 @@ http {
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
     set $rendertron_base <%= rendertron_api_base %>;
-    
+
   <% if basic_auth %>
     auth_basic "Restricted";
     auth_basic_user_file <%= basic_auth_htpasswd_path %>;
@@ -105,7 +105,7 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  location ~ ^/(((?!storage-blog).)*)/$ { 
+  location ~ ^/(((?!storage-blog).)*)/$ {
     return 301 $scheme://$http_host/$1;
   }
 
@@ -113,15 +113,15 @@ http {
   location ~ ^/links/(.*){
     return 301 https://$host/$1;
   }
-  
+
   location ~ ^/.well-known/ {
     try_files $uri @s3;
   }
-  
+
   location ~ ^/static/ {
     try_files $uri @s3;
   }
-  
+
   location ~ ^/assets/ {
     try_files $uri @s3;
   }
@@ -185,7 +185,7 @@ http {
   location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*)$" {
     return 301 https://$host/locations/$1/$2/$3$is_args$args;
   }
-  
+
   # Redirect our locations dlp pages with trailing slash in STATE to non-trailing slash version: https://www.neighbor.com/locations/texas-/san-antonio/self-storage to https://www.neighbor.com/locations/texas/san-antonio/self-storage
   location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*[^-]\/[A-z\-\p{L}'%]*)$" {
     return 301 https://$host/locations/$1/$2$is_args$args;
@@ -209,7 +209,7 @@ http {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_double_path.rb cache;
       return 301 https://$host/locations/$locations_path$is_args$args;
     }
-    
+
     # Redirect our state topic pages with storage and parking in the name to the new url structure
     location ~ "(*UTF8)^\/[A-z\-]*(-storage|-parking)\/[A-z0-9\-\p{L}'%]+$" {
       mruby_set $regions_path /app/bin/config/lib/ngx_mruby/regions_path.rb cache;
@@ -220,13 +220,19 @@ http {
     location ~ "(*UTF8)^\/(garages|parking-spaces)\/([A-z0-9\-\p{L}'%]+)$" {
       return 301 https://$host/regions/$2/$1$is_args$args;
     }
-    
+
     # Redirect for single dash dlps
     location ~* "(*UTF8)^\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_single_path.rb cache;
       return 301 https://$host/locations/$locations_path$is_args$args;
     }
   <% end %>
+
+  # Redirect location DLPs to server-side rendered frontend
+  # The /build directory is also needed because that's where the server-rendered JS comes from
+  location ~ ^/((build|locations)/.*) {
+    proxy_pass <%= ssr_frontend_host %>/$1;
+  }
 
   location @proxy_fallback {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
@@ -283,7 +289,7 @@ http {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
     }
-    
+
     # if it is a rendertron request, on the dlp v2 arm, and has a DLP-like URL, then redirect rendertron with query param
     set $dlp_v2_test_condition "${args}---${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
     if ($dlp_v2_test_condition ~ ^---v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-\/]*$) {
