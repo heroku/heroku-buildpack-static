@@ -233,10 +233,15 @@ http {
     }
   <% end %>
 
-  # Redirect location DLPs to server-side rendered frontend
   # The /build directory is also needed because that's where the server-rendered JS comes from
-  location ~ ^/((build|locations)/.*) {
-    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+  # Redirect location DLPs to server-side rendered frontend
+  location ~ ^/(build\/)?([A-z\-]*)-near-me\/(?!(indoor|outdoor|covered))([A-z\-]+)\/([A-z\-]+) {
+    proxy_pass <%= ssr_frontend_host %>/$1locations/$4/$5/$2$is_args$args;
+  }
+
+  # Redirect location DLPs to server-side rendered frontend
+  location ~ ^/(build\/)?([A-z\-]*)-near-me\/(indoor|outdoor|covered)\/([A-z\-]+)\/([A-z\-]+) {
+    proxy_pass <%= ssr_frontend_host %>/$1locations/$4/$5/$2/$3$is_args$args;
   }
 
   location @proxy_fallback {
