@@ -197,7 +197,7 @@ http {
   }
 
   # Redirect our locations pages to the new url structure
-  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)+\/([A-z\-\p{L}'%]*)+\/([A-z\-\p{L}'%]*)$" {
+  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)+\/([A-z\-\p{L}'%]*)+\/([A-z\/\-\p{L}'%]*)$" {
     mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_redirect_path.rb cache;
     return 301 https://$host/$locations_path$is_args$args;
   }
@@ -245,7 +245,7 @@ http {
   }
 
   # Redirect location DLPs to server-side rendered frontend
-  location ~ ^/((build)/.*) {
+  location ~ ^/((build|locations)/.*) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
