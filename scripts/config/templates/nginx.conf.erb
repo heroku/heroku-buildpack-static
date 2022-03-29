@@ -166,7 +166,7 @@ http {
   # Redirect our locations pages to the new url structure
   location ~ "(*UTF8)^\/locations\/[A-z][A-z]\/[A-z\-\/]*$" {
     mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_state_path.rb cache;
-    return 301 https://$host/locations/$locations_path$is_args$args;
+    return 301 https://$host/$locations_path$is_args$args;
   }
 
   # Redirect our listings pages to the new url structure
@@ -183,19 +183,24 @@ http {
 
   # Redirect our locations dlp pages with trailing slash in CITY AND STATE to non-trailing slash version: https://www.neighbor.com/locations/texas-/san-antonio-/self-storage to https://www.neighbor.com/locations/texas/san-antonio/self-storage
   location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*)$" {
-    return 301 https://$host/locations/$1/$2/$3$is_args$args;
+    return 301 https://$host/$3-near-me/$1/$2$is_args$args;
   }
 
   # Redirect our locations dlp pages with trailing slash in STATE to non-trailing slash version: https://www.neighbor.com/locations/texas-/san-antonio/self-storage to https://www.neighbor.com/locations/texas/san-antonio/self-storage
-  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*[^-]\/[A-z\-\p{L}'%]*)$" {
-    return 301 https://$host/locations/$1/$2$is_args$args;
+  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*[^-])\/([A-z\-\p{L}'%]*)$" {
+    return 301 https://$host/$3-near-me/$1/$2$is_args$args;
   }
 
   # Redirect our locations dlp pages with trailing slash in CITY to non-trailing slash version: https://www.neighbor.com/locations/texas/san-antonio-/self-storage to https://www.neighbor.com/locations/texas/san-antonio/self-storage
   location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*[^-])\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*)$" {
-    return 301 https://$host/locations/$1/$2/$3$is_args$args;
+    return 301 https://$host/$3-near-me/$1/$2$is_args$args;
   }
 
+  # Redirect our locations pages to the new url structure
+  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)+\/([A-z\-\p{L}'%]*)+\/([A-z\-\p{L}'%]*)$" {
+    mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_redirect_path.rb cache;
+    return 301 https://$host/$locations_path$is_args$args;
+  }
 
   <% if listing_routing_version == '2' %>
     # Redirect our listing detail pages to the new url structure
@@ -207,7 +212,7 @@ http {
     # Redirect for double dashed dlp pages. Must be above the regions since the slash is optional
     location ~ "(*UTF8)^\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*--([A-z\-]*)\/*[A-z]*$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_double_path.rb cache;
-      return 301 https://$host/locations/$locations_path$is_args$args;
+      return 301 https://$host/$locations_path$is_args$args;
     }
 
     # Redirect our state topic pages with storage and parking in the name to the new url structure
@@ -224,7 +229,7 @@ http {
     # Redirect for single dash dlps
     location ~* "(*UTF8)^\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*-(garages|parking-spaces|long-term-parking|monthly-parking|self-storage|driveway-parking)$" {
       mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_single_path.rb cache;
-      return 301 https://$host/locations/$locations_path$is_args$args;
+      return 301 https://$host/$locations_path$is_args$args;
     }
   <% end %>
 

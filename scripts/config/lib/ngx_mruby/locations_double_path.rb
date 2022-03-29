@@ -10,4 +10,4 @@ uri         = req.var.uri
 
 city, state, type, subtype = uri.match(%r{\/([A-z0-9\-\p{L}'%]*)--([A-z0-9\-\p{L}'%]*)--([A-z\-]*)\/*([A-z]*)$}mi).captures
 
-"#{state.downcase}/#{city.downcase}/#{type.downcase}#{ "/#{subtype}" unless subtype.empty? }"
+"#{type.downcase}-near-me#{ "/#{subtype}" unless subtype.empty? }/#{state.downcase}/#{city.downcase}"
