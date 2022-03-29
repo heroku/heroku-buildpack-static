@@ -187,7 +187,7 @@ http {
   }
 
   # Redirect our locations dlp pages with trailing slash in STATE to non-trailing slash version: https://www.neighbor.com/locations/texas-/san-antonio/self-storage to https://www.neighbor.com/locations/texas/san-antonio/self-storage
-  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*)[^-]\/([A-z\-\p{L}'%]*)$" {
+  location ~ "(*UTF8)^\/locations\/([A-z\-\p{L}'%]*)\-+\/([A-z\-\p{L}'%]*[^-])\/([A-z\-\p{L}'%]*)$" {
     return 301 https://$host/$3-near-me/$1/$2$is_args$args;
   }
 
