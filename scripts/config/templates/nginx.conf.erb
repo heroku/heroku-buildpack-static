@@ -229,7 +229,7 @@ http {
 
     # Redirect our garage and parking spaces state topic pages to the new url structure
     location ~ "(*UTF8)^\/(garages|parking-spaces)\/([A-z0-9\-\p{L}'%]+)$" {
-      return 301 https://$host/regions/$2/$1$is_args$args;
+      return 301 https://$host/regions/$1-near-me/$2$is_args$args;
     }
 
     # Redirect for single dash dlps
