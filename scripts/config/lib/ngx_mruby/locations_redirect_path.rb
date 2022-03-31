@@ -11,6 +11,10 @@ uri         = req.var.uri
 if uri.include?("indoor") || uri.include?("outdoor") || uri.include?("covered")
     state, city, type, subtype = uri.match(%r{/locations/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)$}mi).captures
     "#{type.downcase}-near-me/#{subtype}/#{state}/#{city}"
+
+elsif uri.include?("college-storage")
+    state, city, type, college = uri.match(%r{/locations/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)$}mi).captures
+    "#{type.downcase}-near-me/#{state}/#{city}/#{college}"
 else
     state, city, type = uri.match(%r{/locations/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)\/([A-z0-9\-\p{L}'%]*)$}mi).captures
     "#{type.downcase}-near-me/#{state}/#{city}"
