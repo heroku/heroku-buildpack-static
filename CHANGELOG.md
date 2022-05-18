@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* [#239](https://github.com/heroku/heroku-buildpack-static/pull/239) Update ngx_mruby from 2.2.3 to 2.2.4.
+* [#239](https://github.com/heroku/heroku-buildpack-static/pull/239) Update nginx from 1.19.0 to 1.21.3.
+* [#239](https://github.com/heroku/heroku-buildpack-static/pull/239) Add support for Heroku-22.
 * [#238](https://github.com/heroku/heroku-buildpack-static/pull/238) Drop support for Cedar-14 and Heroku-16.
 
 ## v7 (2021-03-09)

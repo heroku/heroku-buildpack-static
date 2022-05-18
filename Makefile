@@ -1,8 +1,8 @@
 S3_BUCKET ?= heroku-buildpack-static
 
-.PHONY: build build-heroku-18 build-heroku-20 sync
+.PHONY: build build-heroku-18 build-heroku-20 build-heroku-22 sync
 
-build: build-heroku-18 build-heroku-20
+build: build-heroku-18 build-heroku-20 build-heroku-22
 
 build-heroku-18:
 	@docker pull heroku/heroku:18-build
@@ -11,6 +11,10 @@ build-heroku-18:
 build-heroku-20:
 	@docker pull heroku/heroku:20-build
 	@docker run -v "$(shell pwd)":/buildpack --rm -it -e "STACK=heroku-20" heroku/heroku:20-build /buildpack/scripts/build_ngx_mruby.sh
+
+build-heroku-22:
+	@docker pull heroku/heroku:22-build
+	@docker run -v "$(shell pwd)":/buildpack --rm -it -e "STACK=heroku-22" heroku/heroku:22-build /buildpack/scripts/build_ngx_mruby.sh
 
 sync:
 	@echo "Performing dry run of sync to $(S3_BUCKET)..."

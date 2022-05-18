@@ -9,8 +9,8 @@ env_dir=$3
 bp_dir=$(dirname $(dirname $0))
 
 case "${STACK}" in
-  heroku-18|heroku-20)
-    nginx_archive_url="https://heroku-buildpack-static.s3.amazonaws.com/${STACK}/nginx-1.19.0-ngx_mruby-2.2.3.tgz"
+  heroku-18|heroku-20|heroku-22)
+    nginx_archive_url="https://heroku-buildpack-static.s3.amazonaws.com/${STACK}/nginx-1.21.3-ngx_mruby-2.2.4.tgz"
     ;;
   *)
     echo "Stack ${STACK} is not supported!"
