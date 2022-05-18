@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* [#238](https://github.com/heroku/heroku-buildpack-static/pull/238) Drop support for Cedar-14 and Heroku-16.
 
 ## v7 (2021-03-09)
 
