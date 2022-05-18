@@ -1,12 +1,8 @@
 S3_BUCKET ?= heroku-buildpack-static
 
-.PHONY: build build-heroku-16 build-heroku-18 build-heroku-20 sync
+.PHONY: build build-heroku-18 build-heroku-20 sync
 
-build: build-heroku-16 build-heroku-18 build-heroku-20
-
-build-heroku-16:
-	@docker pull heroku/heroku:16-build
-	@docker run -v "$(shell pwd)":/buildpack --rm -it -e "STACK=heroku-16" heroku/heroku:16-build /buildpack/scripts/build_ngx_mruby.sh
+build: build-heroku-18 build-heroku-20
 
 build-heroku-18:
 	@docker pull heroku/heroku:18-build
