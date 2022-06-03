@@ -33,8 +33,8 @@ class NginxConfig
     json['redirect_target'] ||= ENV['REACT_APP_HOSTNAME']
     json['dlp_v2_hide_percentage'] ||= (ENV['DLP_V2_HIDE_PERCENT'] || 100)
     json['listing_routing_version'] ||= (ENV['REACT_APP_LISTING_ROUTING_VERSION'])
-    json['ssr_frontend_host'] ||= ENV['SSR_FRONTEND_HOST']
-
+    json['heroku_ssr_frontend_host'] ||= ENV['HEROKU_SSR_FRONTEND_HOST']
+    json['aws_ssr_frontend_host'] ||= ENV['AWS_SSR_FRONTEND_HOST']
     json['canonical_host'] ||= DEFAULT[:canonical_host]
     json['canonical_host'] = NginxConfigUtil.interpolate(json['canonical_host'], ENV) if json['canonical_host']
 

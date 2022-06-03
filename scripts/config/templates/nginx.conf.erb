@@ -26,6 +26,11 @@ http {
   <%= dlp_v2_hide_percentage %>%   false;
     *                             true;
   }
+  
+  split_clients "${remote_addr}" $ssr_frontend_host {
+    95% <%= heroku_ssr_frontend_host %>;
+    *  <%= aws_ssr_frontend_host %>;
+  }
 
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
@@ -242,18 +247,18 @@ http {
   # The /build directory is also needed because that's where the server-rendered JS comes from
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/(college-storage-near-me)\/([A-z\-]+)\/([A-z\-]+)\/([A-z\-]+)$ {
-    proxy_pass <%= ssr_frontend_host %>/$1/$4/$2/$3$is_args$args;
+    proxy_pass $ssr_frontend_host/$1/$4/$2/$3$is_args$args;
   }
 
   # The /build directory is also needed because that's where the server-rendered JS comes from
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z\-]+)\/([A-z\-]+)$) {
-    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+    proxy_pass $ssr_frontend_host/$1$is_args$args;
   }
 
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/((build)/.*) {
-    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+    proxy_pass $ssr_frontend_host/$1$is_args$args;
   }
 
   location @proxy_fallback {
