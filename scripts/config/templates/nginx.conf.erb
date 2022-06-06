@@ -156,7 +156,7 @@ http {
     return 404;
   }
 
-  location ^~ /test-blog {
+  location ^~ /storage-blog {
     <% if environment == 'staging' || environment == 'development'%>
       proxy_pass                          https://staging-newstorageblog.kinsta.cloud;
     <% else %>
