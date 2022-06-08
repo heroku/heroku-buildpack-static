@@ -147,11 +147,6 @@ http {
     try_files $uri @s3;
   }
 
-  # insert a slash between /storage-blog/ and the article names
-  location ~ \/storage-blog([^\/].*) {
-    return 301 https://www.neighbor.com/storage-blog/$1;
-  }
-
   location ~ \/rentals\/[A-z\-]*--[A-z\-]*-self-storage-space--[0-9]*$ {
     return 404;
   }
