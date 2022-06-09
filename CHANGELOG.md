@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* [#243](https://github.com/heroku/heroku-buildpack-static/pull/243) Buildpack is officially deprecated
+
 ## v8 (2022-05-19)
 
 * [#240](https://github.com/heroku/heroku-buildpack-static/pull/240) Update ngx_mruby from 2.2.3 to 2.2.4.
