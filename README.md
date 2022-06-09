@@ -21,9 +21,16 @@ $ heroku run bash
 ~ $ cat config/nginx.conf
 ```
 
-These commands will output your current NGINX config generated from your `static.json` contents. Write
-these contents to your local repo, commit them to disk and configure an NGINX buildpack to
-serve your application with that configuration.
+These commands will output your current NGINX config generated from your `static.json` contents.
+
+- Write these contents to your local repo at `config/nginx.conf.erb`, commit them to git.
+- Replace path logic that previously used `mruby` with static logic.
+- Configure your app to use the NGINX buildpack via `heroku buildpacks:add https://github.com/heroku/heroku-buildpack-nginx`.
+- Remove this buildpack via `heroku buildpacks:remove https://github.com/heroku/heroku-buildpack-static`
+
+## Deprecation PRs
+
+If you have tips or tricks for migrating off of this buildpack and want to add them to the instructions above please send a PR.
 
 ## Features
 * serving static assets
@@ -298,6 +305,7 @@ when accessing `/foo`, `X-Foo` will have the value `"foo"` and `X-Bar` will not 
 In case you have multiple buildpacks for the application you can ensure static rendering in `Procfile` with `web: bin/boot`.
 
 ## Testing
+
 For testing we use Docker to replicate Heroku locally. You'll need to have [it setup locally](https://docs.docker.com/installation/). We're also using rspec for testing with Ruby. You'll need to have those setup and install those deps:
 
 ```sh
