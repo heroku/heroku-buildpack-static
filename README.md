@@ -6,8 +6,6 @@ This is a buildpack for handling static sites and single page web apps.
 
 For a guide, read the [Getting Started with Single Page Apps on Heroku](https://gist.github.com/hone/24b06869b4c1eca701f9).
 
-# heroku-buildpack-static
-
 ## WARNING: `heroku-buildpack-static` is deprecated
 
 This buildpack is deprecated and is no longer being maintained.
@@ -26,7 +24,7 @@ These commands will output your current NGINX config generated from your `static
 - Write these contents to your local repo at `config/nginx.conf.erb`, commit them to git.
 - Replace path logic that previously used `mruby` with static logic.
 - Configure your app to use the NGINX buildpack via `heroku buildpacks:add heroku-community/nginx`.
-- Remove this buildpack via `heroku buildpacks:remove https://github.com/heroku/heroku-buildpack-static`
+- Remove this buildpack via `heroku buildpacks:remove heroku-community/static` (or `heroku buildpacks:remove https://github.com/heroku/heroku-buildpack-static`).
 
 ## Deprecation PRs
 
