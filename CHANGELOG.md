@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v9 (2022-06-09)
+
 * [#243](https://github.com/heroku/heroku-buildpack-static/pull/243) Buildpack is officially deprecated
 
 ## v8 (2022-05-19)
