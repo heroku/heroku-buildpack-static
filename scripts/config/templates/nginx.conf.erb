@@ -160,7 +160,7 @@ http {
     <% if environment == 'staging' || environment == 'development'%>
       proxy_pass                          https://staging-newstorageblog.kinsta.cloud;
     <% else %>
-      proxy_pass                          http://blog2.neighbor.com;
+      proxy_pass                          https://newstorageblog.kinsta.cloud;
     <% end %>
 
     proxy_set_header X-Real-IP          $remote_addr;
