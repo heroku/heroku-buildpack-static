@@ -28,7 +28,7 @@ http {
   }
   
   split_clients "${remote_addr}" $ssr_frontend_host {
-    95% <%= heroku_ssr_frontend_host %>;
+    50% <%= heroku_ssr_frontend_host %>;
     *  <%= aws_ssr_frontend_host %>;
   }
 
