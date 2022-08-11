@@ -258,7 +258,7 @@ http {
   }
 
   # Redirect fleet search experience to ssr as well
-  location ~ ^/fleet-storage-near-me {
+  location ~ ^/(fleet-storage-near-me) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
