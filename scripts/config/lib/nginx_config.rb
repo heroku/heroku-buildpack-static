@@ -69,11 +69,14 @@ class NginxConfig
 
     redirects = json['redirects'] || {}
     redirects.merge! json['redirects2019'] || {}
+
+    uppercase_redirects = {}
     redirects.each do |loc, hash|
       url = NginxConfigUtil.interpolate(hash['url'], ENV)
       redirects[loc].merge!('url' => url)
-      redirects[loc.upcase].merge!('url' => url)
+      uppercase_redirects[loc.upcase] = redirects[loc]
     end
+    redirects.merge!(uppercase_redirects)
 
     json['error_page'] ||= nil
     json['debug'] = ENV['STATIC_DEBUG']
