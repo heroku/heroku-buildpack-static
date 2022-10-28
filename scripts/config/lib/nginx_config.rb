@@ -4,6 +4,7 @@ require 'json'
 require 'uri'
 require_relative 'nginx_config_util'
 
+# a config object that parses the static and config files
 class NginxConfig
   DEFAULT = {
     root: 'public_html/',
@@ -69,7 +70,9 @@ class NginxConfig
     redirects = json['redirects'] || {}
     redirects.merge! json['redirects2019'] || {}
     redirects.each do |loc, hash|
-      redirects[loc].merge!('url' => NginxConfigUtil.interpolate(hash['url'], ENV))
+      url = NginxConfigUtil.interpolate(hash['url'], ENV)
+      redirects[loc].merge!('url' => url)
+      redirects[loc.upcase].merge!('url' => url)
     end
 
     json['error_page'] ||= nil
