@@ -74,7 +74,7 @@ class NginxConfig
     redirects.each do |loc, hash|
       url = NginxConfigUtil.interpolate(hash['url'], ENV)
       redirects[loc].merge!('url' => url)
-      uppercase_redirects["#{loc.upcase}-bki"] = redirects[loc]
+      uppercase_redirects[loc.upcase] = redirects[loc].clone
     end
     redirects.merge!(uppercase_redirects)
 
