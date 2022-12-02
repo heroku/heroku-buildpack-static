@@ -164,6 +164,12 @@ http {
     proxy_hide_header X-Robots-Tag;  
   }
 
+  # Redirect dlp urls with uppercase cities or states to lowercase or urls with spaces or %20 symbols to proper location
+  location ~ "(*UTF8)^\/[A-z-]*-near-me(\/[a-z]*)?\/[A-Z][A-z| |\-|%20]*\/[A-Z][A-z| |\-|%20]*$" {
+    mruby_set $dlp_path /app/bin/config/lib/ngx_mruby/dlp_redirect_path.rb cache;
+    return 301 https://$host/$dlp_path$is_args$args;
+  }
+
   # Redirect our locations pages with abbr state to full state name
   location ~ "(*UTF8)^\/locations\/[A-z][A-z]\/[A-z\-\/]*$" {
     mruby_set $locations_path /app/bin/config/lib/ngx_mruby/locations_state_path.rb cache;
@@ -259,6 +265,16 @@ http {
 
   # Redirect fleet search experience to ssr as well
   location ~ ^/(fleet-storage-near-me) {
+    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+  }
+
+  # for ssr topic page test redirect the following pages to ssr
+  location ~ ^/((self-storage|boat-storage|business-storage|climate-controlled-storage|garages|parking-spaces|rv-storage|trailer-storage|warehouse-storage)-near-me.*) {
+    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+  }
+
+  # for ssr topic page test redirect the following pages (with sub-pages) to ssr
+  location ~ ^/((self-storage|boat-storage|business-storage|climate-controlled-storage|garages|parking-spaces|rv-storage|trailer-storage|warehouse-storage)-near-me/.*) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
