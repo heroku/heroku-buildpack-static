@@ -167,7 +167,7 @@ http {
   # Redirect dlp urls with uppercase cities or states to lowercase or urls with spaces or %20 symbols to proper location
   location ~ "(*UTF8)^\/[A-z-]*-near-me(\/[a-z]*)?\/[A-Z][A-z| |\-|%20]*\/[A-Z][A-z| |\-|%20]*$" {
     mruby_set $dlp_path /app/bin/config/lib/ngx_mruby/dlp_redirect_path.rb cache;
-    return 301 https://$host/test123;
+    return 301 https://$host/$dlp_path$is_args$args;
   }
 
   # Redirect our locations pages with abbr state to full state name
