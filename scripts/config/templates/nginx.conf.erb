@@ -217,12 +217,12 @@ http {
 
   # Redirect topic pages from old url to new url structure test
   location ~ "(*UTF8)^\/(boat-storage)" {
-    return 301 https://$host/boat-storage-near-me
+    return 301 https://$host/boat-storage-near-me;
   }
 
   # Redirect topic pages from old url to new url structure test
   location ~ "(*UTF8)^\/(car-storage)" {
-    return 301 https://$host/car-storage-near-me
+    return 301 https://$host/car-storage-near-me;
   }
 
   <% if listing_routing_version == '2' %>
