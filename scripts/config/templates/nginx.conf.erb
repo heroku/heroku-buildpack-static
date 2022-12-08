@@ -215,6 +215,11 @@ http {
     return 301 https://$host/$regions_path$is_args$args;
   }
 
+  # Redirect topic pages from old url to new url structure test
+  location ~ "(*UTF8)^\/(boat-storage)" {
+    return 301 https://$host/boat-storage-near-me
+  }
+
   <% if listing_routing_version == '2' %>
     # Redirect our listing detail pages to the new url structure
     location ~ "(*UTF8)^\/rentals\/[A-z0-9\-\p{L}'%]*--[A-z0-9\-\p{L}'%]*-self-storage-space-[0-9]+$" {
