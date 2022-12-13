@@ -293,11 +293,6 @@ http {
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
     add_header x-is-proxy-fallback "true";
 
-    if ($http_x_should_prerender) {
-      proxy_pass $rendertron_base$neighbor_url;
-      break;
-    }
-
     try_files $uri $path $fallback =200;
   }
   <% if canonical_host %>
