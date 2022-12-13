@@ -323,12 +323,6 @@ http {
       break;
     }
 
-    # this proxies the request to the live render service
-    if ($http_x_should_prerender) {
-      proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
-      break;
-    }
-
     # if it is a rendertron request, on the dlp v2 arm, and has a DLP-like URL, then redirect rendertron with query param
     set $dlp_v2_test_condition "${args}---${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
     if ($dlp_v2_test_condition ~ ^---v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-\/]*$) {
