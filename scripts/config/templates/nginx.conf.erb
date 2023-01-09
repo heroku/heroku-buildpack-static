@@ -249,7 +249,7 @@ http {
   # The /build directory is also needed because that's where the server-rendered JS comes from
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/(college-storage-near-me)\/([A-z\-]+)\/([A-z\-]+)\/([A-z\-]+)$ {
-    proxy_pass <%= ssr_frontend_host %>/$1/$2/$3$is_args$args;
+    return 301 <%= ssr_frontend_host %>/$1/$2/$3$is_args$args;
   }
 
   # The /build directory is also needed because that's where the server-rendered JS comes from
