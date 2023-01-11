@@ -18,6 +18,8 @@ if types.length > 1
     # case climate-controlled storage, long term storage, long term parking
     "#{storage_type}#{suffix}-near-me/#{state.downcase}"
   end
+elsif state == 'search'
+  "#{types[0]}#{suffix}/search"
 else
   "#{types[0]}#{suffix}-near-me/#{state.downcase}"
 end
