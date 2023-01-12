@@ -252,6 +252,12 @@ http {
     return 301 https://$host/$1/$2/$3$is_args$args;
   }
 
+  # redirect fleet-storage-near-me DLPs to ssr fleet-parking-near-me DLPs
+  location ~ ^/fleet-storage-near-me/(.*) {
+    add_header x-debug $1;
+    return 301 https://$host/fleet-parking-near-me/$1$is_args$args;
+  }
+
   # The /build directory is also needed because that's where the server-rendered JS comes from
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z\-]+)\/([A-z\-]+)$) {
@@ -271,12 +277,6 @@ http {
   # for ssr topic page test redirect the following pages to ssr
   location ~ ^/((self-storage|boat-storage|business-storage|climate-controlled-storage|garages|parking-spaces|rv-storage|trailer-storage|warehouse-storage)-near-me.*) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
-  }
-
-  # redirect fleet-storage-near-me DLPs to ssr fleet-parking-near-me DLPs
-  location ~ ^/fleet-storage-near-me/(.*) {
-    add_header x-debug $1;
-    return 301 https://$host/fleet-parking-near-me/$1$is_args$args;
   }
 
   # for ssr topic page test redirect the following pages (with sub-pages) to ssr
