@@ -274,8 +274,9 @@ http {
   }
 
   # redirect fleet-storage-near-me DLPs to ssr fleet-parking-near-me DLPs
-  location ~ ^/(fleet-storage-near-me/)(.*) {
-    return 301 https://$host/fleet-parking-near-me/$2$is_args$args;
+  location ~ ^/fleet-storage-near-me/(.*) {
+    add_header x-debug $1;
+    return 301 https://$host/fleet-parking-near-me/$1$is_args$args;
   }
 
   # for ssr topic page test redirect the following pages (with sub-pages) to ssr
