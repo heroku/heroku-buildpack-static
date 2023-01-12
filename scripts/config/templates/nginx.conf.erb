@@ -252,6 +252,11 @@ http {
     return 301 https://$host/$1/$2/$3$is_args$args;
   }
 
+  # redirect fleet-storage-near-me DLPs to ssr fleet-parking-near-me DLPs
+  location ~ ^/fleet-storage-near-me/(.*) {
+    return 301 https://$host/fleet-parking-near-me/$1$is_args$args;
+  }
+
   # The /build directory is also needed because that's where the server-rendered JS comes from
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z\-]+)\/([A-z\-]+)$) {
