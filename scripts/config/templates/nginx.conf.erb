@@ -229,7 +229,7 @@ http {
     }
 
     # Redirect our state topic pages with storage and parking in the name to the new url structure
-    location ~ "(*UTF8)^\/(?!fleet)([A-z\-]+)*(-storage|-parking)\/[A-z0-9\-\p{L}'%]+$" {
+    location ~ "(*UTF8)^\/(?!fleet)[A-z\-]*(-storage|-parking)\/[A-z0-9\-\p{L}'%]+$" {
       mruby_set $regions_path /app/bin/config/lib/ngx_mruby/regions_path.rb cache;
       return 301 https://$host/$regions_path$is_args$args;
     }
@@ -264,7 +264,7 @@ http {
   }
 
   # Redirect fleet search experience to ssr as well
-  location ~ ^/(fleet-storage-near-me) {
+  location ~ ^/(fleet-parking\/search) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
