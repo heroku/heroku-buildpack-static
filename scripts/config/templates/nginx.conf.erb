@@ -283,6 +283,11 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
+  # redirect commercial landing pages to ssr-frontend
+  location ~ ^/(fleet-parking|retail-reit|parking-operator) {
+    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+  }
+
   location @proxy_fallback {
     mruby_set $path /app/bin/config/lib/ngx_mruby/routes_path.rb cache;
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
