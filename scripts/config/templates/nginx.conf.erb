@@ -269,7 +269,7 @@ http {
   }
 
   # Redirect fleet search experience to ssr as well
-  location ~ ^/(fleet-parking\/search) {
+  location ~ ^/(fleet-parking\/search)$ {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
@@ -280,6 +280,11 @@ http {
 
   # for ssr topic page test redirect the following pages (with sub-pages) to ssr
   location ~ ^/((self-storage|boat-storage|business-storage|climate-controlled-storage|garages|parking-spaces|rv-storage|trailer-storage|warehouse-storage)-near-me/.*) {
+    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+  }
+
+  # redirect commercial landing pages to ssr-frontend
+  location ~ ^/(fleet-parking|retail-reit|parking-operator)$ {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
