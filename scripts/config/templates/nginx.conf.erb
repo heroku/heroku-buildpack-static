@@ -269,7 +269,7 @@ http {
   }
 
   # Redirect fleet search experience to ssr as well
-  location ~ ^/(fleet-parking\/search) {
+  location ~ ^/(fleet-parking\/search)$ {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
@@ -284,7 +284,7 @@ http {
   }
 
   # redirect commercial landing pages to ssr-frontend
-  location ~ ^/(fleet-parking|retail-reit|parking-operator) {
+  location ~ ^/(fleet-parking|retail-reit|parking-operator)$ {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
