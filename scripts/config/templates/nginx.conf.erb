@@ -273,13 +273,8 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
-  # for ssr topic page test redirect the following pages to ssr
-  location ~ ^/((self-storage|boat-storage|business-storage|climate-controlled-storage|garages|parking-spaces|rv-storage|trailer-storage|warehouse-storage)-near-me.*) {
-    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
-  }
-
-  # for ssr topic page test redirect the following pages (with sub-pages) to ssr
-  location ~ ^/((self-storage|boat-storage|business-storage|climate-controlled-storage|garages|parking-spaces|rv-storage|trailer-storage|warehouse-storage)-near-me/.*) {
+  # redirect all near-me pages to SSR frontend
+  location ~ ^/(([a-zA-Z-]+)-near-me.*) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
