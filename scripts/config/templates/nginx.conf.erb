@@ -278,9 +278,14 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
-  # redirect commercial landing pages to ssr-frontend
-  location ~ ^/commercial\/(fleet-parking|retail-reit|parking-operator)$ {
+  # redirect all commercial pages to ssr-frontend
+  location ~ ^/commercial\/(.*) {
     proxy_pass <%= ssr_frontend_host %>/commercial/$1$is_args$args;
+  }
+  
+  # redirect all storage pages to ssr-frontend
+  location ~ ^/storage\/(.*) {
+    proxy_pass <%= ssr_frontend_host %>/storage/$1$is_args$args;
   }
 
   location @proxy_fallback {
