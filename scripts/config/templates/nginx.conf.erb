@@ -257,6 +257,12 @@ http {
     return 301 https://$host/fleet-parking-near-me/$1$is_args$args;
   }
 
+  # redirect DLPs with abbreviated state name to full state name
+  location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z][A-z])\/([A-z\-]+)$) {
+    mruby_set $dlp_path /app/bin/config/lib/ngx_mruby/dlp_state_path.rb cache;
+    return 301 https://$host/$dlp_path$is_args$args;
+  }
+
   # The /build directory is also needed because that's where the server-rendered JS comes from
   # Redirect location DLPs to server-side rendered frontend
   location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z\-]+)\/([A-z\-]+)$) {
@@ -273,8 +279,14 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
+  # redirect discover pages with abbreviated state name to full state name
+  location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z][A-z])(\/[A-z\-]*)*$) {
+    mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
+    return 301 https://$host/$discover_path$is_args$args;
+  }
+
   # redirect all near-me pages to SSR frontend
-  location ~ /((?!storage-units)[a-zA-Z-]+-near-me(\/[a-zA-Z-]*)*$) {
+  location ~ /((?!storage-units)[0-9A-z-]+-near-me(\/[A-z-]*)*$) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
