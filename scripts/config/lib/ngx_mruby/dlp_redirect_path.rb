@@ -9,7 +9,7 @@ req         = Nginx::Request.new
 uri         = req.var.uri
 
 def format_url(uri)
-  type, subtype, state, city = uri.match(%r{/([A-z0-9-]*)-near-me(?:/([a-z]*))?/([A-Z][A-z| |\-|%20]*)/([A-Z][A-z| |\-|%20]*)$}i).captures
+  type, subtype, state, city = uri.match(%r{/([A-z0-9-]*)-near-me(?:/([a-z]*))?/([A-z| |\-|%20]*)/([A-z| |\-|%20]*)$}i).captures
   state.gsub!(/%20| /, '-')
   city.gsub!(/%20| /, '-')
 
