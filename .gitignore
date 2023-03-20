@@ -4,3 +4,4 @@ vendor/
 test.conf
 static.json
 .idea/
+*.DS_STORE
