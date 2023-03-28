@@ -254,7 +254,7 @@ http {
 
   # Redirect fleet-storage-near-me and fleet-parking-near-me DLPs to SSR fleet parking landing page
   location ~ ^/fleet-(storage|parking)-near-me(.*) {
-    return 301 https://$host/commercial/fleet-parking/$1$is_args$args;
+    return 301 https://$host/commercial/fleet-parking$is_args$args;
   }
 
   # redirect DLPs with abbreviated state name to full state name
