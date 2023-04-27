@@ -285,6 +285,10 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
+  location = "/commercial/turo-vehicle-parking" {
+    return 301 https://www.neighbor.com/commercial/turo-fleet-car-parking;
+  }
+
   # redirect all commercial pages to ssr-frontend
   location ~ ^/commercial\/(.*) {
     proxy_pass <%= ssr_frontend_host %>/commercial/$1$is_args$args;
