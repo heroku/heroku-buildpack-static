@@ -280,6 +280,10 @@ http {
     return 301 https://$host/$discover_path$is_args$args;
   }
 
+  location = "/warehouse-storage-near-me" {
+    return 301 https://www.neighbor.com/commercial/warehouse-storage;
+  }
+
   # redirect all near-me pages to SSR frontend
   location ~ /((?!storage-units)[0-9A-z-]+-near-me(\/[A-z-]*)*$) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
