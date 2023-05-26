@@ -274,6 +274,23 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
+  # Redirect deprecated DLP types to the more useful type
+  # Start of deprecated DLP types redirection
+  location ~ ^/(college|long-term)-storage-near-me([A-z\-\/]*) {
+    return 301 https://$host/self-storage-near-me$2$is_args$args;
+  }
+
+  location ~ ^/driveway-parking-near-me([A-z\-\/]*) {
+    return 301 https://$host/parking-spaces-near-me$1$is_args$args;
+  }
+  #End of deprecated DLP types redirection
+
+  # Redirect deprecated DLP subtypes to their main type
+  # Current deprecated subtypes are all truck or trailer storage subtypes, which should redirect to their parent type
+  location ~ ^/(truck|trailer)-storage-near-me/(indoor|outdoor|covered)([A-z\-\/]*) {
+    return 301 https://$host/$1-storage-near-me$3$is_args$args;
+  }
+
   # redirect discover pages with abbreviated state name to full state name
   location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z][A-z])(\/[A-z\-]*)*$) {
     mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
