@@ -315,6 +315,11 @@ http {
   location ~ ^/commercial\/(.*) {
     proxy_pass <%= ssr_frontend_host %>/commercial/$1$is_args$args;
   }
+
+  # redirect all location pages to ssr-frontend
+  location ~ ^/location\/(.*) {
+    proxy_pass <%= ssr_frontend_host %>/location/$1$is_args$args;
+  }
   
   # redirect all storage pages to ssr-frontend
   location ~ ^/storage\/(.*) {
