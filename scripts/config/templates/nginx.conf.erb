@@ -285,8 +285,6 @@ http {
   location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z\-]+)\/([A-z\-]+)$) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
-
-  # Redirect location DLPs to server-side rendered frontend
   location ~ ^/((build)/.*) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
@@ -311,19 +309,9 @@ http {
     return 301 https://www.neighbor.com/commercial/turo-fleet-car-parking;
   }
 
-  # redirect all commercial pages to ssr-frontend
-  location ~ ^/commercial\/(.*) {
-    proxy_pass <%= ssr_frontend_host %>/commercial/$1$is_args$args;
-  }
-
-  # redirect all location pages to ssr-frontend
-  location ~ ^/location\/(.*) {
-    proxy_pass <%= ssr_frontend_host %>/location/$1$is_args$args;
-  }
-  
-  # redirect all storage pages to ssr-frontend
-  location ~ ^/storage\/(.*) {
-    proxy_pass <%= ssr_frontend_host %>/storage/$1$is_args$args;
+  # redirect all commercial, facility, location, and storage pages to ssr-frontend
+  location ~ ^/(commercial|facility|location|storage)\/(.*) {
+    proxy_pass <%= ssr_frontend_host %>/$1/$2$is_args$args;
   }
 
   location @proxy_fallback {
