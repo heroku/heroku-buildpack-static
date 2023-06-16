@@ -280,11 +280,7 @@ http {
     return 301 https://$host/$1-storage-near-me$3$is_args$args;
   }
 
-  # The /build directory is also needed because that's where the server-rendered JS comes from
-  # Redirect location DLPs to server-side rendered frontend
-  location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z\-]+)\/([A-z\-]+)$) {
-    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
-  }
+  # Redirect build directory to server-side rendered frontend to get JS files
   location ~ ^/((build)/.*) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
@@ -301,13 +297,7 @@ http {
   }
 
 	# redirect any near me pages with invalid characters to the corrected url
-	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[\+\ ].*$) {
-		mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
-		return 301 https://$host/$discover_path$is_args$args;
-	}
-
-	# redirect any near me pages with uppercase letters to the lower-case url
-	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[A-Z].*) {
+	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[A-Z\+\ ].*$) {
 		mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
 		return 301 https://$host/$discover_path$is_args$args;
 	}
