@@ -301,7 +301,13 @@ http {
   }
 
 	# redirect any near me pages with invalid characters to the corrected url
-	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[A-Z\+\ ].*$) {
+	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[\+\ ].*$) {
+		mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
+		return 301 https://$host/$discover_path$is_args$args;
+	}
+
+	# redirect any near me pages with uppercase letters to the lower-case url
+	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[A-Z].*) {
 		mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
 		return 301 https://$host/$discover_path$is_args$args;
 	}
