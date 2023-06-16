@@ -312,7 +312,7 @@ http {
   }
 
   # redirect all commercial, facility, location, and storage pages to ssr-frontend
-  location ~ ^/(commercial|facility|location|storage)\/(.*) {
+  location ~ ^/(commercial|facility|location|storage|business)\/(.*) {
     proxy_pass <%= ssr_frontend_host %>/$1/$2$is_args$args;
   }
 
