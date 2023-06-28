@@ -264,11 +264,8 @@ http {
   }
 
   # Redirect deprecated DLP subtypes to their main type
-  # Current deprecated subtypes are all truck or trailer storage subtypes, which should redirect to their parent type
-  location ~ ^/trailer-storage-near-me/(indoor|outdoor|covered)(.*) {
-    return 301 https://$host/trailer-storage-near-me$2$is_args$args;
-  }
 
+  # Current deprecated subtypes are all truck storage subtypes, which should redirect to their parent type
 	location ~ ^/truck-storage-near-me/(indoor|outdoor|covered)(.*) {
     return 301 https://$host/truck-parking-near-me$2$is_args$args;
   }
@@ -285,6 +282,10 @@ http {
 
   location ~ ^/truck-storage-near-me(.*) {
     return 301 https://$host/truck-parking-near-me$1$is_args$args;
+  }
+
+  location ~ ^/trailer-storage-near-me(.*) {
+    return 301 https://$host/rv-storage-near-me$1$is_args$args;
   }
   #End of deprecated DLP types redirection
 
