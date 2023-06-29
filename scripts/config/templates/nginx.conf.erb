@@ -254,7 +254,7 @@ http {
 
   # Redirect fleet-storage-near-me and fleet-parking-near-me DLPs to SSR fleet parking landing page
   location ~ ^/fleet-(storage|parking)-near-me(.*) {
-    return 301 https://$host/commercial/fleet-parking$is_args$args;
+    return 301 https://$host/business/fleet-parking$is_args$args;
   }
 
   # redirect DLPs with abbreviated state name to full state name
@@ -317,12 +317,21 @@ http {
   }
 
   location = "/commercial/turo-vehicle-parking" {
-    return 301 https://www.neighbor.com/commercial/turo-fleet-car-parking;
+    return 301 https://www.neighbor.com/business/turo-fleet-car-parking;
   }
 
-  # redirect all commercial, facility, location, and storage pages to ssr-frontend
-  location ~ ^/(commercial|facility|location|storage)\/(.*) {
+  location = "/business/turo-vehicle-parking" {
+    return 301 https://www.neighbor.com/business/turo-fleet-car-parking;
+  }
+
+  # redirect all business, facility, location, and storage pages to ssr-frontend
+  location ~ ^/(facility|location|storage|business)\/(.*) {
     proxy_pass <%= ssr_frontend_host %>/$1/$2$is_args$args;
+  }
+
+  # redirect deprecated commercial pages to new business directory
+  location ~ ^/commercial/(.*) {
+    return 301 https://$host/business/$1$is_args$args;
   }
 
   location @proxy_fallback {
