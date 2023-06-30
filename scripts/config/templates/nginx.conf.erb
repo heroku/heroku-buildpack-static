@@ -288,9 +288,13 @@ http {
     return 301 https://$host/rv-storage-near-me$1$is_args$args;
   }
 
-  # redirect warehouse storage discover page the new commercial warehouse storage cms page
+  # redirect warehouse storage dlps to the new commercial warehouse storage cms page
   location ~ ^/warehouse-storage-near-me(.*) {
     return 301 https://www.neighbor.com/business/warehouse-storage$is_args$args;
+  }
+  # redirect business storage dlps to the new commercial warehouse storage cms page
+  location ~ ^/business-storage-near-me(.*) {
+    return 301 https://www.neighbor.com/business/business-commercial-storage$is_args$args;
   }
   #End of deprecated DLP types redirection
 
