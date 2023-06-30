@@ -292,6 +292,10 @@ http {
   location ~ ^/warehouse-storage-near-me(.*) {
     return 301 https://www.neighbor.com/business/warehouse-storage$is_args$args;
   }
+  # redirect warehouse storage discover page the new commercial warehouse storage cms page
+  location ~ ^/business-storage-near-me(.*) {
+    return 301 https://www.neighbor.com/business/business-commercial-storage$is_args$args;
+  }
   #End of deprecated DLP types redirection
 
   # Redirect build directory to server-side rendered frontend to get JS files
