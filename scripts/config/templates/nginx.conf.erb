@@ -27,6 +27,11 @@ http {
     *                             true;
   }
 
+  split_clients "${request_uri}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
+    50% /host-signup;
+    * /storage-units-near-me/colorado/centennial/10x30-parking-lot-602747;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -89,6 +94,10 @@ http {
     <% else %>
       try_files $uri $uri/ $fallback;
     <% end %>
+    }
+
+    location /parking {
+      rewrite ^ $parking_split_redirect$is_args$args break;
     }
 
   <% if clean_urls %>
