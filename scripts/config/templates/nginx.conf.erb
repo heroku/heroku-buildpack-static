@@ -27,6 +27,11 @@ http {
     *                             true;
   }
 
+  split_clients "${request_uri}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
+    50% 1;
+    * 2;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -104,6 +109,15 @@ http {
   <% end %>
 
   rewrite ^/embed/(.*)$ /$1.html last;
+
+  location /parking {
+    if ($parking_split_redirect = 1) {
+      rewrite ^ /host-signup$is_args$args? permanent;
+    }
+    if ($parking_split_redirect = 2) {
+      rewrite ^ /storage-units-near-me/colorado/centennial/10x30-parking-lot-602747$is_args$args? permanent;
+    }
+  }
 
   location ~ ^/(((?!storage-blog).)*)/$ {
     return 301 $scheme://$http_host/$1;
