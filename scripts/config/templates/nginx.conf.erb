@@ -27,7 +27,7 @@ http {
     *                             true;
   }
 
-  split_clients "${request_uri}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
+  split_clients "${request_id}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
     50% 1;
     * 2;
   }
@@ -110,7 +110,7 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  location /parking {
+  location ~ ^/parking {
     if ($parking_split_redirect = 1) {
       rewrite ^ /host-signup$is_args$args? permanent;
     }
