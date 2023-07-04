@@ -110,7 +110,7 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  location /parking {
+  location ~ ^/parking {
     if ($parking_split_redirect = 1) {
       rewrite ^ /host-signup$is_args$args? permanent;
     }
