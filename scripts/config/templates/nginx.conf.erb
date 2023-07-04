@@ -27,7 +27,7 @@ http {
     *                             true;
   }
 
-  split_clients "${request_uri}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
+  split_clients "${request_id}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
     50% 1;
     * 2;
   }
