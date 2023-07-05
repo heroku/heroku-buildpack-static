@@ -70,11 +70,11 @@ def updated_state(abbr_state)
 end
 
 def correct_state(uri)
-    type, subtype, state, city = uri.match(%r{/([A-z0-9-]*)-near-me(?:/([a-z]*))?/([A-Z][A-z| |\-|%20]*)/([A-Z][A-z| |\-|%20]*)$}i).captures
-    state.gsub!(/%20| /, '-')
-    city.gsub!(/%20| /, '-')
+    type, subtype, state, city = uri.match(%r{/([A-z0-9-]*)-near-me(?:/(indoor|outdoor|covered))?/([A-z| |\-|%20|\+]*)(/[A-z| |\-|%20|\+]*)*$}i).captures
+    state.gsub!(/%20| |\+/, '-')
+    city.gsub!(/%20| |\+/, '-') unless city.nil?
 
-    "#{type.downcase}-near-me#{"/#{subtype.downcase}" unless subtype.nil?}/#{updated_state(state.downcase)}/#{city.downcase}"
+    "#{type.downcase}-near-me#{"/#{subtype.downcase}" unless subtype.nil?}/#{updated_state(state.downcase)}#{city.downcase unless city.nil?}"
 end
 
 correct_state(uri)

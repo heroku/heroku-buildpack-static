@@ -318,7 +318,7 @@ http {
   }
 
 	# redirect city dlps with two letter city name to the state page
-  location ~ ^\/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!indoor|outdoor|covered)[A-z\-]+)\/(a(l|k|z|r)|c(a|o|t)|de|dc|fl|ga|hi|i(d|l|n|a)|ks|ky|la|m(e|d|a|i|n|s|o|t)|n(e|b|h|j|m|y|c|d)|o(h|k|r)|pa|ri|sc|sd|tn|tx|ut|vt|va|w(a|v|i|y))$) {
+  location ~ ^\/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!indoor|outdoor|covered)[A-z\-]+))\/(a(l|k|z|r)|c(a|o|t)|de|dc|fl|ga|hi|i(d|l|n|a)|ks|ky|la|m(e|d|a|i|n|s|o|t)|n(e|b|h|j|m|y|c|d)|o(h|k|r)|pa|ri|sc|sd|tn|tx|ut|vt|va|w(a|v|i|y))$ {
     return 301 https://$host/$1$is_args$args;
   }
 
