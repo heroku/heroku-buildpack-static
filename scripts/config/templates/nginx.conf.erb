@@ -110,7 +110,7 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  location ~ ^/parking {
+  location = "/parking" {
     if ($parking_split_redirect = 1) {
       rewrite ^ /host-signup$is_args$args? permanent;
     }
@@ -271,12 +271,6 @@ http {
     return 301 https://$host/business/fleet-parking$is_args$args;
   }
 
-  # redirect DLPs with abbreviated state name to full state name
-  location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z][A-z])\/([A-z\-]+)$) {
-    mruby_set $dlp_path /app/bin/config/lib/ngx_mruby/dlp_state_path.rb cache;
-    return 301 https://$host/$dlp_path$is_args$args;
-  }
-
   # Redirect deprecated DLP subtypes to their main type
 
   # Current deprecated subtypes are all truck storage subtypes, which should redirect to their parent type
@@ -317,15 +311,20 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
-  # redirect discover pages with abbreviated state name to full state name
-  location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!(indoor|outdoor|covered))[A-z][A-z])(\/[A-z\-]*)*$) {
-    mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
+  # redirect near-me pages with abbreviated state name to full state name
+  location ~ ^/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?(a(l|k|z|r)|c(a|o|t)|de|dc|fl|ga|hi|i(d|l|n|a)|ks|ky|la|m(e|d|a|i|n|s|o|t)|n(e|b|h|j|m|y|c|d)|o(h|k|r)|pa|ri|sc|sd|tn|tx|ut|vt|va|w(a|v|i|y))(\/[A-z\-]*)*$) {
+    mruby_set $discover_path /app/bin/config/lib/ngx_mruby/dlp_state_path.rb cache;
     return 301 https://$host/$discover_path$is_args$args;
   }
 
-	# redirect any near me pages with invalid characters to the corrected url
+	# redirect city dlps with two letter city name to the state page
+  location ~ ^\/(([0-9A-z\-]*)-near-me\/((indoor|outdoor|covered)\/)?((?!indoor|outdoor|covered)[A-z\-]+))\/(a(l|k|z|r)|c(a|o|t)|de|dc|fl|ga|hi|i(d|l|n|a)|ks|ky|la|m(e|d|a|i|n|s|o|t)|n(e|b|h|j|m|y|c|d)|o(h|k|r)|pa|ri|sc|sd|tn|tx|ut|vt|va|w(a|v|i|y))$ {
+    return 301 https://$host/$1$is_args$args;
+  }
+
+	# redirect any near-me pages with invalid characters to the corrected url
 	location ~ ^/((?!storage-units)[0-9A-z-]+-near-me\/.*[A-Z\+\ ].*$) {
-		mruby_set $discover_path /app/bin/config/lib/ngx_mruby/discover_state_path.rb cache;
+		mruby_set $discover_path /app/bin/config/lib/ngx_mruby/dlp_state_path.rb cache;
 		return 301 https://$host/$discover_path$is_args$args;
 	}
 
