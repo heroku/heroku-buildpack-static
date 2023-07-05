@@ -9,9 +9,8 @@ req         = Nginx::Request.new
 uri         = req.var.uri
 
 def lowercase(uri)
-  puts('uri', uri)
   path = uri.match(%r{/storage-units-near-me/(.*)$}i).captures
-  puts('path', path)
+  path = path[0]
   path.gsub!(/%20| |\+/, '-')
 
   "#{path.downcase}"
