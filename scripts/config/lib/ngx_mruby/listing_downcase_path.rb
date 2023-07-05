@@ -8,6 +8,11 @@ USER_CONFIG = '/app/static.json'
 req         = Nginx::Request.new
 uri         = req.var.uri
 
-path = uri.match(%r{/storage-units-near-me/(.*)$}mi).captures
+def lowercase(uri)
+  path = uri.match(%r{/storage-units-near-me/(.*)$}i).captures
+  path.gsub!(/%20| |\+/, '-')
 
-path.downcase.gsub(/%20| |\+/, '-')
+  "#{path.downcase}"
+end
+
+lowercase(uri)

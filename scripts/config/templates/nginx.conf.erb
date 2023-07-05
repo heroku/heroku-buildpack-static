@@ -358,7 +358,7 @@ http {
   }
 
   # redirect any listing detail page with invalid characters to the corrected url
-  location ~ ^/storage-units-near-me\/(.*[A-Z\+\ ].*$) {
+  location ~ ^/(storage-units-near-me\/.*[A-Z\+\ ].*$) {
     mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_downcase_path.rb cache;
     return 301 https://$host/storage-units-near-me/$listing_path$is_args$args;
   }
