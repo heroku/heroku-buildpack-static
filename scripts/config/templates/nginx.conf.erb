@@ -328,6 +328,12 @@ http {
 		return 301 https://$host/$discover_path$is_args$args;
 	}
 
+  # redirect any near me pages with invalid characters to the corrected url
+  location ~ ^\/((?!storage-units)[0-9A-z-]+-near-me.*(\/(\-+)|(\-+)(\/|$))) {
+    mruby_set $corrected_path /app/bin/config/lib/ngx_mruby/leading_or_trailing_hyphen_path.rb cache;
+    return 301 https://$host/$corrected_path$is_args$args;
+  }
+
   # redirect all near-me pages to SSR frontend
   location ~ /((?!storage-units)[0-9A-z-]+-near-me(\/[A-z-]*)*$) {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
