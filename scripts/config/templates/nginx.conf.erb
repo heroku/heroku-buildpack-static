@@ -331,7 +331,7 @@ http {
   # redirect any near me pages with invalid characters to the corrected url
   location ~ ^\/((?!storage-units)[0-9A-z-]+-near-me.*(\/(\-+)|(\-+)(\/|$))) {
     mruby_set $corrected_path /app/bin/config/lib/ngx_mruby/leading_or_trailing_hyphen_path.rb cache;
-    return 301 https://$host/$corrected_path$is_args$args;
+    return 301 https://$host$corrected_path$is_args$args;
   }
 
   # redirect all near-me pages to SSR frontend
@@ -355,6 +355,12 @@ http {
   # redirect deprecated commercial pages to new business directory
   location ~ ^/commercial/(.*) {
     return 301 https://$host/business/$1$is_args$args;
+  }
+
+  # redirect any listing detail page with invalid characters to the corrected url
+  location ~ ^/storage-units-near-me\/(.*[A-Z\+\ ].*$) {
+    mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_downcase_path.rb cache;
+    return 301 https://$host/storage-units-near-me/$listing_path$is_args$args;
   }
 
   location @proxy_fallback {
