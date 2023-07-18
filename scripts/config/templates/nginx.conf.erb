@@ -112,10 +112,10 @@ http {
 
   location = "/parking" {
     if ($parking_split_redirect = 1) {
-      rewrite ^ /host-signup$is_args$args? permanent;
+      rewrite ^ /host-signup?utm_source=DirectMail&utm_campaign=lot-owners-direct-link permanent;
     }
     if ($parking_split_redirect = 2) {
-      rewrite ^ /storage-units-near-me/colorado/centennial/10x30-parking-lot-602747$is_args$args? permanent;
+      rewrite ^ /business/social-become-a-host?utm_source=DirectMail&utm_campaign=lot_url2 permanent;
     }
   }
 
