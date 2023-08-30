@@ -342,6 +342,11 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
+  # this is an old commercial landing page that is no longer active. Redirect to ssr to use the 404 page
+  location ~ /(commercial-storage-near-me\/.*$) {
+    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
+  }
+
   location = "/commercial/turo-vehicle-parking" {
     return 301 https://www.neighbor.com/business/turo-fleet-car-parking;
   }
