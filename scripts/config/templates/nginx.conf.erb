@@ -368,6 +368,7 @@ http {
   location = "/host" {
     proxy_pass <%= ssr_frontend_host %>/host$is_args$args;
   }
+  
    # redirect /host page to ssr-frontend
   location = "/business" {
     proxy_pass <%= ssr_frontend_host %>/business$is_args$args;
