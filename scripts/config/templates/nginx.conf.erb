@@ -368,15 +368,14 @@ http {
   location = "/host" {
     proxy_pass <%= ssr_frontend_host %>/host$is_args$args;
   }
+   # redirect /host page to ssr-frontend
+  location = "/business" {
+    proxy_pass <%= ssr_frontend_host %>/business$is_args$args;
+  }
 
   # redirect deprecated commercial pages to new business directory
   location ~ ^/commercial/(.*) {
     return 301 https://$host/business/$1$is_args$args;
-  }
-
-  # direct business page to ssr
-  location ~ ^/business {
-    proxy_pass <%= ssr_frontend_host %>/$1/$2;
   }
 
   # redirect any listing detail page with invalid characters to the corrected url
