@@ -374,6 +374,11 @@ http {
     return 301 https://$host/business/$1$is_args$args;
   }
 
+  # direct business page to ssr
+  location ~ ^/business {
+    proxy_pass <%= ssr_frontend_host %>/$1/$2;
+  }
+
   # redirect any listing detail page with invalid characters to the corrected url
   location ~ ^/(storage-units-near-me\/.*[A-Z\+\ ].*$) {
     mruby_set $listing_path /app/bin/config/lib/ngx_mruby/listing_downcase_path.rb cache;
