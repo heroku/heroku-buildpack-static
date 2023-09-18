@@ -27,6 +27,12 @@ http {
     * 2;
   }
 
+  # TODO update to use remote_addr instead of request_id
+  split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_redirect {
+    50%   <%= ssr_frontend_host %>/speedy_search;
+    *     <%= redirect_target %>/search;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -112,6 +118,17 @@ http {
     if ($parking_split_redirect = 2) {
       rewrite ^ /business/social-become-a-host?utm_source=DirectMail&utm_campaign=lot_url2 permanent;
     }
+  }
+
+  # temporary route to test nginx updates
+  location = "/speedy-search-nginx" {
+    add_header x-speedy-search-redirect $speedy_search_redirect;
+
+    proxy_pass $speedy_search_redirect$is_args$args;
+  }
+
+  location = "/speedy-search" {
+    proxy_pass <%= ssr_frontend_host %>/speedy-search$is_args$args;
   }
 
   location ~ ^/(((?!storage-blog).)*)/$ {
@@ -343,10 +360,6 @@ http {
 
   location = "/business/turo-vehicle-parking" {
     return 301 https://www.neighbor.com/business/turo-fleet-car-parking;
-  }
-
-  location = "/speedy-search" {
-    proxy_pass <%= ssr_frontend_host %>/speedy-search$is_args$args;
   }
 
   # redirect all business, facility, location, and storage pages to ssr-frontend
