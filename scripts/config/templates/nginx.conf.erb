@@ -34,8 +34,8 @@ http {
 
   # TODO update to use remote_addr instead of request_id
   split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_redirect {
-    50%   <%= ssr_frontend_host %>/speedy_search;
-    *     <%= redirect_target %>/search;
+    50%   "$ssr_frontend_host"/speedy_search;
+    *     "$redirect_target"/search;
   }
 
 <% if logging['access'] %>
