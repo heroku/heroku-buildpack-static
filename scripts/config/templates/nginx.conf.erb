@@ -22,11 +22,6 @@ http {
 
   server_tokens off;
 
-  split_clients "${request_uri}_DLP_VERSION" $is_dlp_v2 {
-  <%= dlp_v2_hide_percentage %>%   false;
-    *                             true;
-  }
-
   split_clients "${request_id}_PARKING_SPLIT_REDIRECT" $parking_split_redirect {
     50% 1;
     * 2;
@@ -342,11 +337,6 @@ http {
     proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
   }
 
-  # this is an old commercial landing page that is no longer active. Redirect to ssr to use the 404 page
-  location ~ /(commercial-storage-near-me\/.*$) {
-    proxy_pass <%= ssr_frontend_host %>/$1$is_args$args;
-  }
-
   location = "/commercial/turo-vehicle-parking" {
     return 301 https://www.neighbor.com/business/turo-fleet-car-parking;
   }
@@ -362,11 +352,6 @@ http {
   # redirect all business, facility, location, and storage pages to ssr-frontend
   location ~ ^/(facility|location|storage|business)\/(.*) {
     proxy_pass <%= ssr_frontend_host %>/$1/$2$is_args$args;
-  }
-
-  # redirect /host page to ssr-frontend
-  location = "/host" {
-    proxy_pass <%= ssr_frontend_host %>/host$is_args$args;
   }
 
   # redirect deprecated commercial pages to new business directory
@@ -423,16 +408,6 @@ http {
     if ($static_render_condition ~ ^---(<%= pathsToProxyToPrerenderedS3.join('|') %>)$) {
       proxy_pass https://s3.amazonaws.com/neighbor-build-${environment}/prerendered$request_uri;
       break;
-    }
-
-    # if it is a rendertron request, on the dlp v2 arm, and has a DLP-like URL, then redirect rendertron with query param
-    set $dlp_v2_test_condition "${args}---${http_x_neighbor_rendertron}---${is_dlp_v2}---${request_uri}";
-    if ($dlp_v2_test_condition ~ ^---v[0-9]*---true---\/[A-Z][a-zA-Z\-]*--[A-Z][a-zA-Z\-\/]*$) {
-      return 302 "${request_uri}?v=2";
-    }
-
-    if ($dlp_v2_test_condition ~ "(*UTF8)^---v[0-9]*---true---\/locations\/[A-z\-\p{L}'%\/]*$") {
-      return 302 "${request_uri}?v=2";
     }
 
   <% if clean_urls %>
