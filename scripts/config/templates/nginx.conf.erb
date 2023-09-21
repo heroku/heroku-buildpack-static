@@ -34,8 +34,8 @@ http {
 
   # TODO update to use remote_addr instead of request_id
   split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_redirect {
-    50%   <%= ssr_frontend_host %>/speedy-search;
-    *     https://<%= redirect_target %>/search;
+    50%   <%= ssr_frontend_host %>/speedy-search/;
+    *     https://<%= redirect_target %>/search/;
   }
 
 <% if logging['access'] %>
@@ -117,7 +117,7 @@ http {
   rewrite ^/embed/(.*)$ /$1.html last;
 
   # temporary route to test nginx updates
-  location = "/speedy-search-nginx" {
+  location = "/search" {
     add_header x-speedy-search-redirect $speedy_search_redirect;
 
     proxy_pass $speedy_search_redirect$is_args$args;
