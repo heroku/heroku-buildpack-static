@@ -116,7 +116,7 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  # temporary route to test nginx updates
+  # temporary route to test nginx updates, renamed to not block search route
   location = "/tylers_favorite_route" {
     add_header x-speedy-search-redirect $speedy_search_redirect;
 
