@@ -32,6 +32,12 @@ http {
     * 2;
   }
 
+  # TODO update to use remote_addr instead of request_id
+  split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_redirect {
+    50%   <%= ssr_frontend_host %>/speedy-search/;
+    *     https://<%= redirect_target %>/search/;
+  }
+
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
 <% else %>
@@ -109,6 +115,22 @@ http {
   <% end %>
 
   rewrite ^/embed/(.*)$ /$1.html last;
+
+  # temporary route to test nginx updates, renamed to not block search route
+  location = "/tylers_favorite_route" {
+    add_header x-speedy-search-redirect $speedy_search_redirect;
+
+    proxy_pass $speedy_search_redirect$is_args$args;
+  }
+
+  location = "/speedy-search" {
+    proxy_pass <%= ssr_frontend_host %>/speedy-search$is_args$args;
+  }
+
+  # redirect /speedy-search/count and /speedy-search/{listingId} to ssr-frontend
+  location ~ ^/speedy-search/(count|\d+)$ {
+    proxy_pass <%= ssr_frontend_host %>/speedy-search/$1$is_args$args;
+  }
 
   location = "/parking" {
     if ($parking_split_redirect = 1) {
@@ -295,6 +317,11 @@ http {
     return 301 https://$host/truck-parking-near-me$1$is_args$args;
   }
 
+  # Redirect covered car to indoor, deprecating covered car
+  location ~ ^/car-storage-near-me/covered/(.*) {
+    return 301 https://$host/car-storage-near-me/indoor/$1$is_args$args;
+  }
+
   location ~ ^/trailer-storage-near-me(.*) {
     return 301 https://$host/rv-storage-near-me$1$is_args$args;
   }
@@ -354,15 +381,6 @@ http {
   location = "/business/turo-vehicle-parking" {
     return 301 https://www.neighbor.com/business/turo-fleet-car-parking;
   }
-
-  location = "/speedy-search" {
-    proxy_pass <%= ssr_frontend_host %>/speedy-search$is_args$args;
-  }
-
- # redirect /speedy-search/count and /speedy-search/{listingId} to ssr-frontend
-  location ~ ^/speedy-search/(count|\d+)$ {
-    proxy_pass <%= ssr_frontend_host %>/speedy-search/$1$is_args$args;
-}
 
   # redirect all business, facility, location, and storage pages to ssr-frontend
   location ~ ^/(facility|location|storage|business)\/(.*) {
