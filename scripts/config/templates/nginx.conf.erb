@@ -117,7 +117,7 @@ http {
   rewrite ^/embed/(.*)$ /$1.html last;
 
   # temporary route to test nginx updates
-  location = "/search" {
+  location = "/tylers_favorite_route" {
     add_header x-speedy-search-redirect $speedy_search_redirect;
 
     proxy_pass $speedy_search_redirect$is_args$args;
