@@ -319,7 +319,7 @@ http {
 
   # Redirect covered car to indoor, deprecating covered car
   location ~ ^/car-storage-near-me/covered/(.*) {
-    return 301 https://$host/car-parking-near-me/indoor/$1$is_args$args;
+    return 301 https://$host/car-storage-near-me/indoor/$1$is_args$args;
   }
 
   location ~ ^/trailer-storage-near-me(.*) {
