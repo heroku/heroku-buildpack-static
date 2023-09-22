@@ -312,6 +312,11 @@ http {
     return 301 https://$host/truck-parking-near-me$1$is_args$args;
   }
 
+
+  location ~ ^/car-storage-near-me/covered/(.*) {
+    return 301 https://$host/car-parking-near-me/indoor/$1$is_args$args;
+  }
+
   location ~ ^/trailer-storage-near-me(.*) {
     return 301 https://$host/rv-storage-near-me$1$is_args$args;
   }
