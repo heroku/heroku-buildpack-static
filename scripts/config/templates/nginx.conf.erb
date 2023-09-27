@@ -127,6 +127,11 @@ http {
     proxy_pass <%= ssr_frontend_host %>/speedy-search$is_args$args;
   }
 
+  # redirect quiz flow to ssr-frontend
+  location = "/speedy-search-q" {
+    proxy_pass <%= ssr_frontend_host %>/speedy-search-q$is_args$args;
+  }
+
   # redirect /speedy-search/count and /speedy-search/{listingId} to ssr-frontend
   location ~ ^/speedy-search/(count|\d+)$ {
     proxy_pass <%= ssr_frontend_host %>/speedy-search/$1$is_args$args;
