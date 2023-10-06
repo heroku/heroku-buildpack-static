@@ -392,6 +392,11 @@ http {
     proxy_pass <%= ssr_frontend_host %>/host$is_args$args;
   }
 
+   # redirect /business page to ssr-frontend
+  location = "/business" {
+    proxy_pass <%= ssr_frontend_host %>/business$is_args$args;
+  }
+
   # redirect deprecated commercial pages to new business directory
   location ~ ^/commercial/(.*) {
     return 301 https://$host/business/$1$is_args$args;
