@@ -14,6 +14,7 @@ http {
   gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
   gzip_vary on;
   gzip_proxied any;
+  map_hash_bucket_size 128;
 
   log_format custom_agent  'network.client.ip=$remote_addr network.client.ip_forward_chain=$http_x_forwarded_for timestamp=$time_iso8601 log_source="nginx" '
                            'http.method=$request_method http.url="$request_uri" http.status_code=$status network.bytes_written=$body_bytes_sent http.request_id=$http_x_request_id '
@@ -33,9 +34,15 @@ http {
   }
 
   # TODO update to use remote_addr instead of request_id
-  split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_redirect {
-    50%   <%= ssr_frontend_host %>/speedy-search/;
+  split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_assignment {
+    50%   <%= ssr_frontend_host %>/search/;
     *     https://<%= redirect_target %>/search/;
+  }
+  
+  map $cookie_speedy_search_assignment $speedy_search_redirect {
+    default                                   $speedy_search_assignment;
+    "<%= ssr_frontend_host %>/search/" "<%= ssr_frontend_host %>/search/";
+    "https://<%= redirect_target %>/search/"  "https://<%= redirect_target %>/search/";
   }
 
 <% if logging['access'] %>
@@ -117,19 +124,11 @@ http {
   rewrite ^/embed/(.*)$ /$1.html last;
 
   # temporary route to test nginx updates, renamed to not block search route
-  location = "/tylers_favorite_route" {
-    add_header x-speedy-search-redirect $speedy_search_redirect;
+  location = "/search" {
+    add_header x-speedy-redir $speedy_search_redirect;
+    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
 
     proxy_pass $speedy_search_redirect$is_args$args;
-  }
-
-  location = "/speedy-search" {
-    proxy_pass <%= ssr_frontend_host %>/speedy-search$is_args$args;
-  }
-
-  # redirect /speedy-search/count and /speedy-search/{listingId} to ssr-frontend
-  location ~ ^/speedy-search/(count|\d+)$ {
-    proxy_pass <%= ssr_frontend_host %>/speedy-search/$1$is_args$args;
   }
 
   location = "/parking" {
