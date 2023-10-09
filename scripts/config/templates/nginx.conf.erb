@@ -35,8 +35,14 @@ http {
 
   # TODO update to use remote_addr instead of request_id
   split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_assignment {
-    50%   <%= ssr_frontend_host %>/search/;
-    *     https://<%= redirect_target %>/search/;
+    50%   <%= ssr_frontend_host %>;
+    *     https://<%= redirect_target %>;
+  }
+  
+  map $cookie_speedy_search_assignment $speedy_search_redirect {
+    default                                   $speedy_search_assignment;
+    "<%= ssr_frontend_host %>" "<%= ssr_frontend_host %>";
+    "https://<%= redirect_target %>"  "https://<%= redirect_target %>";
   }
   
   map $cookie_speedy_search_assignment $speedy_search_redirect {
@@ -91,6 +97,7 @@ http {
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
     set $rendertron_base <%= rendertron_api_base %>;
+    set $speedy_search_condition "${speedy_search_redirect}_${uri}";
 
   <% if basic_auth %>
     auth_basic "Restricted";
@@ -123,10 +130,14 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  # temporary route to test nginx updates, renamed to not block search route
-  location = "/search/" {
-    add_header x-speedy-redir $speedy_search_redirect;
-    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
+  if ($speedy_search_condition ~ "<%= ssr_frontend_host %>_/search") {
+    rewrite ^(.*)$ /speedy-search/$1;
+  }
+
+  location ^~ /speedy-search {
+    # add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
+    rewrite ^/speedy-search/(.*)$ $1 break;
+    add_header x-speedy-redir $speedy_search_redirect$is_args$args;
 
     proxy_pass $speedy_search_redirect$is_args$args;
   }
