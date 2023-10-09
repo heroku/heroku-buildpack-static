@@ -44,12 +44,6 @@ http {
     "<%= ssr_frontend_host %>" "<%= ssr_frontend_host %>";
     "https://<%= redirect_target %>"  "https://<%= redirect_target %>";
   }
-  
-  map $cookie_speedy_search_assignment $speedy_search_redirect {
-    default                                   $speedy_search_assignment;
-    "<%= ssr_frontend_host %>/search/" "<%= ssr_frontend_host %>/search/";
-    "https://<%= redirect_target %>/search/"  "https://<%= redirect_target %>/search/";
-  }
 
 <% if logging['access'] %>
   access_log logs/access.log custom_agent;
@@ -135,7 +129,7 @@ http {
   }
 
   location ^~ /speedy-search {
-    # add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
+    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
     rewrite ^/speedy-search/(.*)$ $1 break;
     add_header x-speedy-redir $speedy_search_redirect$is_args$args;
 
