@@ -33,16 +33,20 @@ http {
     * 2;
   }
 
-  # TODO update to use remote_addr instead of request_id
-  split_clients "${request_id}_SPEEDY_SEARCH" $speedy_search_assignment {
+  split_clients "${remote_addr}_SPEEDY_SEARCH_FF" $speedy_search_ff {
+    <%= speedy_search_ff_percent_off || 100 %>%  "off";
+    *                                     "on";
+  }
+
+  split_clients "${request_id}_SPEEDY_SEARCH_TEST_SPLIT" $speedy_search_assignment {
     50%   <%= ssr_frontend_host %>;
     *     https://<%= redirect_target %>;
   }
   
   map $cookie_speedy_search_assignment $speedy_search_redirect {
     default                                   $speedy_search_assignment;
-    "<%= ssr_frontend_host %>" "<%= ssr_frontend_host %>";
-    "https://<%= redirect_target %>"  "https://<%= redirect_target %>";
+    "<%= ssr_frontend_host %>"                "<%= ssr_frontend_host %>";
+    "https://<%= redirect_target %>"          "https://<%= redirect_target %>";
   }
 
 <% if logging['access'] %>
@@ -91,7 +95,7 @@ http {
     set $url_encoded_scheme $scheme$url_encoded_colon_slashes;
     set $neighbor_url $url_encoded_scheme$http_host$request_uri;
     set $rendertron_base <%= rendertron_api_base %>;
-    set $speedy_search_condition "${speedy_search_redirect}_${uri}";
+    set $speedy_search_condition "${speedy_search_ff}_${speedy_search_redirect}_${uri}";
 
   <% if basic_auth %>
     auth_basic "Restricted";
@@ -124,16 +128,35 @@ http {
 
   rewrite ^/embed/(.*)$ /$1.html last;
 
-  if ($speedy_search_condition ~ "<%= ssr_frontend_host %>_/search") {
+  # 1. Speedy Search - SSR
+  if ($speedy_search_condition = "on_<%= ssr_frontend_host %>_/search") {
     rewrite ^(.*)$ /speedy-search/$1;
   }
 
   location ^~ /speedy-search {
     add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
     rewrite ^/speedy-search/(.*)$ $1 break;
-    add_header x-speedy-redir $speedy_search_redirect$is_args$args;
+    add_header x-speedy-redir $speedy_search_redirect;
 
-    proxy_pass $speedy_search_redirect$is_args$args;
+    proxy_pass $speedy_search_redirect;
+  }
+
+  # redirect /speedy-search/count and /speedy-search/{listingId} to ssr-frontend
+  location ~ ^/search/(count|\d+)$ {
+    proxy_pass <%= ssr_frontend_host %>/search/$1$is_args$args;
+  }
+
+  # 2. Speedy Search - React
+  if ($speedy_search_condition ~ "on_https://<%= redirect_target %>_/search") {
+    rewrite ^(.*)$ /snail-search/$1;
+  }
+
+  location ^~ /snail-search {
+    mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
+    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
+    add_header x-speedy-redir $speedy_search_redirect;
+
+    try_files "/index.html" $fallback;
   }
 
   location = "/parking" {
