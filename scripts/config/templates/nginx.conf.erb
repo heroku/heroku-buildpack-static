@@ -142,8 +142,8 @@ http {
   }
 
   # redirect /speedy-search/count and /speedy-search/{listingId} to ssr-frontend
-  location ~ ^/search/(count|\d+)$ {
-    proxy_pass <%= ssr_frontend_host %>/search/$1$is_args$args;
+  location ~ ^/search((-q)|/?(count|\d+))$ {
+    proxy_pass <%= ssr_frontend_host %>/search$1$is_args$args;
   }
 
   # 2. Speedy Search - React
