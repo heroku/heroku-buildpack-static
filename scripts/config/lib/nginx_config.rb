@@ -31,6 +31,7 @@ class NginxConfig
     json['encoding'] ||= DEFAULT[:encoding]
     json['rendertron_api_base'] ||= ENV['RENDERTRON_API_BASE']
     json['environment'] ||= ENV['ENVIRONMENT']
+    json['speedy_search_ff_percent_off'] ||= ENV['SPEEDY_SEARCH_FF_PERCENT_OFF']
     json['redirect_target'] ||= ENV['REACT_APP_HOSTNAME']
     json['dlp_v2_hide_percentage'] ||= (ENV['DLP_V2_HIDE_PERCENT'] || 100)
     json['listing_routing_version'] ||= (ENV['REACT_APP_LISTING_ROUTING_VERSION'])
