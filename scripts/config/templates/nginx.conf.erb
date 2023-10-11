@@ -134,7 +134,8 @@ http {
   }
 
   location ^~ /speedy-search {
-    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
+    # 31536000 is 1 year
+    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect; Max-Age=31536000";
     rewrite ^/speedy-search/(.*)$ $1 break;
     add_header x-speedy-redir $speedy_search_redirect;
 
@@ -153,7 +154,8 @@ http {
 
   location ^~ /snail-search {
     mruby_set $fallback /app/bin/config/lib/ngx_mruby/routes_fallback.rb cache;
-    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect";
+    # 31536000 is 1 year
+    add_header Set-Cookie "speedy_search_assignment=$speedy_search_redirect; Max-Age=31536000";
     add_header x-speedy-redir $speedy_search_redirect;
 
     try_files "/index.html" $fallback;
