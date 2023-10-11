@@ -147,7 +147,7 @@ http {
   }
 
   # 2. Speedy Search - React
-  if ($speedy_search_condition ~ "on_https://<%= redirect_target %>_/search") {
+  if ($speedy_search_condition ~ "on_https://<%= redirect_target %>_/search(-q|$)") {
     rewrite ^(.*)$ /snail-search/$1;
   }
 
